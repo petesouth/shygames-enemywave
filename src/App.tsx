@@ -5,8 +5,6 @@ import './App.css';
 import Phaser, { Game, Types } from "phaser";
 
 import { Container, Row, Col, Button } from "react-bootstrap";
-import { render } from '@testing-library/react';
-
 
 interface TheGameProps {
 
