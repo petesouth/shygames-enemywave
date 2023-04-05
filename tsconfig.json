@@ -2,6 +2,12 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "types": [
+      "react",
+      "react-dom",
+      "jest",
+      "node"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -15,7 +21,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "typeRoots": ["node_modules/@types", "./node_modules/phaser/types"]
+    "jsxImportSource": "react/jsx-runtime",
+    "typeRoots": ["node_modules/@types", "./node_modules/phaser/types", ""]
   },
   "include": ["src"]
 }
