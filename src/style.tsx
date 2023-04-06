@@ -18,7 +18,7 @@ export const getGlobalStyles = makeStyles({
     top: 0,
     zIndex: 1, // Apply higher z-index value
     width: "100%",
-    backgroundColor: "#fff",
+    backgroundColor: "white",
     padding: "10px",
     boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
     textAlign: "center"
@@ -32,6 +32,7 @@ export const getGlobalStyles = makeStyles({
     
   },
   gameCard: {
-    width: "70%"
+    minWidth: 400,
+    padding: 20
   }
 });
