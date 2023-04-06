@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
 import Phaser, { Game, Types } from "phaser";
@@ -164,7 +166,7 @@ const GameFeedGamePanel = ({imageSrc, title, description, onPlay } : GameFeedGam
 }
 
 
-function App() {
+function AppMainGameFeed() {
   const classes = getGlobalStyles();
 
   const [game, setGame] = useState<number>(1);
@@ -196,6 +198,13 @@ function App() {
 
     </div>
   );
+}
+
+
+const App = () => {
+  return (<Routes>
+  <Route path="/" element={<AppMainGameFeed />} />
+</Routes>)
 }
 
 export default App;
