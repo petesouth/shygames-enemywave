@@ -21,7 +21,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "jsxImportSource": "react/jsx-runtime",
     "typeRoots": ["node_modules/@types", "./node_modules/phaser/types", ""]
   },
   "include": ["src"]
