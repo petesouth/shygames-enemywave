@@ -1,0 +1,3 @@
+[submodule "3rdparty/tank-survivor"]
+	path = 3rdparty/tank-survivor
+	url = https://github.com/erincodepirate/tank-survivor
