@@ -84,6 +84,7 @@ function printEnv {
   
 }
 
+
 if [ "$run_program" = false ]
 then
    echo exiting program.  Pleases make specified modifications.
@@ -192,13 +193,12 @@ printEnv
 pwd
 ls -all
 
-echo "********* SUCCESS GO IS INSTALLED ********"
+echo "********* FINISHED SUCCESS GO IS INSTALLED ********"
 echo "For more information see: https://golang.org/doc/install/source"
 echo "The environment is as follows:"
 echo "******************************************"
 
 echo MAKE SURE YOUR .CSHRC, .BASHRC, .SHRC etc.. are updated for these environment variables. ENJOY !!!
-
 
 echo "PATH=$PATH"
   
