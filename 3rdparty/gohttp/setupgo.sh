@@ -155,7 +155,7 @@ cd src
 pwd
 echo "*****************Runnnnnning====== ./all.bash"
 ./all.bash
-echo "***********Runnnnnning====== ./all.bash"
+echo "***********Runnnnnning====== ./make.bash"
 ./make.bash
 
 popd
@@ -178,11 +178,11 @@ cd $GOPATH
 pwd
 
 hash on
-GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go get github.com/sparrc/gdm
-GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go install github.com/sparrc/gdm
+GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go get github.com/sparrc/gdm@latest
+GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go install github.com/sparrc/gdm@latest
 
-GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go get github.com/nsf/gocode
-GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go install github.com/nsf/gocode
+GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go get github.com/nsf/gocode@latest
+GOPATH=$GOPATH GOROOT=$GOROOT GOOS=$GOOS GOARCH=$GOARCH go install github.com/nsf/gocode@latest
 export GOPATH
 hash off
 
