@@ -84,3 +84,8 @@ Commandline:
 petesouth  erincodepirate
 
 
+### To run Example:
+
+gohttp -addr=192.168.0.227 -port=8080 -directory=.
+
+

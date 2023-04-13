@@ -1,12 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
-import {Game as FeedGame, fetchGames} from "../redux/gameAPI";
+import { Game as FeedGame, fetchGames } from "../redux/gameAPI";
 import { getGlobalStyles } from "../style";
-import { Container, Image } from "react-bootstrap";
+import { Button, Card, Col, Container, Image, Row } from "react-bootstrap";
 import { GameFeedGamePanel } from "../components/gamefeed/GameFeedGamePanel";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AnyAction } from "redux";
 
 import shyGamesRobotImage from "../assets/ShyGamesRobot.png";
+import { useNavigate } from "react-router-dom";
 
 const appName: string = (process.env.REACT_APP_APP_NAME) ? process.env.REACT_APP_APP_NAME : "REACT_APP_APP_NAME NOT FOUND PLEASE DEFINE"
 
@@ -17,7 +18,9 @@ export interface AppMainGameFeedProps {
 
 export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
   const classes = getGlobalStyles();
+  const navigate = useNavigate();
 
+  const [gamePanel, setGamePanel] = useState<JSX.Element | null>(null);
   const gameList = useSelector<any, FeedGame[]>((state) => state.games.gameList);
   const dispatch = useDispatch();
 
@@ -36,14 +39,31 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
       <div className={classes.content}>
         {(content) ? (<div style={{ padding: 40 }}>
           {content}
-        </div>) : (<div style={{ padding: 40 }}>
+        </div>) : (gamePanel !== null) ? gamePanel : (<div style={{ padding: 40 }}>
           <Container>
             {gameList?.map((game: FeedGame, index: number, array: FeedGame[]) => {
               return <GameFeedGamePanel title={game.title}
                 description={game.description}
                 imageSrc={game.gameImage}
                 onPlay={() => {
-                  alert("Go to the Games Summary page for game:" + game.title);
+                  setGamePanel((<>
+                    <Row>
+                      <Col>
+                        <Card>
+                          <Card.Header>{game.title}</Card.Header>
+                          <Card.Body>
+                           <iframe src={game.url} width={game.width} height={game.height} />
+                          </Card.Body>
+                          <Card.Body>
+                            <Button onClick={()=>{
+                              setGamePanel(null);
+                            }}>STOP</Button>
+                          </Card.Body>
+                        </Card>
+                      </Col>
+                    </Row>
+
+                  </>))
                 }}
               />;
             })}

@@ -32,7 +32,7 @@ export const getGlobalStyles = makeStyles({
     
   },
   gameCard: {
-    minWidth: 400,
+    minWidth: 300,
     padding: 20
   }
 });
