@@ -14,10 +14,13 @@
 # go install github.com/go-sql-driver/mysql
 
 
-go install github.com/petesouth/shygames-gamefeed/3rdparty/gohttp/src/gohttp
+cd $GOPATH/src
+mkdir -r github.com/petesouth/gohttp
+cp -r ./* $GOPATH/src/github.com/petesouth/gohttp/
 
-mv $GOPATH/bin/gohttp $GOPATH/bin/gohttp
-cp $GOPATH/bin/gohttp $GOPATH/src/github.com/petesouth/shygames-gamefeed/3rdparty/gohttp/dist
+go install github.com/petesouth/gohttp/src/gohttp
+
+cp $GOPATH/bin/gohttp ./dist
 
 echo "build was successful"
 
