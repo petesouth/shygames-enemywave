@@ -9,36 +9,63 @@ then
     exit 0
 fi
 
-
+# This is the root of where this installation of GO
+# will be compiled and set to run from
+# you can think of this as like python environments.
+# This way allows me to run whatever version of go i need
+# and to isolate them if need be per project
+# everything this file does ends up in this directory as the parent.
 INSTALL_ROOT=$1
 export INSTALL_ROOT
 
 echo "======runing the go install.  Using $INSTALL_ROOT as the target directory"
 
 
-#GOOS=freebsd
+
+#THE VERSION OF GO LANG THAT WERE GOING TO COMPILE
+#AND SETUP.
 GOLANGVER=1.17.13
 export GOLANGVER
 
+# Operating system.
+# This works on Freebsd as well
+#GOOS=freebsd
 GOOS=linux
 export GOOS
 
+#1 allows for C/C++ code to be called from golang
 CGO_ENABLED=0
 export CGO_ENABLED
 
+#Type of Binary distributables.  X86 and so forth.
 GOARCH=amd64
 export GOARCH
 
+# GO uses go1.4 to compile whatever latest 
+# version before the latest is installed.
+# This version of go creates the latest
+# version of go.  Confusing but how it works.
+# this directory is the compile lib that building
+# a version of go needs for the build tools it uses 
+# according to (GOLANGVER)
 GOROOT_BOOTSTRAP=$INSTALL_ROOT/go1.4
 export GOROOT_BOOTSTRAP
 
-
+# DIRECTORY THAT HOLDS THE LATEST GO TO BE BUILT
+# AND INSTALLED ACCORDING TO GOLANGVER.
+# a sub directory will be created called go from 
+# git clonning the latest golang build
 GOSRC=$INSTALL_ROOT/gosrc
 export GOSRC
 
+#The checked out version of go that is to be setup compiled
+# and installed.
 GOROOT=$INSTALL_ROOT/gosrc/go
 export GOROOT
 
+# Once I use the go 1.4 to compile the latest go in GOSRC and GOROOT
+# I copy the resulting GO executables to this directory
+# which is where they run from when I run my env.sh (see ./env.sh.template)
 GOPATH=$INSTALL_ROOT/go
 export GOPATH
 
@@ -46,6 +73,8 @@ export GOPATH
 PATH=./:$PATH:$GOROOT/bin:$GOPATH/bin:$GOROOT_BOOTSTRAP/bin
 export path
 
+# Making sure I have the right parameters
+# before I kick it all off.
 run_program=true
 export run_program
 
@@ -68,10 +97,19 @@ then
 fi
 
 
+#Use this to tell me message outputs 
+#and inform me of where everything is configured 
+#to go.
 function printEnv {
+local message="$1"
+
+  
   echo "=================="
+  echo "message=$message"
+  echo "INSTALL_ROOT=$INSTALL_ROOT"
+
   echo "GOPATH=$GOPATH"
-  echo "GORSRC=$GOSRC"
+  echo "GOSRC=$GOSRC"
   echo "GOROOT=$GOROOT"
   echo "GOARCH=$GOARCH"
   echo "GOOS=$GOOS"
@@ -88,7 +126,7 @@ function printEnv {
 if [ "$run_program" = false ]
 then
    echo exiting program.  Pleases make specified modifications.
-   printEnv
+   printEnv "exit run_program was false"
    exit 1
 fi
 
@@ -133,25 +171,15 @@ ls -all
 find $INSTALL_ROOT -maxdepth 1 -name "go*"
 
 
-echo "******* PHASE 1: Now I have go1.4 in place for bootstrapping building a branch of go1.17.1 for linux"
+printEnv "******* PHASE 1: Now I have go1.4 in place for bootstrapping building a branch of go1.17.1 for linux"
 
-printEnv
-pushd .
-mkdir -p $GOSRC
+echo "Doing the clone from GOSRC=$GOSRC into GOROOT=$GO then building golang $GOLANGVER"
 cd $GOSRC
-
-echo "******* PHASE 3: the git clone of latest go build into $GOROOT"
-pwd
-
-
-echo "Doing the clone from GOSRC=$GOSRC then building golang $GOLANGVER"
-
 git clone https://go.googlesource.com/go go
-ls -all
 cd go
-echo "*******This is NOW GOROOT GOSRC=$GOSRC/go diretory from above created from the git clone"
-pwd
 git checkout go$GOLANGVER
+
+
 cd src
 pwd
 echo "*****************Runnnnnning====== ./all.bash"
@@ -161,7 +189,7 @@ echo "***********Runnnnnning====== ./make.bash"
 
 popd
 
-echo "******* PHASE 4 That should have build go version $GOLANVER"
+printEnv "******* PHASE 4 That should have build go version $GOLANVER"
 
 
 if [ -d "$GOPATH" ]
@@ -173,7 +201,7 @@ else
 fi
 
 
-echo "******* PHASE 5 - Gettingthe varius tools like GDM and gocode"
+printEnv "******* PHASE 5 - Gettingthe varius tools like GDM and gocode"
 pushd .
 cd $GOPATH
 pwd
@@ -189,21 +217,15 @@ hash off
 
 popd
 
-printEnv
-pwd
-ls -all
-
-echo "********* FINISHED SUCCESS GO IS INSTALLED ********"
-echo "For more information see: https://golang.org/doc/install/source"
-echo "The environment is as follows:"
-echo "******************************************"
-
-echo MAKE SURE YOUR .CSHRC, .BASHRC, .SHRC etc.. are updated for these environment variables. ENJOY !!!
+printEnv echo "********* FINISHED SUCCESS GO IS INSTALLED ********" \
+"\n\nFor more information see: https://golang.org/doc/install/source" \
+"\nThe environment is as follows:" \
+"\n******************************************" \
+"\nMAKE SURE YOUR .CSHRC, .BASHRC, .SHRC etc.. are updated for these environment variables." \
+"\nENJOY !!!"
 
 echo "PATH=$PATH"
   
-
-printEnv
 pwd
 ls -all
 
