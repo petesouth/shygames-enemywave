@@ -14,6 +14,8 @@
 # go install github.com/go-sql-driver/mysql
 
 
+#This bit here simulates go get by copying it local
+#in the same way go get does
 cd $GOPATH/src
 mkdir -r github.com/petesouth/gohttp
 cp -r ./* $GOPATH/src/github.com/petesouth/gohttp/
