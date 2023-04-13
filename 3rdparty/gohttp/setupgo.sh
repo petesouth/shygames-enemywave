@@ -60,7 +60,7 @@ function setupEnvironment {
 
     #The checked out version of go that is to be setup compiled
     # and installed.
-    GOROOT=$INSTALL_ROOT/gosrc/go
+    GOROOT=$GOSRC/go
     export GOROOT
 
     # Once I use the go 1.4 to compile the latest go in GOSRC and GOROOT
@@ -68,11 +68,17 @@ function setupEnvironment {
     # which is where they run from when I run my env.sh (see ./env.sh.template)
     GOPATH=$INSTALL_ROOT/go
     export GOPATH
-
+    
     #Adding GO BIN to my path.
     PATH=./:$PATH:$GOROOT/bin:$GOPATH/bin:$GOROOT_BOOTSTRAP/bin
     export path
 
+}
+
+function generateBuildDirectories {
+    # Needed
+    mkdir -p $GOSRC
+    mkdir -p $GOPATH
 }
 
 #Use this to tell me message outputs 
@@ -148,39 +154,21 @@ function validate {
 
 }
 
-function createScratchDirectoryAsBuildRoot {
-    echo "creating scratch directory (If one is created already it'll be deleted and re-created)"
-
-    if [ -d "./scratch" ]
-    then
-        echo "Directory ./scratch exists, going to remove it for recreation"
-        rm -rf ./scratch
-    fi
-
-    mkdir ./scratch
-    echo created the scratch directory ./scratch
-    cd scratch
-    echo "currecnt working directory is:"
-    pwd
-}
 
 
-function setupGoBootStrapGoToolsFromScratchDir {
+function setupGoBootStrapGoTools {
     echo "setupGoBootStrap - Executing setting up go."
-    echo "******* PHASE 0 - Getting go1.4.3 as a bootstrap this is done in the scratch directory"
     
     # FREEBSD - wget https://storage.googleapis.com/golang/go1.4.3.freebsd-amd64.tar.gz
     #tar -xvf go1.4.3.freebsd-amd64.tar.gz
     wget https://storage.googleapis.com/golang/go1.4.3.linux-amd64.tar.gz
     tar -zxvf go1.4.3.linux-amd64.tar.gz
-
-    
+ 
     echo "UNTAR OF GOLANG 1.4.3 for boot strap \n moving go to GOROOT_BOOTSTRAP=$GOROOT_BOOTSTRAP"
-
 
     echo "mv ./go GOROOT_BOOTSTRAP=$GOROOT_BOOTSTRAP"
     mv ./go $GOROOT_BOOTSTRAP
-
+    rm go1.4.3.linux-amd64.tar.gz
 }
 
 function compileLatestVersionOfGoLang {
@@ -224,16 +212,15 @@ function installGoLangToolsToGoPath {
 
 }
 
-setupEnvironment
+setupEnvironment $1
 
 printEnv "**** Phase 1 -----  VALIDATION -----"
 validate
 
 
 printEnv "**** Phase 2 -----  Creation Of Go 1.4.7 boot strap build tools -----"
-createScratchDirectoryAsBuildRoot
-setupGoBootStrapGoToolsFromScratchDir
-
+setupGoBootStrapGoTools
+generateBuildDirectories
 
 printEnv "******* PHASE 3: Begin Now I have go1.4 in place for bootstrapping building a branch of go1.17.1 for linux"
 compileLatestVersionOfGoLang
