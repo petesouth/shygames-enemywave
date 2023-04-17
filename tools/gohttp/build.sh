@@ -12,17 +12,18 @@ rm ./dist/gohttp.exe
 rm ./dist/gohttplinux
 
 # ******* Make a Linux Distributable
-go get -u github.com/zserge/lorca
+# go get -u github.com/gotk3/gotk3/gtk
 
-#in the same way go get does
+
+# Build Windows server
 GOOS=windows go install ./gohttp.go
-
 cp $GOPATH/bin/gohttp.exe ./dist/gohttp.exe
 
 
+#Build Linux Server
 GOOS=linux go install ./gohttp.go
 
-cp $GOPATH/bin/gohttp ./dist/gohttplinux
+cp $GOPATH/bin/gohttp ./dist/gohttp
 
 
 echo "build was successful pleas check ./dist for your generated files"

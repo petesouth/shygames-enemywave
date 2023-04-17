@@ -89,3 +89,4 @@ petesouth  erincodepirate
 gohttp -addr=192.168.0.227 -port=8080 -directory=.
 
 
+sudo apt-get install libgtk-3-dev libwebkit2gtk-4.0-dev
