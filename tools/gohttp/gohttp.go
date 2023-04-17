@@ -28,7 +28,7 @@ func startServer( addr string, port string, directory string) {
 
 
 func runAppWindow() {
-    ui, err := lorca.New("", "", 800, 600)
+    ui, err := lorca.New("https://www.yahoo.com", "", 800, 600)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func runAppWindow() {
 	//absPath, _ := filepath.Abs("/tank-survivor/build/index.html")
 	//ui.Load(url.PathEscape("file://" + absPath))
 	// Or navigate to a URL:
-	 ui.Load("https://www.yahoo.com")
+	//ui.Load("https://www.yahoo.com")
 
 	// Wait for the UI window to be closed by the user
 	<-ui.Done()
