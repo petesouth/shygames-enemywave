@@ -49,5 +49,26 @@ You can learn more in the [Create React App documentation](https://facebook.gith
 To learn React, check out the [React documentation](https://reactjs.org/).
 
 
-Checkout 3rdparty/gohttp/reademe.md for a quick and dirty filer server for playing
+
+## tools
+
+*Note: Each project under tools is self inclusive.  Your meant to take the output and use it in your game distirbutable.  The tools are to aid in shipping a phaser.io or other webapp game as a local downloable game application.
+
+Checkout tools/gohttp/reademe.md for a quick and dirty filer server for playing
 a web game locally to a user's computer
+
+The reason for golang is it requires no infastructure to run.  golang is self inclusive.
+
+     https://codesahara.com/blog/how-to-deploy-golang-to-production-step-by-step/
+     
+     https://reactnative.dev/docs/getting-started
+
+### gohttp
+This project is a local application that runs a local webserver and then brins
+up a browser windows to display the configured index.  You'd use this to package
+a web application as a downloadable game.  Lets the game play in a browser over http
+BUT it's running local (not internet).  This is for things like steam, and other downloadable exclusive game services.
+
+### Shygames native
+Excatly the same purpose as gohttp except as a localhost on the phone app. Doin this using react-native-webview and react-native-http-server
+

@@ -51,7 +51,7 @@ cd $GOPATH
 * cd $GOPATH     So your at root again    
 * export GOPATH=$GOPATH
 
-* go install github.com/petesouth/shygamesgamefeed/3rdparty/gohttp/src/gohttp 
+* go install github.com/petesouth/shygamesgamefeed/tools/gohttp/src/gohttp 
 * cd $GOPATH/bin 
 
 * Type ./gohttp   You'll see the output asking for the location of a json config file.  
