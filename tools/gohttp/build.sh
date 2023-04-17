@@ -9,7 +9,8 @@
 
 
 rm ./dist/gohttp.exe
-rm ./dist/gohttplinux
+rm ./dist/gohttp
+ls -all ./dist
 
 # ******* Make a Linux Distributable
 # go get -u github.com/gotk3/gotk3/gtk
