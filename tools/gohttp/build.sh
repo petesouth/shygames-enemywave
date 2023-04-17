@@ -8,23 +8,19 @@
 #as a local application/game (downloadable game)
 
 
-# ****** Make a windows Distributable
-GOARCH=windows go get github.com/zserge/webview
-GOARCH=windows go install github.com/zserge/webview
-
-#in the same way go get does
-GOARCH=windows go install ./gohttp.go
-
-cp $GOPATH/bin/gohttp ./dist/gohttpwindows
-
-
+rm ./dist/gohttp.exe
+rm ./dist/gohttplinux
 
 # ******* Make a Linux Distributable
-GOARCH=linux go get github.com/zserge/webview
-GOARCH=linux go install github.com/zserge/webview
+go get -u github.com/zserge/lorca
 
 #in the same way go get does
-GOARCH=linux go install ./gohttp.go
+GOOS=windows go install ./gohttp.go
+
+cp $GOPATH/bin/gohttp.exe ./dist/gohttp.exe
+
+
+GOOS=linux go install ./gohttp.go
 
 cp $GOPATH/bin/gohttp ./dist/gohttplinux
 
