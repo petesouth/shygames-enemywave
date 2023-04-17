@@ -3,7 +3,7 @@ package main
 import (
     "flag"
     "log"
-    "time"
+  //  "time"
    // "strconv"
     "net/http"
     "github.com/zserge/lorca"
@@ -38,7 +38,7 @@ func runAppWindow() {
 	//absPath, _ := filepath.Abs("/tank-survivor/build/index.html")
 	//ui.Load(url.PathEscape("file://" + absPath))
 	// Or navigate to a URL:
-	 ui.Load("http://localhost:8080/tank-survivor/build/index.html")
+	 ui.Load("https://www.yahoo.com")
 
 	// Wait for the UI window to be closed by the user
 	<-ui.Done()
@@ -46,13 +46,15 @@ func runAppWindow() {
 
 func main() {
     // Define command line flags for address and port
-    addr := flag.String("addr", "", "Address to listen on")
-    port := flag.String("port", "8000", "Port to listen on")
-    directory := flag.String("directory", ".", "Root directory")
+    //addr := flag.String("addr", "", "Address to listen on")
+    //port := flag.String("port", "8000", "Port to listen on")
+    //directory := flag.String("directory", ".", "Root directory")
     //websubpath := flag.String("websubpath", ".", "Sub path to the application start page")
     // widthstr := flag.String("width", ".", "Window width")
     // heightstr := flag.String("height", ".", "Window height")
     
+    //flag.Parse();
+
     // width, err := strconv.ParseInt(widthstr, 10, 64)
     // if err != nil {
     //     log.Fatal("ParseInt width: ", err)
@@ -66,8 +68,8 @@ func main() {
     // }
 
 
-    go startServer( *addr, *port, *directory)
-    time.Sleep(5000);
+   // go startServer( *addr, *port, *directory)
+   // time.Sleep(5000);
 
     
     runAppWindow();
