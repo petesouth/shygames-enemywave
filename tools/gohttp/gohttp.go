@@ -29,14 +29,14 @@ func startServer( addr string, port string, directory string) {
 func main() {
     // Define command line flags for address and port
     addr := flag.String("addr", "127.0.0.1", "Address to listen on")
-    port := flag.String("port", "8080", "Port to listen on")
+    port := flag.String("port", "3636", "Port to listen on")
     directory := flag.String("directory", ".", "Root directory")
     flag.Parse();
 
 
     go func () {
         time.Sleep(15000)
-        app := "chrome.exe"
+        app := "./windowbrowser.exe"
         arg0 := "http://" + (*addr) + ":" + (*port) + "/index.html"
         fmt.Println("Executing: App %s %s", app, arg0 )
         cmd := exec.Command(app, arg0)

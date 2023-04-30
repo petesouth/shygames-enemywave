@@ -20,3 +20,14 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Ignore Visual Studio user-specific settings
+.vs/
+
+# Ignore build output
+obj/
+bin/
+
+# Ignore NuGet packages
+packages/
+
