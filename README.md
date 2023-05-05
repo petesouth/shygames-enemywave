@@ -72,8 +72,8 @@ BUT it's running local (not internet).  This is for things like steam, and other
 ### Shygames native
 Excatly the same purpose as gohttp except as a localhost on the phone app. Doin this using react-native-webview and react-native-http-server
 
-###
-Window Browser is a .net program.  It's a Native Window that wraps the Chrome Browser Control over the window body 100percent in both directions x and y.
+### Window Browser 
+is a CSharp .net WebForm app program.  It's a Native Window that wraps the Chrome Browser Control over the window body 100percent in both directions x and y.
 It gets launched by gohttp.
 
 #### Here's how you can use this to bundle your game.
