@@ -77,8 +77,11 @@ is a CSharp .net WebForm app program.  It's a Native Window that wraps the Chrom
 It gets launched by gohttp.
 
 #### Here's how you can use this to bundle your game.
-##### Purpose is so you can bundle a web game as a downloadable game and it plays on the users box.  Sorta like Electron.  but this is way more light wieght.
+##### Purpose is so you can bundle a web game as a downloadable game and it plays on the users box.  Sorta like Electron.  but this is way more light wieght. Doesn't require npm etc. to be installed on a box.  Golang and Windows browser CSHarp will support Ubuntu, Windows (default) and Mac IOS.
 - Compile gohttp copy that you your webgames root directory (index.html should live there).
 - Compile and copy the Windowbrowser into the same directory.
 - Run gohttp this will start up a local host web server and launch the Windowbrowser to play the game in the window broser.
+- Same deal with the shygames Native.  This is just a react-native program running react-native-http-server and react-native-browser streteched over. Running a web game url
+
+
 
