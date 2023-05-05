@@ -72,3 +72,13 @@ BUT it's running local (not internet).  This is for things like steam, and other
 ### Shygames native
 Excatly the same purpose as gohttp except as a localhost on the phone app. Doin this using react-native-webview and react-native-http-server
 
+###
+Window Browser is a .net program.  It's a Native Window that wraps the Chrome Browser Control over the window body 100percent in both directions x and y.
+It gets launched by gohttp.
+
+#### Here's how you can use this to bundle your game.
+##### Purpose is so you can bundle a web game as a downloadable game and it plays on the users box.  Sorta like Electron.  but this is way more light wieght.
+- Compile gohttp copy that you your webgames root directory (index.html should live there).
+- Compile and copy the Windowbrowser into the same directory.
+- Run gohttp this will start up a local host web server and launch the Windowbrowser to play the game in the window broser.
+
