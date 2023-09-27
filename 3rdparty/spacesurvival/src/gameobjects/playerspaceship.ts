@@ -2,6 +2,8 @@
 import Phaser from 'phaser';
 import store from '../store/store';
 import { spaceshipActions } from '../store/spaceshipstore';
+import { ExhaustFlame } from './exhaustflame';
+
 
 export class PlayerSpaceship {
 
@@ -15,6 +17,7 @@ export class PlayerSpaceship {
   private rightKey?: Phaser.Input.Keyboard.Key;
   private upKey?: Phaser.Input.Keyboard.Key;
   private scene: Phaser.Scene;
+  private exhaustFlame: ExhaustFlame;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
@@ -31,6 +34,7 @@ export class PlayerSpaceship {
     this.leftKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
     this.rightKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
     this.upKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+    this.exhaustFlame = new ExhaustFlame(scene);
   }
 
   updateSpaceshipState() {

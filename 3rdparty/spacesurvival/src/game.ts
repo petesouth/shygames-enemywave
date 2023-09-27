@@ -2,6 +2,8 @@
 import Phaser from 'phaser';
 import { PlayerSpaceship } from './gameobjects/playerspaceship';
 
+
+
 export class MainScene extends Phaser.Scene {
   private spaceship!: PlayerSpaceship;
 
