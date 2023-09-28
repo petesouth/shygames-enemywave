@@ -32,7 +32,15 @@ export class SpaceObject {
             Phaser.Math.Between(-50, 50) / 100
         );
 
-        this.graphics = scene.add.graphics({ lineStyle: { width: 1, color: 0xFFFFFF } });
+        // Create a graphics object with the desired line color
+        this.graphics = scene.add.graphics({ lineStyle: { width: 1, color: 0x777777 } });
+
+        // Set the fill style to match the line color
+        this.graphics.fillStyle(0x777777);
+
+        // Draw the polygon with both fill and stroke
+        this.graphics.fillPoints(this.polygon.points, true);
+        this.graphics.strokePoints(this.polygon.points, true);
     }
 
     update(spaceObjects: SpaceObject[]) {
@@ -58,6 +66,11 @@ export class SpaceObject {
         }
 
         this.graphics.clear();
+        
+        this.graphics.fillStyle(0x777777);
+
+        // Draw the polygon with both fill and stroke
+        this.graphics.fillPoints(this.polygon.points, true);
         this.graphics.strokePoints(this.polygon.points, true);
 
         // Handle collisions with other SpaceObjects
