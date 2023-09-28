@@ -61,6 +61,10 @@ export class SpaceObject {
         this.graphics.strokePoints(this.polygon.points, true);
 
         // Handle collisions with other SpaceObjects
+        this.detectCollisions(spaceObjects);
+    }
+
+    private detectCollisions(spaceObjects: SpaceObject[]) {
         if (!this.hasCollided) { // Check if a collision has occurred in the current frame
             for (const spaceObj of spaceObjects) {
                 if (spaceObj !== this) { // Avoid self-collision

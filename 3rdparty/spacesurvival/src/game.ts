@@ -14,7 +14,7 @@ export class MainScene extends Phaser.Scene {
         this.spaceship = new PlayerSpaceship(this);
 
         // Create a random number of space objects
-        const numObjects = Phaser.Math.Between(5, 10);
+        const numObjects = Phaser.Math.Between(10, 24);
         for (let i = 0; i < numObjects; i++) {
             const spaceObj = new SpaceObject(this);
             this.spaceObjects.push(spaceObj);
