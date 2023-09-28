@@ -48,25 +48,46 @@ export class PlayerSpaceship {
     const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
 
     if (this.leftKey?.isDown) {
-      Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -this.rotationRate);
-      Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -this.rotationRate);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -this.rotationRate);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -this.rotationRate);
     } else if (this.rightKey?.isDown) {
-      Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, this.rotationRate);
-      Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, this.rotationRate);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, this.rotationRate);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, this.rotationRate);
     }
 
     if (this.upKey?.isDown) {
-      const deltaX = this.spaceShipShape.x1 - centroid.x;
-      const deltaY = this.spaceShipShape.y1 - centroid.y;
-      const angle = Math.atan2(deltaY, deltaX);
-      this.velocity.x += this.thrust * Math.cos(angle);
-      this.velocity.y += this.thrust * Math.sin(angle);
+        const deltaX = this.spaceShipShape.x1 - centroid.x;
+        const deltaY = this.spaceShipShape.y1 - centroid.y;
+        const angle = Math.atan2(deltaY, deltaX);
+        this.velocity.x += this.thrust * Math.cos(angle);
+        this.velocity.y += this.thrust * Math.sin(angle);
     }
 
     this.velocity.x *= this.damping;
     this.velocity.y *= this.damping;
     Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
     Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
+
+    const maxX = Math.max(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
+    const minX = Math.min(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
+    const maxY = Math.max(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
+    const minY = Math.min(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
+
+    if (maxX < 0) {
+        Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.scene.scale.width, 0);
+        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.scene.scale.width, 0);
+    } else if (minX > this.scene.scale.width) {
+        Phaser.Geom.Triangle.Offset(this.spaceShipShape, -this.scene.scale.width, 0);
+        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, -this.scene.scale.width, 0);
+    }
+
+    if (maxY < 0) {
+        Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, this.scene.scale.height);
+        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, this.scene.scale.height);
+    } else if (minY > this.scene.scale.height) {
+        Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, -this.scene.scale.height);
+        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
+    }
 
     this.graphics.fillTriangleShape(this.spaceShipShape);
     this.graphics.fillTriangleShape(this.innerSpaceShipShape);
@@ -75,12 +96,13 @@ export class PlayerSpaceship {
     this.graphics.strokeTriangleShape(this.innerSpaceShipShape);
 
     if (this.upKey?.isDown) {
-      this.exhaustFlame.show();
-      this.exhaustFlame.update();
+        this.exhaustFlame.show();
+        this.exhaustFlame.update();
     } else {
-      this.exhaustFlame.hide();
+        this.exhaustFlame.hide();
     }
 
     this.exhaustFlame.render();
-  }
+}
+
 }
