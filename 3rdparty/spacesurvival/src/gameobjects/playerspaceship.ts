@@ -120,7 +120,7 @@ export class PlayerSpaceship {
 
                 const distance = Phaser.Math.Distance.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
 
-                if (distance < 20) {
+                if (distance < 40) {
                     // Calculate collision angle
                     const angle = Phaser.Math.Angle.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
                     // Create Vector2 objects for velocity and position
