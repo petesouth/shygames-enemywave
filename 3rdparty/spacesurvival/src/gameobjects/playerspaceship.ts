@@ -91,52 +91,56 @@ export class PlayerSpaceship {
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
         }
 
-
-        for (const spaceObj of spaceObjects) {
-            const distance = Phaser.Math.Distance.Between(this.spaceShipShape.x1, this.spaceShipShape.y1, 
-                spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
-            if (distance < 40) {
-                // Calculate collision angle
-                const angle = Phaser.Math.Angle.Between(
-                    this.spaceShipShape.x1,
-                    this.spaceShipShape.y1,
-                    spaceObj.getPolygon().points[0].x,
-                    spaceObj.getPolygon().points[0].y
-                );        
-                // Create Vector2 objects for velocity and position
-                const velocity1 = new Phaser.Math.Vector2(this.velocity.x, this.velocity.y);
-                const velocity2 = spaceObj.getVelocity().clone();
-                const position1 = new Phaser.Math.Vector2(this.spaceShipShape.x1, this.spaceShipShape.y1);
-                const position2 = { ...spaceObj.getPolygon().points[0] };
-                
-                // Calculate new velocities for both objects based on collision
-                const m1 = 1; // Mass of PlayerSpaceship (adjust as needed)
-                const m2 = 1; // Mass of SpaceObject (adjust as needed)
-                
-                const newVelocity1 = velocity1
-                    .clone()
-                    .scale((m1 - m2) / (m1 + m2))
-                    .add(
-                        velocity2
-                            .clone()
-                            .scale((2 * m2) / (m1 + m2))
-                    );
-                
-                const newVelocity2 = velocity2
-                    .clone()
-                    .scale((m2 - m1) / (m1 + m2))
-                    .add(
-                        velocity1
-                            .clone()
-                            .scale((2 * m1) / (m1 + m2))
-                    );
         
-                // Apply new velocities in opposite directions
-                this.velocity.set(newVelocity1.x, newVelocity1.y);
-                spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+        for (const spaceObj of spaceObjects) {
+            const collisionPoints = this.spaceShipShape.getPoints(3);
+        
+            for (let i = 0; i < collisionPoints.length; i++) {
+                const x1 = collisionPoints[i].x;
+                const y1 = collisionPoints[i].y;
+                const x2 = collisionPoints[(i + 1) % collisionPoints.length].x;
+                const y2 = collisionPoints[(i + 1) % collisionPoints.length].y;
+        
+                const distance = Phaser.Math.Distance.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
+        
+                if (distance < 40) {
+                    // Calculate collision angle
+                    const angle = Phaser.Math.Angle.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);        
+                    // Create Vector2 objects for velocity and position
+                    const velocity1 = new Phaser.Math.Vector2(this.velocity.x, this.velocity.y);
+                    const velocity2 = spaceObj.getVelocity().clone();
+                    const position1 = new Phaser.Math.Vector2(x1, y1);
+                    const position2 = { ...spaceObj.getPolygon().points[0] };
+                    
+                    // Calculate new velocities for both objects based on collision
+                    const m1 = 1; // Mass of PlayerSpaceship (adjust as needed)
+                    const m2 = 1; // Mass of SpaceObject (adjust as needed)
+                    
+                    const newVelocity1 = velocity1
+                        .clone()
+                        .scale((m1 - m2) / (m1 + m2))
+                        .add(
+                            velocity2
+                                .clone()
+                                .scale((2 * m2) / (m1 + m2))
+                        );
+                    
+                    const newVelocity2 = velocity2
+                        .clone()
+                        .scale((m2 - m1) / (m1 + m2))
+                        .add(
+                            velocity1
+                                .clone()
+                                .scale((2 * m1) / (m1 + m2))
+                        );
+                
+                    // Apply new velocities in opposite directions
+                    this.velocity.set(newVelocity1.x, newVelocity1.y);
+                    spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+                }
             }
         }
-                
+        
 
         this.graphics.strokeTriangleShape(this.spaceShipShape);
         this.graphics.fillTriangleShape(this.innerSpaceShipShape);

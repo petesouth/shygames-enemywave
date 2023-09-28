@@ -12,13 +12,15 @@ export class SpaceObject {
         const x = Phaser.Math.Between(0, scene.scale.width);
         const y = Phaser.Math.Between(0, scene.scale.height);
 
-        const sides = Phaser.Math.Between(3, 8);
+        const sides = Phaser.Math.Between(5, 7);
         const size = Phaser.Math.Between(10, 20);
+        const scale = 1.6; // Scaling factor
+
         const points = [];
 
         for (let i = 0; i < sides; i++) {
-            const px = Math.cos((i / sides) * 2 * Math.PI) * size + x;
-            const py = Math.sin((i / sides) * 2 * Math.PI) * size + y;
+            const px = Math.cos((i / sides) * 2 * Math.PI) * size * scale + x;
+            const py = Math.sin((i / sides) * 2 * Math.PI) * size * scale + y;
             points.push(new Phaser.Geom.Point(px, py));
         }
 
