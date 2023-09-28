@@ -82,9 +82,9 @@ export class EnemySpaceship {
         }
     
         const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-    
         const directionX = this.playerSpaceship.getPositionX() - centroid.x;
         const directionY = this.playerSpaceship.getPositionY() - centroid.y;
+        const distanceToPlayer = Phaser.Math.Distance.Between(centroid.x, centroid.y, this.playerSpaceship.getPositionX(), this.playerSpaceship.getPositionY());
         const angle = Math.atan2(directionY, directionX);
     
         // Rotate the spaceship to point towards the player
@@ -94,8 +94,14 @@ export class EnemySpaceship {
         Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationDifference);
         Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, rotationDifference);
     
-        this.velocity.x += this.thrust * Math.cos(angle);
-        this.velocity.y += this.thrust * Math.sin(angle);
+        // If the enemy is closer than 40 pixels to the player, reduce its speed
+        let effectiveThrust = this.thrust;
+        if (distanceToPlayer < 80) { // Considering 80 because 40 pixels is the buffer, so we start slowing down when we are 80 pixels away
+            effectiveThrust *= (distanceToPlayer - 80) / 80;
+        }
+    
+        this.velocity.x += effectiveThrust * Math.cos(angle);
+        this.velocity.y += effectiveThrust * Math.sin(angle);
     
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
