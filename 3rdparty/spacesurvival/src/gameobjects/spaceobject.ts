@@ -85,7 +85,6 @@ export class SpaceObject {
         this.detectCollisions(spaceObjects);
     }
 
-
     private detectCollisions(spaceObjects: SpaceObject[]) {
         if (!this.hasCollided) {
             for (const spaceObj of spaceObjects) {
@@ -103,32 +102,18 @@ export class SpaceObject {
                         if (distance < 30) {
                             const angle = Phaser.Math.Angle.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y) + Phaser.Math.RND.realInRange(-Math.PI / 4, Math.PI / 4);
     
-                            const velocity1 = this.velocity.clone();
-                            const velocity2 = spaceObj.getVelocity().clone();
+                            // Random speed between slow and fast
+                            const minSpeed = .2; // Adjust as needed
+                            const maxSpeed = 3; // Adjust as needed
+                            const newSpeed = Phaser.Math.RND.realInRange(minSpeed, maxSpeed);
     
-                            const m1 = 1; // Mass of the first object (adjust as needed)
-                            const m2 = 1; // Mass of the second object (adjust as needed)
+                            // Calculate the new velocity based on the random speed
+                            const velocity1 = this.velocity.clone().normalize().scale(newSpeed);
+                            const velocity2 = spaceObj.getVelocity().clone().normalize().scale(newSpeed);
     
-                            const newVelocity1 = velocity1
-                                .clone()
-                                .scale((m1 - m2) / (m1 + m2))
-                                .add(
-                                    velocity2
-                                        .clone()
-                                        .scale((2 * m2) / (m1 + m2))
-                                );
-    
-                            const newVelocity2 = velocity2
-                                .clone()
-                                .scale((m2 - m1) / (m1 + m2))
-                                .add(
-                                    velocity1
-                                        .clone()
-                                        .scale((2 * m1) / (m1 + m2))
-                                );
-    
-                            this.velocity.set(newVelocity1.x, newVelocity1.y);
-                            spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+                            // Apply the new velocities
+                            this.velocity.set(velocity1.x, velocity1.y);
+                            spaceObj.setVelocity(velocity2.x, velocity2.y);
     
                             this.hasCollided = true;
                             spaceObj.hasCollided = true;
@@ -149,7 +134,9 @@ export class SpaceObject {
         }
     }
     
-
+    
+    
+    
     getPolygon() {
         return this.polygon;
     }

@@ -3,7 +3,6 @@ import { ExhaustFlame } from './exhaustflame';
 import { SpaceObject } from './spaceobject';
 
 export class PlayerSpaceship {
-
     private spaceShipShape: Phaser.Geom.Triangle;
     private innerSpaceShipShape: Phaser.Geom.Triangle;
     private graphics: Phaser.GameObjects.Graphics;
@@ -45,9 +44,8 @@ export class PlayerSpaceship {
 
     updateSpaceshipState(spaceObjects: SpaceObject[]) {
         this.graphics.clear();
-
         const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-
+    
         if (this.leftKey?.isDown) {
             Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -this.rotationRate);
             Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -this.rotationRate);
@@ -55,7 +53,7 @@ export class PlayerSpaceship {
             Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, this.rotationRate);
             Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, this.rotationRate);
         }
-
+    
         if (this.upKey?.isDown) {
             const deltaX = this.spaceShipShape.x1 - centroid.x;
             const deltaY = this.spaceShipShape.y1 - centroid.y;
@@ -63,18 +61,18 @@ export class PlayerSpaceship {
             this.velocity.x += this.thrust * Math.cos(angle);
             this.velocity.y += this.thrust * Math.sin(angle);
         }
-
+    
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
-
+    
         Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
         Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
-
+    
         const maxX = Math.max(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
         const minX = Math.min(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
         const maxY = Math.max(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
         const minY = Math.min(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
-
+    
         if (maxX < 0) {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.scene.scale.width, 0);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.scene.scale.width, 0);
@@ -82,7 +80,7 @@ export class PlayerSpaceship {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, -this.scene.scale.width, 0);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, -this.scene.scale.width, 0);
         }
-
+    
         if (maxY < 0) {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, this.scene.scale.height);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, this.scene.scale.height);
@@ -90,72 +88,67 @@ export class PlayerSpaceship {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, -this.scene.scale.height);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
         }
-
-        
+    
         this.detectCollisions(spaceObjects);
-        
-
+    
         this.graphics.strokeTriangleShape(this.spaceShipShape);
         this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-
+    
         if (this.upKey?.isDown) {
             this.exhaustFlame.show();
             this.exhaustFlame.update();
         } else {
             this.exhaustFlame.hide();
         }
-
+    
         this.exhaustFlame.render();
     }
+    
 
     private detectCollisions(spaceObjects: SpaceObject[]) {
         for (const spaceObj of spaceObjects) {
-            const collisionPoints = this.spaceShipShape.getPoints(3);
-
+            const collisionPoints = [
+                new Phaser.Geom.Point(this.spaceShipShape.x1, this.spaceShipShape.y1),
+                new Phaser.Geom.Point(this.spaceShipShape.x2, this.spaceShipShape.y2),
+                new Phaser.Geom.Point(this.spaceShipShape.x3, this.spaceShipShape.y3)
+            ];
+    
+            const objPolygon = spaceObj.getPolygon().points;
+    
             for (let i = 0; i < collisionPoints.length; i++) {
-                const x1 = collisionPoints[i].x;
-                const y1 = collisionPoints[i].y;
-                const x2 = collisionPoints[(i + 1) % collisionPoints.length].x;
-                const y2 = collisionPoints[(i + 1) % collisionPoints.length].y;
-
-                const distance = Phaser.Math.Distance.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
-
-                if (distance < 40) {
-                    // Calculate collision angle
-                    const angle = Phaser.Math.Angle.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
-                    // Create Vector2 objects for velocity and position
-                    const velocity1 = new Phaser.Math.Vector2(this.velocity.x, this.velocity.y);
-                    const velocity2 = spaceObj.getVelocity().clone();
-                    const position1 = new Phaser.Math.Vector2(x1, y1);
-                    const position2 = { ...spaceObj.getPolygon().points[0] };
-
-                    // Calculate new velocities for both objects based on collision
-                    const m1 = 1; // Mass of PlayerSpaceship (adjust as needed)
-                    const m2 = 1; // Mass of SpaceObject (adjust as needed)
-
-                    const newVelocity1 = velocity1
-                        .clone()
-                        .scale((m1 - m2) / (m1 + m2))
-                        .add(
-                            velocity2
-                                .clone()
-                                .scale((2 * m2) / (m1 + m2))
-                        );
-
-                    const newVelocity2 = velocity2
-                        .clone()
-                        .scale((m2 - m1) / (m1 + m2))
-                        .add(
-                            velocity1
-                                .clone()
-                                .scale((2 * m1) / (m1 + m2))
-                        );
-
-                    // Apply new velocities in opposite directions
-                    this.velocity.set(newVelocity1.x, newVelocity1.y);
-                    spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+                for (let j = 0; j < objPolygon.length; j++) {
+                    if (this.lineSegmentIntersects(collisionPoints[i], collisionPoints[(i + 1) % 3], objPolygon[j], objPolygon[(j + 1) % objPolygon.length])) {
+                        const distance = Phaser.Math.Distance.BetweenPoints(collisionPoints[i], objPolygon[j]);
+    
+                        if (distance < 40) {
+                            const angle = Phaser.Math.Angle.BetweenPoints(collisionPoints[i], objPolygon[j]);
+                            const velocity1 = this.velocity.clone();
+                            const velocity2 = spaceObj.getVelocity().clone();
+    
+                            const m1 = 1; 
+                            const m2 = 1; 
+    
+                            const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
+                            const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
+    
+                            this.velocity.set(newVelocity1.x, newVelocity1.y);
+                            spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+                        }
+                    }
                 }
             }
         }
     }
+    
+    private lineSegmentIntersects(a: Phaser.Geom.Point, b: Phaser.Geom.Point, c: Phaser.Geom.Point, d: Phaser.Geom.Point): boolean {
+        const det = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
+        if (det === 0) return false;
+    
+        const lambda = ((d.y - c.y) * (d.x - a.x) + (c.x - d.x) * (d.y - a.y)) / det;
+        const gamma = ((a.y - b.y) * (d.x - a.x) + (b.x - a.x) * (d.y - a.y)) / det;
+    
+        return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+    }
+    
+    
 }
