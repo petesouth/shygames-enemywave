@@ -1,9 +1,12 @@
 import Phaser from 'phaser';
 import { PlayerSpaceship } from './gameobjects/playerspaceship';
+import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
 export class MainScene extends Phaser.Scene {
-    private spaceship!: PlayerSpaceship;
+    private playerspaceship!: PlayerSpaceship;
+    private enemyspaceship!: EnemySpaceship;
+
     private spaceObjects: SpaceObject[] = [];
 
     constructor() {
@@ -11,7 +14,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.spaceship = new PlayerSpaceship(this);
+        this.playerspaceship = new PlayerSpaceship(this);
+        this.enemyspaceship = new EnemySpaceship(this, this.playerspaceship);
 
         // Create a random number of space objects
         const numObjects = Phaser.Math.Between(10, 24);
@@ -23,9 +27,12 @@ export class MainScene extends Phaser.Scene {
 
     update() {
         
-      this.spaceship.updateSpaceshipState(this.spaceObjects);
+      this.playerspaceship.updateSpaceshipState(this.spaceObjects);
 
-        this.spaceObjects.forEach(spaceObj => {
+      this.enemyspaceship.updateSpaceshipState(this.spaceObjects);
+
+
+      this.spaceObjects.forEach(spaceObj => {
             spaceObj.update(this.spaceObjects);
         });
     }
