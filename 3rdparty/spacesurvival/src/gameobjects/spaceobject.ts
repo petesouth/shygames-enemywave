@@ -1,5 +1,13 @@
 import Phaser from 'phaser';
 
+
+// Constants derived from the polygon creation logic
+const MAX_SIZE = 20;
+const MIN_SIZE = 8;
+const SCALE = 1.6;
+const MIN_SIDES = 5;
+const MAX_SIDES = 12;
+
 export class SpaceObject {
     private graphics: Phaser.GameObjects.Graphics;
     private polygon: Phaser.Geom.Polygon;
@@ -10,12 +18,13 @@ export class SpaceObject {
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
 
+
         const x = Phaser.Math.Between(0, scene.scale.width);
         const y = Phaser.Math.Between(0, scene.scale.height);
 
-        const sides = Phaser.Math.Between(5, 7);
-        const size = Phaser.Math.Between(10, 20);
-        const scale = 1.6; // Scaling factor
+        const sides = Phaser.Math.Between(MIN_SIDES, MAX_SIDES);
+        const size = Phaser.Math.Between(MIN_SIZE, MAX_SIZE);
+        const scale = SCALE; // Scaling factor
 
         const points = [];
 
@@ -85,43 +94,70 @@ export class SpaceObject {
         this.detectCollisions(spaceObjects);
     }
 
+    public destory () {
+        this.graphics.clear();
+        this.graphics.destroy();
+    }
+
+    public getSpaceObjectWidthHeight(): { width: number, height: number } {
+        const maxX = Math.max(...this.polygon.points.map(point => point.x));
+        const minX = Math.min(...this.polygon.points.map(point => point.x));
+        const maxY = Math.max(...this.polygon.points.map(point => point.y));
+        const minY = Math.min(...this.polygon.points.map(point => point.y));
+
+        return {
+            width: maxX - minX,
+            height: maxY - minY
+        };
+    }
+
+    
+    public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
+        const maxDiameter = MAX_SIZE * SCALE * 2; // Diameter = 2 * Radius
+        return {
+            width: maxDiameter,
+            height: maxDiameter
+        };
+    }
+
+
     private detectCollisions(spaceObjects: SpaceObject[]) {
         if (!this.hasCollided) {
             for (const spaceObj of spaceObjects) {
                 if (spaceObj !== this) {
                     const collisionPoints = this.polygon.points;
-    
+
                     for (let i = 0; i < collisionPoints.length; i++) {
                         const x1 = collisionPoints[i].x;
                         const y1 = collisionPoints[i].y;
                         const x2 = collisionPoints[(i + 1) % collisionPoints.length].x;
                         const y2 = collisionPoints[(i + 1) % collisionPoints.length].y;
-    
+
                         const distance = Phaser.Math.Distance.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
-    
+
                         if (distance < 30) {
                             const angle = Phaser.Math.Angle.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y) + Phaser.Math.RND.realInRange(-Math.PI / 4, Math.PI / 4);
-    
+
                             // Random speed between slow and fast
                             const minSpeed = .2; // Adjust as needed
                             const maxSpeed = 3; // Adjust as needed
                             const newSpeed = Phaser.Math.RND.realInRange(minSpeed, maxSpeed);
-    
+
                             // Calculate the new velocity based on the random speed
                             const velocity1 = this.velocity.clone().normalize().scale(newSpeed);
                             const velocity2 = spaceObj.getVelocity().clone().normalize().scale(newSpeed);
-    
+
                             // Apply the new velocities
                             this.velocity.set(velocity1.x, velocity1.y);
                             spaceObj.setVelocity(velocity2.x, velocity2.y);
-    
+
                             this.hasCollided = true;
                             spaceObj.hasCollided = true;
-    
+
                             // Calculate the repulsion force to avoid sticking
                             const repulsionForce = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
                             repulsionForce.scale(1 / distance); // Inverse proportion to distance
-    
+
                             // Apply the repulsion force to push the objects apart
                             this.velocity.add(repulsionForce);
                             spaceObj.getVelocity().subtract(repulsionForce);
@@ -133,10 +169,10 @@ export class SpaceObject {
             this.hasCollided = false;
         }
     }
-    
-    
-    
-    
+
+
+
+
     getPolygon() {
         return this.polygon;
     }

@@ -8,7 +8,7 @@ export class MainScene extends Phaser.Scene {
     private enemyspaceship!: EnemySpaceship;
 
     private spaceObjects: SpaceObject[] = [];
-
+    
     constructor() {
         super('MainScene');
     }
@@ -17,13 +17,9 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceship = new EnemySpaceship(this, this.playerspaceship);
 
-        // Create a random number of space objects
-        const numObjects = Phaser.Math.Between(18, 30);
-        for (let i = 0; i < numObjects; i++) {
-            const spaceObj = new SpaceObject(this);
-            this.spaceObjects.push(spaceObj);
-        }
+        this.createAsteroidsBasedOnScreenSize();
     }
+
 
     update() {
         
@@ -36,6 +32,31 @@ export class MainScene extends Phaser.Scene {
             spaceObj.update(this.spaceObjects);
         });
     }
+
+    public createAsteroidsBasedOnScreenSize() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const dimendsionsSpaceObject: { width:number, height: number} = SpaceObject.getMaxSpaceObjectWidthHeight();
+        let numobjects : number = 0;
+
+        if( width >= height ) {
+            numobjects = (width / dimendsionsSpaceObject.width);
+        } else {
+            numobjects = (height / dimendsionsSpaceObject.width);
+        }
+
+        this.spaceObjects.forEach((spaceObject)=>{
+            spaceObject.destory();
+        });
+
+        this.spaceObjects = [];
+
+        for (let i = 0; i < numobjects; i++) {
+            const spaceObj = new SpaceObject(this);
+            this.spaceObjects.push(spaceObj);
+        }
+    }
+
 }
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -59,6 +80,8 @@ export default class Game extends Phaser.Game {
             const w = window.innerWidth;
             const h = window.innerHeight;
             this.scale.setGameSize(w, h);
+            const mainScene : MainScene = this.scene.getScene("MainScene") as MainScene;
+            mainScene.createAsteroidsBasedOnScreenSize();
         });
     }
 }
