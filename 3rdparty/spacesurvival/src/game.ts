@@ -51,6 +51,9 @@ export class MainScene extends Phaser.Scene {
 
         this.spaceObjects = [];
 
+        
+        numobjects = Phaser.Math.Between(numobjects * .6, numobjects);
+    
         for (let i = 0; i < numobjects; i++) {
             const spaceObj = new SpaceObject(this);
             this.spaceObjects.push(spaceObj);
