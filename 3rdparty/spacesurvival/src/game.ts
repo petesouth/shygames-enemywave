@@ -46,7 +46,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         this.spaceObjects.forEach((spaceObject)=>{
-            spaceObject.destory();
+            spaceObject.destroy();
         });
 
         this.spaceObjects = [];

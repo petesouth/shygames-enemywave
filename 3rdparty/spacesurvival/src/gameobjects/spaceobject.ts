@@ -94,7 +94,7 @@ export class SpaceObject {
         this.detectCollisions(spaceObjects);
     }
 
-    public destory () {
+    public destroy () {
         this.graphics.clear();
         this.graphics.destroy();
     }
