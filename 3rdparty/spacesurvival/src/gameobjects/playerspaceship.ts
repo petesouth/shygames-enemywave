@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { ExhaustFlame } from './exhaustflame';
 import { SpaceObject } from './spaceobject';
+import { ForceField } from './forcefield';
 
 export class PlayerSpaceship {
     private spaceShipShape: Phaser.Geom.Triangle;
@@ -13,6 +14,9 @@ export class PlayerSpaceship {
     private leftKey?: Phaser.Input.Keyboard.Key;
     private rightKey?: Phaser.Input.Keyboard.Key;
     private upKey?: Phaser.Input.Keyboard.Key;
+    private shieldKey?: Phaser.Input.Keyboard.Key;
+    private forceField: ForceField;
+
     private scene: Phaser.Scene;
     private exhaustFlame: ExhaustFlame;
 
@@ -38,7 +42,9 @@ export class PlayerSpaceship {
         this.leftKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.rightKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.upKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-
+        this.shieldKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        
+        this.forceField = new ForceField(scene, this);
         this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
     }
 
@@ -108,6 +114,15 @@ export class PlayerSpaceship {
         }
     
         this.exhaustFlame.render();
+
+        if (this.shieldKey?.isDown) {
+            this.forceField.show();
+        } else {
+            this.forceField.hide();
+        }
+    
+        this.forceField.update();
+        this.forceField.render();
     }
 
      // Add a method to get the X position of the spaceship's centroid
