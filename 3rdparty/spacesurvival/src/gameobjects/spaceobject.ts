@@ -137,51 +137,47 @@ export class SpaceObject {
     }
 
     private detectCollisions(spaceObjects: SpaceObject[]) {
-        if (!this.hasCollided) {
-            for (const spaceObj of spaceObjects) {
-                if (spaceObj !== this) {
-                    const centroidThis = this.getCentroid();
-                    const centroidSpaceObj = spaceObj.getCentroid();
+        const centroidSpaceObj = this.getCentroid();
+        for (const spaceObj of spaceObjects) {
+            if (spaceObj !== this) {
+                const collisionPoints = spaceObj.getPolygon().points;
     
-                    const distance = Phaser.Math.Distance.Between(centroidThis.x, centroidThis.y, centroidSpaceObj.x, centroidSpaceObj.y);
+                for (let point of collisionPoints) {
+                    if (Phaser.Geom.Polygon.ContainsPoint(this.getPolygon(), point)) {
+                        const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
     
-                    if (distance < 40) {
-                        const angle = Phaser.Math.Angle.Between(centroidThis.x, centroidThis.y, centroidSpaceObj.x, centroidSpaceObj.y) + Phaser.Math.RND.realInRange(-Math.PI / 4, Math.PI / 4);
+                        if (distance < 40) {
+                            const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceObj, spaceObj.getCentroid());
     
-                        // Random speed between slow and fast
-                        const minSpeed = .2; // Adjust as needed
-                        const maxSpeed = 3; // Adjust as needed
-                        const newSpeed = Phaser.Math.RND.realInRange(minSpeed, maxSpeed);
+                            // Apply collision response logic here
+                            const velocity1 = this.getVelocity().clone();
+                            const velocity2 = spaceObj.getVelocity().clone();
     
-                        // Calculate the new velocity based on the random speed
-                        const velocity1 = this.velocity.clone().normalize().scale(newSpeed);
-                        const velocity2 = spaceObj.getVelocity().clone().normalize().scale(newSpeed);
+                            const m1 = 1; // Mass for SpaceObject. Adjust if needed
+                            const m2 = 1; // Mass for SpaceObject. Adjust if needed
     
-                        // Apply the new velocities
-                        this.velocity.set(velocity1.x, velocity1.y);
-                        spaceObj.setVelocity(velocity2.x, velocity2.y);
+                            const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
+                            const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
     
-                        this.hasCollided = true;
-                        spaceObj.hasCollided = true;
+                            // Ensure a minimum velocity to avoid standing still
+                            const minVelocity = 0.1; // Adjust as needed
+                            if (newVelocity1.length() < minVelocity) {
+                                newVelocity1.normalize().scale(minVelocity);
+                            }
+                            if (newVelocity2.length() < minVelocity) {
+                                newVelocity2.normalize().scale(minVelocity);
+                            }
     
-                        // Calculate the repulsion force to avoid sticking
-                        const repulsionForce = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
-                        repulsionForce.scale(1 / distance); // Inverse proportion to distance
-    
-                        // Apply the repulsion force to push the objects apart
-                        this.velocity.add(repulsionForce);
-                        spaceObj.getVelocity().subtract(repulsionForce);
+                            this.setVelocity(newVelocity1.x, newVelocity1.y);
+                            spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+                        }
                     }
                 }
             }
-        } else {
-            this.hasCollided = false;
         }
     }
     
-
-
-
+    
 
     getPolygon() {
         return this.polygon;
