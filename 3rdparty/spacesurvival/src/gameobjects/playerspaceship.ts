@@ -3,7 +3,7 @@ import { ExhaustFlame } from './exhaustflame';
 import { SpaceObject } from './spaceobject';
 import { ForceField } from './forcefield';
 import { Bullet } from './bullet';
-
+import {Mine} from "./mine";
 
 
 export class PlayerSpaceship {
@@ -20,9 +20,16 @@ export class PlayerSpaceship {
     private shieldKey?: Phaser.Input.Keyboard.Key;
     private forceField: ForceField;
     private fireKey?: Phaser.Input.Keyboard.Key;
+    private mineKey?: Phaser.Input.Keyboard.Key;
+    
+    private mines: Mine[] = [];
     private bullets: Bullet[] = [];
     private lastFired: number = 0;
     private fireRate: number = 200;  // 1000 ms = 1 second
+
+    private lastMinePlaced: number = 0;
+    private mineRate: number = 1000;  // 1000 ms = 1 second
+
 
     private scene: Phaser.Scene;
     private exhaustFlame: ExhaustFlame;
@@ -54,6 +61,8 @@ export class PlayerSpaceship {
         this.forceField = new ForceField(scene, this);
         this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
         this.fireKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.mineKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+
 
     }
 
@@ -153,6 +162,26 @@ export class PlayerSpaceship {
             }
         }
     }
+
+    public handleMines(spaceObjects: SpaceObject[]) {
+        const currentTime = this.scene.time.now;
+        
+        if (this.mineKey?.isDown && (currentTime - this.lastMinePlaced > this.mineRate)) {
+            const x = this.getPositionX();
+            const y = this.getPositionY();
+            const mine = new Mine(this.scene, x, y);
+            this.mines.push(mine);
+            this.lastMinePlaced = currentTime;
+        }
+        
+        for (let i = 0; i < this.mines.length; i++) {
+            if (this.mines[i].process(spaceObjects)) {
+                this.mines.splice(i, 1);
+                i--; // Adjust the index after removing an element
+            }
+        }
+    }
+    
 
      // Add a method to get the X position of the spaceship's centroid
      public getPositionX(): number {

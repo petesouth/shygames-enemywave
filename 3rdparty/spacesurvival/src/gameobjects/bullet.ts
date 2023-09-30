@@ -17,11 +17,10 @@ export class Bullet {
         this.graphics = scene.add.graphics();
         this.point = new Phaser.Geom.Point(startX, startY);
         this.direction = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
-        this.maxDistance = .5 * scene.scale.width;
+        this.maxDistance = .5 * (( scene.scale.width >= scene.scale.height ) ? scene.scale.width : scene.scale.height);
     }
 
     update() {
-        console.log("Bullet update");
         this.graphics.clear();
         if (this.isPopping) {
             this.popSize += 2;

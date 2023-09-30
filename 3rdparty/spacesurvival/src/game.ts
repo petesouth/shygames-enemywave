@@ -25,6 +25,8 @@ export class MainScene extends Phaser.Scene {
         
       this.playerspaceship.updateSpaceshipState(this.spaceObjects);
       this.playerspaceship.handleBullets(this.spaceObjects);
+      this.playerspaceship.handleMines(this.spaceObjects);
+
       
       this.enemyspaceship.updateSpaceshipState(this.spaceObjects);
 
