@@ -1,9 +1,8 @@
 import Phaser from 'phaser';
 
-
 // Constants derived from the polygon creation logic
-const MAX_SIZE = 20;
-const MIN_SIZE = 8;
+const MAX_SIZE = 28;
+const MIN_SIZE = 15;
 const SCALE = 1.6;
 const MIN_SIDES = 5;
 const MAX_SIDES = 12;
@@ -13,11 +12,19 @@ export class SpaceObject {
     private polygon: Phaser.Geom.Polygon;
     private velocity: Phaser.Math.Vector2;
     private scene: Phaser.Scene;
-    private hasCollided: boolean = false; // Flag to track collision
+    private rotationSpeed: number; // Add this property
+    private angle: number;
+    private angularVelocity: number;
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
 
+        // Initialize the angle and angular velocity properties
+        this.angle = Phaser.Math.Between(0, 360); // Initial random angle
+        this.angularVelocity = Phaser.Math.Between(-1, 2); // Adjust the range as needed for rotation speed
+        
+        // Initialize the rotation direction flag and speed
+        this.rotationSpeed = Math.random() < 0.5 ? 1 : -1; // Random initial direction (-1 or 1)
 
         const x = Phaser.Math.Between(0, scene.scale.width);
         const y = Phaser.Math.Between(0, scene.scale.height);
@@ -27,10 +34,14 @@ export class SpaceObject {
         const scale = SCALE; // Scaling factor
 
         const points = [];
-
         for (let i = 0; i < sides; i++) {
-            const px = Math.cos((i / sides) * 2 * Math.PI) * size * scale + x;
-            const py = Math.sin((i / sides) * 2 * Math.PI) * size * scale + y;
+            // Add randomness to the point generation
+            const varianceX = Phaser.Math.Between(-size * scale * 0.5, size * scale * 0.5);
+            const varianceY = Phaser.Math.Between(-size * scale * 0.5, size * scale * 0.5);
+
+            const px = Math.cos((i / sides) * 2 * Math.PI) * (size * scale + varianceX) + x;
+            const py = Math.sin((i / sides) * 2 * Math.PI) * (size * scale + varianceY) + y;
+
             points.push(new Phaser.Geom.Point(px, py));
         }
 
@@ -53,47 +64,60 @@ export class SpaceObject {
     }
 
     update(spaceObjects: SpaceObject[]) {
+        // Update position and velocity
         this.polygon.setTo(this.polygon.points.map(point => {
             return new Phaser.Geom.Point(point.x + this.velocity.x, point.y + this.velocity.y);
         }));
-
+    
         // Clamp the velocity magnitude to a maximum value
         const maxVelocityMagnitude = 7; // Adjust as needed
         const velocityMagnitude = this.velocity.length();
-
+    
         if (velocityMagnitude > maxVelocityMagnitude) {
             this.velocity.normalize().scale(maxVelocityMagnitude);
         }
-
+    
+        // Wrap around the screen
         const maxX = Math.max(...this.polygon.points.map(point => point.x));
         const minX = Math.min(...this.polygon.points.map(point => point.x));
         const maxY = Math.max(...this.polygon.points.map(point => point.y));
         const minY = Math.min(...this.polygon.points.map(point => point.y));
-
+    
         if (maxX < 0) {
             this.polygon.setTo(this.polygon.points.map(point => new Phaser.Geom.Point(point.x + this.scene.scale.width, point.y)));
         } else if (minX > this.scene.scale.width) {
             this.polygon.setTo(this.polygon.points.map(point => new Phaser.Geom.Point(point.x - this.scene.scale.width, point.y)));
         }
-
+    
         if (maxY < 0) {
             this.polygon.setTo(this.polygon.points.map(point => new Phaser.Geom.Point(point.x, point.y + this.scene.scale.height)));
         } else if (minY > this.scene.scale.height) {
             this.polygon.setTo(this.polygon.points.map(point => new Phaser.Geom.Point(point.x, point.y - this.scene.scale.height)));
         }
-
+    
+        // Clear graphics and set fill style
         this.graphics.clear();
-
-        this.graphics.fillStyle(0x777777);
-
-        // Draw the polygon with both fill and stroke
-        this.graphics.fillPoints(this.polygon.points, true);
-        this.graphics.strokePoints(this.polygon.points, true);
-
+        this.graphics.fillStyle(0x777777); // Color Gray
+    
+        // Apply gradual rotation with the direction
+        this.angle += this.rotationSpeed * this.angularVelocity;
+    
+        
+        // Calculate rotated polygon points
+        const rotatedPoints = this.polygon.points.map(point => {
+            const rotatedX = Math.cos(Phaser.Math.DegToRad(this.angle)) * (point.x - this.getCentroid().x) - Math.sin(Phaser.Math.DegToRad(this.angle)) * (point.y - this.getCentroid().y) + this.getCentroid().x;
+            const rotatedY = Math.sin(Phaser.Math.DegToRad(this.angle)) * (point.x - this.getCentroid().x) + Math.cos(Phaser.Math.DegToRad(this.angle)) * (point.y - this.getCentroid().y) + this.getCentroid().y;
+            return new Phaser.Geom.Point(rotatedX, rotatedY);
+        });
+    
+        // Draw the rotated polygon with both fill and stroke
+        this.graphics.fillPoints(rotatedPoints, true);
+        this.graphics.strokePoints(rotatedPoints, true);
+    
         // Handle collisions with other SpaceObjects
         this.detectCollisions(spaceObjects);
     }
-
+    
     public destroy () {
         this.graphics.clear();
         this.graphics.destroy();
@@ -111,7 +135,6 @@ export class SpaceObject {
         };
     }
 
-    
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
         const maxDiameter = MAX_SIZE * SCALE * 2; // Diameter = 2 * Radius
         return {
@@ -147,29 +170,15 @@ export class SpaceObject {
                         const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
     
                         if (distance < 40) {
-                            const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceObj, spaceObj.getCentroid());
+                            // Calculate the repelling force direction
+                            const repelDirection = new Phaser.Math.Vector2(
+                                centroidSpaceObj.x - point.x,
+                                centroidSpaceObj.y - point.y
+                            ).normalize();
     
-                            // Apply collision response logic here
-                            const velocity1 = this.getVelocity().clone();
-                            const velocity2 = spaceObj.getVelocity().clone();
-    
-                            const m1 = 1; // Mass for SpaceObject. Adjust if needed
-                            const m2 = 1; // Mass for SpaceObject. Adjust if needed
-    
-                            const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
-                            const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
-    
-                            // Ensure a minimum velocity to avoid standing still
-                            const minVelocity = 0.1; // Adjust as needed
-                            if (newVelocity1.length() < minVelocity) {
-                                newVelocity1.normalize().scale(minVelocity);
-                            }
-                            if (newVelocity2.length() < minVelocity) {
-                                newVelocity2.normalize().scale(minVelocity);
-                            }
-    
-                            this.setVelocity(newVelocity1.x, newVelocity1.y);
-                            spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+                            // Apply the repelling force
+                            const repelForce = 0.1; // Adjust as needed
+                            this.velocity.add(repelDirection.scale(repelForce));
                         }
                     }
                 }
@@ -178,7 +187,7 @@ export class SpaceObject {
     }
     
     
-
+    
     getPolygon() {
         return this.polygon;
     }
