@@ -6,6 +6,7 @@ import { SpaceObject } from './gameobjects/spaceobject';
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceship!: EnemySpaceship;
+    private starsBackground!: Phaser.GameObjects.Graphics;
 
     private spaceObjects: SpaceObject[] = [];
     
@@ -14,6 +15,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     create() {
+        this.createStarBackground();
+
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceship = new EnemySpaceship(this, this.playerspaceship);
 
@@ -63,6 +66,23 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    public createStarBackground() {
+        const stars = this.add.graphics({ fillStyle: { color: 0xFFFFFF } });
+    
+        const numStars = Math.floor((this.scale.width * this.scale.height) / 200);  // One star for every 200 pixels
+    
+        for (let i = 0; i < numStars; i++) {
+            const x = Phaser.Math.Between(0, this.scale.width);
+            const y = Phaser.Math.Between(0, this.scale.height);
+            stars.fillRect(x, y, 1, 1);
+        }
+    
+        // Make sure the stars are rendered behind all other game objects
+        stars.setDepth(0);
+    }
+    
+    
+
 }
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -87,6 +107,7 @@ export default class Game extends Phaser.Game {
             const h = window.innerHeight;
             this.scale.setGameSize(w, h);
             const mainScene : MainScene = this.scene.getScene("MainScene") as MainScene;
+            mainScene.createStarBackground();
             mainScene.createAsteroidsBasedOnScreenSize();
         });
     }
