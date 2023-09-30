@@ -67,19 +67,23 @@ export class MainScene extends Phaser.Scene {
     }
 
     public createStarBackground() {
-        const stars = this.add.graphics({ fillStyle: { color: 0xFFFFFF } });
+        // Clear the existing stars
+        if (this.starsBackground) {
+            this.starsBackground.clear();
+        } else {
+            this.starsBackground = this.add.graphics({ fillStyle: { color: 0xFFFFFF } });
+            this.starsBackground.setDepth(0); // Make sure the stars are rendered behind other game objects
+        }
     
-        const numStars = Math.floor((this.scale.width * this.scale.height) / 200);  // One star for every 200 pixels
+        const numStars = Math.floor((this.scale.width * this.scale.height) / 200); // One star for every 200 pixels
     
         for (let i = 0; i < numStars; i++) {
             const x = Phaser.Math.Between(0, this.scale.width);
             const y = Phaser.Math.Between(0, this.scale.height);
-            stars.fillRect(x, y, 1, 1);
+            this.starsBackground.fillRect(x, y, 1, 1);
         }
-    
-        // Make sure the stars are rendered behind all other game objects
-        stars.setDepth(0);
     }
+    
     
     
 
