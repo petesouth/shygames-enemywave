@@ -120,48 +120,57 @@ export class SpaceObject {
         };
     }
 
+    public getCentroid(): Phaser.Geom.Point {
+        return this.getCentroidOfPolygon(this.polygon);
+    }
+
+    private getCentroidOfPolygon(polygon: Phaser.Geom.Polygon): Phaser.Geom.Point {
+        const { x, y } = polygon.points.reduce((acc, point) => ({
+            x: acc.x + point.x,
+            y: acc.y + point.y
+        }), { x: 0, y: 0 });
+
+        const centroidX = x / polygon.points.length;
+        const centroidY = y / polygon.points.length;
+
+        return new Phaser.Geom.Point(centroidX, centroidY);
+    }
 
     private detectCollisions(spaceObjects: SpaceObject[]) {
         if (!this.hasCollided) {
             for (const spaceObj of spaceObjects) {
                 if (spaceObj !== this) {
-                    const collisionPoints = this.polygon.points;
-
-                    for (let i = 0; i < collisionPoints.length; i++) {
-                        const x1 = collisionPoints[i].x;
-                        const y1 = collisionPoints[i].y;
-                        const x2 = collisionPoints[(i + 1) % collisionPoints.length].x;
-                        const y2 = collisionPoints[(i + 1) % collisionPoints.length].y;
-
-                        const distance = Phaser.Math.Distance.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y);
-
-                        if (distance < 30) {
-                            const angle = Phaser.Math.Angle.Between(x1, y1, spaceObj.getPolygon().points[0].x, spaceObj.getPolygon().points[0].y) + Phaser.Math.RND.realInRange(-Math.PI / 4, Math.PI / 4);
-
-                            // Random speed between slow and fast
-                            const minSpeed = .2; // Adjust as needed
-                            const maxSpeed = 3; // Adjust as needed
-                            const newSpeed = Phaser.Math.RND.realInRange(minSpeed, maxSpeed);
-
-                            // Calculate the new velocity based on the random speed
-                            const velocity1 = this.velocity.clone().normalize().scale(newSpeed);
-                            const velocity2 = spaceObj.getVelocity().clone().normalize().scale(newSpeed);
-
-                            // Apply the new velocities
-                            this.velocity.set(velocity1.x, velocity1.y);
-                            spaceObj.setVelocity(velocity2.x, velocity2.y);
-
-                            this.hasCollided = true;
-                            spaceObj.hasCollided = true;
-
-                            // Calculate the repulsion force to avoid sticking
-                            const repulsionForce = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
-                            repulsionForce.scale(1 / distance); // Inverse proportion to distance
-
-                            // Apply the repulsion force to push the objects apart
-                            this.velocity.add(repulsionForce);
-                            spaceObj.getVelocity().subtract(repulsionForce);
-                        }
+                    const centroidThis = this.getCentroid();
+                    const centroidSpaceObj = spaceObj.getCentroid();
+    
+                    const distance = Phaser.Math.Distance.Between(centroidThis.x, centroidThis.y, centroidSpaceObj.x, centroidSpaceObj.y);
+    
+                    if (distance < 40) {
+                        const angle = Phaser.Math.Angle.Between(centroidThis.x, centroidThis.y, centroidSpaceObj.x, centroidSpaceObj.y) + Phaser.Math.RND.realInRange(-Math.PI / 4, Math.PI / 4);
+    
+                        // Random speed between slow and fast
+                        const minSpeed = .2; // Adjust as needed
+                        const maxSpeed = 3; // Adjust as needed
+                        const newSpeed = Phaser.Math.RND.realInRange(minSpeed, maxSpeed);
+    
+                        // Calculate the new velocity based on the random speed
+                        const velocity1 = this.velocity.clone().normalize().scale(newSpeed);
+                        const velocity2 = spaceObj.getVelocity().clone().normalize().scale(newSpeed);
+    
+                        // Apply the new velocities
+                        this.velocity.set(velocity1.x, velocity1.y);
+                        spaceObj.setVelocity(velocity2.x, velocity2.y);
+    
+                        this.hasCollided = true;
+                        spaceObj.hasCollided = true;
+    
+                        // Calculate the repulsion force to avoid sticking
+                        const repulsionForce = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
+                        repulsionForce.scale(1 / distance); // Inverse proportion to distance
+    
+                        // Apply the repulsion force to push the objects apart
+                        this.velocity.add(repulsionForce);
+                        spaceObj.getVelocity().subtract(repulsionForce);
                     }
                 }
             }
@@ -169,6 +178,7 @@ export class SpaceObject {
             this.hasCollided = false;
         }
     }
+    
 
 
 

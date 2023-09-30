@@ -2,6 +2,9 @@ import Phaser from 'phaser';
 import { ExhaustFlame } from './exhaustflame';
 import { SpaceObject } from './spaceobject';
 import { ForceField } from './forcefield';
+import { Bullet } from './bullet';
+
+
 
 export class PlayerSpaceship {
     private spaceShipShape: Phaser.Geom.Triangle;
@@ -16,6 +19,10 @@ export class PlayerSpaceship {
     private upKey?: Phaser.Input.Keyboard.Key;
     private shieldKey?: Phaser.Input.Keyboard.Key;
     private forceField: ForceField;
+    private fireKey?: Phaser.Input.Keyboard.Key;
+    private bullets: Bullet[] = [];
+    private lastFired: number = 0;
+    private fireRate: number = 200;  // 1000 ms = 1 second
 
     private scene: Phaser.Scene;
     private exhaustFlame: ExhaustFlame;
@@ -46,6 +53,8 @@ export class PlayerSpaceship {
         
         this.forceField = new ForceField(scene, this);
         this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
+        this.fireKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
     }
 
     public getTriangle() {
@@ -125,6 +134,26 @@ export class PlayerSpaceship {
         this.forceField.render();
     }
 
+    public handleBullets(spaceObjects: SpaceObject[]) {
+        const currentTime = this.scene.time.now;
+
+        if (this.fireKey?.isDown && (currentTime - this.lastFired > this.fireRate)) {
+            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
+            const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            this.bullets.push(bullet);
+            this.lastFired = currentTime;
+        }
+
+        for (let i = 0; i < this.bullets.length; i++) {
+            if (this.bullets[i].process(spaceObjects)) {
+                this.bullets.splice(i, 1);
+                i--; // Adjust the index after removing an element
+          
+            }
+        }
+    }
+
      // Add a method to get the X position of the spaceship's centroid
      public getPositionX(): number {
         return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).x;
@@ -137,49 +166,38 @@ export class PlayerSpaceship {
     
 
     private detectCollisions(spaceObjects: SpaceObject[]) {
+        const centroidSpaceShip = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
         for (const spaceObj of spaceObjects) {
             const collisionPoints = [
                 new Phaser.Geom.Point(this.spaceShipShape.x1, this.spaceShipShape.y1),
                 new Phaser.Geom.Point(this.spaceShipShape.x2, this.spaceShipShape.y2),
                 new Phaser.Geom.Point(this.spaceShipShape.x3, this.spaceShipShape.y3)
             ];
-    
-            const objPolygon = spaceObj.getPolygon().points;
-    
-            for (let i = 0; i < collisionPoints.length; i++) {
-                for (let j = 0; j < objPolygon.length; j++) {
-                    if (this.lineSegmentIntersects(collisionPoints[i], collisionPoints[(i + 1) % 3], objPolygon[j], objPolygon[(j + 1) % objPolygon.length])) {
-                        const distance = Phaser.Math.Distance.BetweenPoints(collisionPoints[i], objPolygon[j]);
-    
-                        if (distance < 40) {
-                            const angle = Phaser.Math.Angle.BetweenPoints(collisionPoints[i], objPolygon[j]);
-                            const velocity1 = this.velocity.clone();
-                            const velocity2 = spaceObj.getVelocity().clone();
-    
-                            const m1 = 1; 
-                            const m2 = 1; 
-    
-                            const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
-                            const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
-    
-                            this.velocity.set(newVelocity1.x, newVelocity1.y);
-                            spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
-                        }
+            
+            for (let point of collisionPoints) {
+                if (Phaser.Geom.Polygon.ContainsPoint(spaceObj.getPolygon(), point)) {
+                    const centroidSpaceObj = spaceObj.getCentroid();
+                    const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
+        
+                    if (distance < 40) {
+                        const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
+                        const velocity1 = this.velocity.clone();``
+                        const velocity2 = spaceObj.getVelocity().clone();
+        
+                        const m1 = 1; // Mass for PlayerSpaceship. Adjust if needed
+                        const m2 = 1; // Mass for SpaceObject. Adjust if needed
+        
+                        const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
+                        const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
+        
+                        this.velocity.set(newVelocity1.x, newVelocity1.y);
+                        spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
                     }
                 }
             }
         }
     }
     
-    private lineSegmentIntersects(a: Phaser.Geom.Point, b: Phaser.Geom.Point, c: Phaser.Geom.Point, d: Phaser.Geom.Point): boolean {
-        const det = (b.x - a.x) * (d.y - c.y) - (b.y - a.y) * (d.x - c.x);
-        if (det === 0) return false;
-    
-        const lambda = ((d.y - c.y) * (d.x - a.x) + (c.x - d.x) * (d.y - a.y)) / det;
-        const gamma = ((a.y - b.y) * (d.x - a.x) + (b.x - a.x) * (d.y - a.y)) / det;
-    
-        return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
-    }
-    
+        
     
 }
