@@ -7,14 +7,24 @@ export class Mine {
     public isPopping: boolean = false;
     private popSize: number = 0;
     public hit: boolean = false;
+    private lifeTimer: number = 10000;  // 10000 ms = 10 seconds
+    private creationTime: number;
+
 
     constructor(private scene: Phaser.Scene, startX: number, startY: number) {
         this.graphics = scene.add.graphics();
         this.point = new Phaser.Geom.Point(startX, startY);
+        this.creationTime = scene.time.now;
     }
 
     update() {
         this.graphics.clear();
+        
+        const currentTime = this.scene.time.now;
+        if (currentTime - this.creationTime >= this.lifeTimer) {
+            this.pop();
+        }
+        
         if (this.isPopping) {
             this.popSize += 2;
             if (this.popSize > 20) {
@@ -23,7 +33,7 @@ export class Mine {
             }
         }
     }
-
+    
     render() {
         this.graphics.clear();
         const colors = [0xffa500, 0xff4500];
