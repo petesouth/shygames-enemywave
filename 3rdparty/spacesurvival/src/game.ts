@@ -3,7 +3,7 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
-const num_ships = 4;
+const num_ships = 6;
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
@@ -32,17 +32,16 @@ export class MainScene extends Phaser.Scene {
 
     update() {
 
-        this.playerspaceship.render();
         this.playerspaceship.detectCollisions(this.spaceObjects);
         this.playerspaceship.handleBullets(this.spaceObjects);
         this.playerspaceship.handleMines(this.spaceObjects);
-
+        this.playerspaceship.render();
+        
         this.enemyspaceship.forEach((enemy)=>{
             this.playerspaceship.handleSpaceshipCollision(enemy);
         })
         
         this.enemyspaceship.forEach((tenemyspaceship) => {
-            tenemyspaceship.render();
             tenemyspaceship.detectCollisions(this.spaceObjects);
             tenemyspaceship.handleSpaceshipCollision(this.playerspaceship);
 
@@ -52,6 +51,8 @@ export class MainScene extends Phaser.Scene {
                     tenemyspaceship.handleSpaceshipCollision(ttenemyspaceship);
                 }
             });
+
+            tenemyspaceship.render();
         })
 
         this.spaceObjects.forEach(spaceObj => {
