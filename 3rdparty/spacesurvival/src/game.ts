@@ -32,12 +32,19 @@ export class MainScene extends Phaser.Scene {
 
     update() {
 
-        this.playerspaceship.updateSpaceshipState(this.spaceObjects);
+        this.playerspaceship.updateSpaceshipState();
+        this.playerspaceship.detectCollisions(this.spaceObjects);
         this.playerspaceship.handleBullets(this.spaceObjects);
         this.playerspaceship.handleMines(this.spaceObjects);
 
+        this.enemyspaceship.forEach((enemy)=>{
+            this.playerspaceship.handleSpaceshipCollision(enemy);
+        })
+        
         this.enemyspaceship.forEach((tenemyspaceship) => {
-            tenemyspaceship.updateSpaceshipState(this.spaceObjects);
+            tenemyspaceship.updateSpaceshipState();
+            tenemyspaceship.detectCollisions(this.spaceObjects);
+            tenemyspaceship.handleSpaceshipCollision(this.playerspaceship);
         })
 
         this.spaceObjects.forEach(spaceObj => {
