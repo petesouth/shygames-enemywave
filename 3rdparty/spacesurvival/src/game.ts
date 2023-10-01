@@ -32,7 +32,7 @@ export class MainScene extends Phaser.Scene {
 
     update() {
 
-        this.playerspaceship.updateSpaceshipState();
+        this.playerspaceship.render();
         this.playerspaceship.detectCollisions(this.spaceObjects);
         this.playerspaceship.handleBullets(this.spaceObjects);
         this.playerspaceship.handleMines(this.spaceObjects);
@@ -42,9 +42,16 @@ export class MainScene extends Phaser.Scene {
         })
         
         this.enemyspaceship.forEach((tenemyspaceship) => {
-            tenemyspaceship.updateSpaceshipState();
+            tenemyspaceship.render();
             tenemyspaceship.detectCollisions(this.spaceObjects);
             tenemyspaceship.handleSpaceshipCollision(this.playerspaceship);
+
+            // Now the enemy ships bounce off of eachother as well pesky things
+            this.enemyspaceship.forEach((ttenemyspaceship)=>{
+                if( tenemyspaceship != ttenemyspaceship ) {
+                    tenemyspaceship.handleSpaceshipCollision(ttenemyspaceship);
+                }
+            });
         })
 
         this.spaceObjects.forEach(spaceObj => {

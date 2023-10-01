@@ -41,7 +41,7 @@ export class BaseSpaceship {
 
 
 
-    constructor(scene: Phaser.Scene, initialPositionOffset:number = 400, spaceshiptColor:number = 0x808080) {
+    constructor(scene: Phaser.Scene, initialPositionOffset:number = 400, spaceshiptColor:number = 0xC0C0C0) {
         this.scene = scene;
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshiptColor;
@@ -58,7 +58,7 @@ export class BaseSpaceship {
         this.innerSpaceShipShape = new Phaser.Geom.Triangle(
             this.initialPositionOffset, this.initialPositionOffset - halfHeight * 0.6,
             this.initialPositionOffset - halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75,
-            this.initialPositionOffset + halfBaseWidth * 0.7, 300 + halfHeight * 0.75
+            this.initialPositionOffset + halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75
         );
 
         this.leftKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
@@ -89,8 +89,7 @@ export class BaseSpaceship {
     
     
     updateSpaceshipState() {
-        this.graphics.clear();
-        const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+        const centroid = this.getCentroid();
     
         if (this.leftKey?.isDown) {
             Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -this.rotationRate);
@@ -135,17 +134,11 @@ export class BaseSpaceship {
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
         }
     
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-    
         if (this.upKey?.isDown) {
             this.exhaustFlame.show();
-            this.exhaustFlame.update();
         } else {
             this.exhaustFlame.hide();
         }
-    
-        this.exhaustFlame.render();
 
         if (this.shieldKey?.isDown) {
             this.forceField.show();
@@ -153,8 +146,22 @@ export class BaseSpaceship {
             this.forceField.hide();
         }
     
+    }
+
+    public render() {
+        this.graphics.clear();
+        
+        this.updateSpaceshipState();
+        this.graphics.strokeTriangleShape(this.spaceShipShape);
+        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
+    
+        this.exhaustFlame.update();
+        this.exhaustFlame.render();
+
         this.forceField.update();
         this.forceField.render();
+       
+        
     }
 
     public handleBullets(spaceObjects: SpaceObject[]) {

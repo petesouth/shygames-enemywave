@@ -16,40 +16,16 @@ export class EnemySpaceship extends BaseSpaceship {
         }
     }
 
-    public getVelocity(): Phaser.Math.Vector2 {
-        return this.velocity;
-    }
-    
-    public setVelocity(x: number, y: number) {
-        this.velocity.set(x, y);
-    }
-
-
 
     public updateSpaceshipState() {
         if( !this.playerSpaceship ) {
             super.updateSpaceshipState();
-            return;
-        }
-
-        this.graphics.clear();
-        this.chasePlayerSpaceship();
-        
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-
-        if (this.upKey?.isDown || this.playerSpaceship) {
-            this.exhaustFlame.show();
-            this.exhaustFlame.update();
         } else {
-            this.exhaustFlame.hide();
+            this.chasePlayerSpaceship();
         }
-
-        this.exhaustFlame.render();
     }
 
-    
-
+   
 
     private chasePlayerSpaceship() {
         if (!this.playerSpaceship) {
@@ -83,10 +59,9 @@ export class EnemySpaceship extends BaseSpaceship {
 
         Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
         Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
-
-        // Show the exhaust flame since the spaceship is moving
         this.exhaustFlame.show();
-        this.exhaustFlame.update();
+        
+
     }
 
     
