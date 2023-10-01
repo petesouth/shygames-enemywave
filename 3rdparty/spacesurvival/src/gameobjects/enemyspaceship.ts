@@ -2,6 +2,10 @@ import Phaser from 'phaser';
 import { ExhaustFlame } from './exhaustflame';
 import { SpaceObject } from './spaceobject';
 
+
+const halfBaseWidth = 10;
+const halfHeight = 15;
+
 export class EnemySpaceship {
 
 
@@ -26,9 +30,7 @@ export class EnemySpaceship {
         this.scene = scene;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xFF0000 }, fillStyle: { color: 0xFF0000 } });
 
-        const halfBaseWidth = 20;
-        const halfHeight = 30;
-
+        
         this.spaceShipShape = new Phaser.Geom.Triangle(
             distanceFromLeftCorner, distanceFromLeftCorner - halfHeight,
             distanceFromLeftCorner - halfBaseWidth, distanceFromLeftCorner + halfHeight,
@@ -155,7 +157,7 @@ export class EnemySpaceship {
                     const centroidSpaceObj = spaceObj.getCentroid();
                     const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
         
-                    if (distance < 40) {
+                    if (distance < (halfBaseWidth *2)) {
                         const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
                         const velocity1 = this.velocity.clone();``
                         const velocity2 = spaceObj.getVelocity().clone();

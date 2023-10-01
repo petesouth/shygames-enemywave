@@ -6,6 +6,9 @@ import { Bullet } from './bullet';
 import {Mine} from "./mine";
 
 
+const halfBaseWidth = 10;
+const halfHeight = 15;
+
 export class PlayerSpaceship {
     private spaceShipShape: Phaser.Geom.Triangle;
     private innerSpaceShipShape: Phaser.Geom.Triangle;
@@ -38,8 +41,7 @@ export class PlayerSpaceship {
         this.scene = scene;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0x808080 }, fillStyle: { color: 0xC0C0C0 } });
 
-        const halfBaseWidth = 20;
-        const halfHeight = 30;
+        
 
         this.spaceShipShape = new Phaser.Geom.Triangle(
             400, 300 - halfHeight,
@@ -208,7 +210,7 @@ export class PlayerSpaceship {
                     const centroidSpaceObj = spaceObj.getCentroid();
                     const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
         
-                    if (distance < 40) {
+                    if (distance < (halfBaseWidth *2)) {
                         const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
                         const velocity1 = this.velocity.clone();``
                         const velocity2 = spaceObj.getVelocity().clone();

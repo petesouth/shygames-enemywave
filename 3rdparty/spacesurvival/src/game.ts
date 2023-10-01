@@ -3,7 +3,7 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
-const num_ships = 5;
+const num_ships = 4;
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
@@ -23,7 +23,7 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship = new PlayerSpaceship(this);
 
         for (var i = 0; i < num_ships; ++i) {
-            this.enemyspaceship.push(new EnemySpaceship(this, 2000 * i, this.playerspaceship));
+            this.enemyspaceship.push(new EnemySpaceship(this, 5000 + (i*1000), this.playerspaceship));
         }
 
         this.createAsteroidsBasedOnScreenSize();
