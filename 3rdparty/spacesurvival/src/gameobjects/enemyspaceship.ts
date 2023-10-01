@@ -22,7 +22,7 @@ export class EnemySpaceship {
         getPositionY: () => number
     };
 
-    constructor(scene: Phaser.Scene, playerSpaceship?: { getPositionX: () => number, getPositionY: () => number }) {
+    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship?: { getPositionX: () => number, getPositionY: () => number }) {
         this.scene = scene;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xFF0000 }, fillStyle: { color: 0xFF0000 } });
 
@@ -30,15 +30,15 @@ export class EnemySpaceship {
         const halfHeight = 30;
 
         this.spaceShipShape = new Phaser.Geom.Triangle(
-            100, 100 - halfHeight,
-            100 - halfBaseWidth, 100 + halfHeight,
-            100 + halfBaseWidth, 100 + halfHeight
+            distanceFromLeftCorner, distanceFromLeftCorner - halfHeight,
+            distanceFromLeftCorner - halfBaseWidth, distanceFromLeftCorner + halfHeight,
+            distanceFromLeftCorner + halfBaseWidth, distanceFromLeftCorner + halfHeight
         );
 
         this.innerSpaceShipShape = new Phaser.Geom.Triangle(
-            100, 100 - halfHeight * 0.6,
-            100 - halfBaseWidth * 0.7, 100 + halfHeight * 0.75,
-            100 + halfBaseWidth * 0.7, 100 + halfHeight * 0.75
+            distanceFromLeftCorner, distanceFromLeftCorner - halfHeight * 0.6,
+            distanceFromLeftCorner - halfBaseWidth * 0.7, distanceFromLeftCorner + halfHeight * 0.75,
+            distanceFromLeftCorner + halfBaseWidth * 0.7, distanceFromLeftCorner + halfHeight * 0.75
         );
 
         this.leftKey = scene.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
