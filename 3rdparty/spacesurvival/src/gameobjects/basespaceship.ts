@@ -3,7 +3,8 @@ import { ExhaustFlame } from './exhaustflame';
 import { SpaceObject } from './spaceobject';
 import { ForceField } from './forcefield';
 import { Bullet } from './bullet';
-import {Mine} from "./mine";
+import { Mine } from "./mine";
+import { Missile } from './missile';
 
 
 export const halfBaseWidth = 10;
@@ -23,12 +24,19 @@ export class BaseSpaceship {
     protected shieldKey?: Phaser.Input.Keyboard.Key;
     protected forceField: ForceField;
     protected fireKey?: Phaser.Input.Keyboard.Key;
+    protected missileKey?: Phaser.Input.Keyboard.Key;
     protected mineKey?: Phaser.Input.Keyboard.Key;
-    
+
     protected mines: Mine[] = [];
     protected bullets: Bullet[] = [];
     protected lastFired: number = 0;
     protected fireRate: number = 200;  // 1000 ms = 1 second
+
+
+    protected missiles: Missile[] = [];
+    protected missileLastFired: number = 0;
+    protected missileFireRate: number = 200;  // 1000 ms = 1 second
+
 
     protected lastMinePlaced: number = 0;
     protected mineRate: number = 1000;  // 1000 ms = 1 second
@@ -36,18 +44,18 @@ export class BaseSpaceship {
 
     protected scene: Phaser.Scene;
     protected exhaustFlame: ExhaustFlame;
-    protected initialPositionOffset:number;
+    protected initialPositionOffset: number;
     protected spaceshipColor: number;
 
 
 
-    constructor(scene: Phaser.Scene, initialPositionOffset:number = 400, spaceshiptColor:number = 0xC0C0C0) {
+    constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshiptColor: number = 0xC0C0C0) {
         this.scene = scene;
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshiptColor;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: this.spaceshipColor }, fillStyle: { color: this.spaceshipColor } });
 
-        
+
 
         this.spaceShipShape = new Phaser.Geom.Triangle(
             this.initialPositionOffset, this.initialPositionOffset - halfHeight,
@@ -65,19 +73,21 @@ export class BaseSpaceship {
         this.rightKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
         this.upKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
         this.shieldKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        
-        this.forceField = new ForceField(scene, this);
-        this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
+
         this.fireKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.missileKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.G);
         this.mineKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
+        this.forceField = new ForceField(scene, this);
+        this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
+        
 
     }
 
     public getVelocity(): Phaser.Math.Vector2 {
         return this.velocity;
     }
-    
+
     public setVelocity(x: number, y: number) {
         this.velocity.set(x, y);
     }
@@ -86,11 +96,11 @@ export class BaseSpaceship {
         return this.spaceShipShape;
     }
 
-    
-    
+
+
     updateSpaceshipState() {
         const centroid = this.getCentroid();
-    
+
         if (this.leftKey?.isDown) {
             Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -this.rotationRate);
             Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -this.rotationRate);
@@ -98,7 +108,7 @@ export class BaseSpaceship {
             Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, this.rotationRate);
             Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, this.rotationRate);
         }
-    
+
         if (this.upKey?.isDown) {
             const deltaX = this.spaceShipShape.x1 - centroid.x;
             const deltaY = this.spaceShipShape.y1 - centroid.y;
@@ -106,18 +116,18 @@ export class BaseSpaceship {
             this.velocity.x += this.thrust * Math.cos(angle);
             this.velocity.y += this.thrust * Math.sin(angle);
         }
-    
+
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
-    
+
         Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
         Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
-    
+
         const maxX = Math.max(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
         const minX = Math.min(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
         const maxY = Math.max(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
         const minY = Math.min(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
-    
+
         if (maxX < 0) {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.scene.scale.width, 0);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.scene.scale.width, 0);
@@ -125,7 +135,7 @@ export class BaseSpaceship {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, -this.scene.scale.width, 0);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, -this.scene.scale.width, 0);
         }
-    
+
         if (maxY < 0) {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, this.scene.scale.height);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, this.scene.scale.height);
@@ -133,7 +143,7 @@ export class BaseSpaceship {
             Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, -this.scene.scale.height);
             Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
         }
-    
+
         if (this.upKey?.isDown) {
             this.exhaustFlame.show();
         } else {
@@ -145,26 +155,52 @@ export class BaseSpaceship {
         } else {
             this.forceField.hide();
         }
-    
+
     }
 
     public render() {
         this.graphics.clear();
-        
+
         this.updateSpaceshipState();
         this.graphics.strokeTriangleShape(this.spaceShipShape);
         this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-    
+
         this.exhaustFlame.update();
         this.exhaustFlame.render();
 
         this.forceField.update();
         this.forceField.render();
-       
-        
+
+
     }
 
-    public handleBullets(spaceObjects: SpaceObject[]) {
+
+    public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+        const currentTime = this.scene.time.now;
+
+        if (this.missileKey?.isDown && (currentTime - this.missileLastFired > this.missileFireRate)) {
+            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
+            const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            missile.setTarget(spaceShips[ Phaser.Math.Between(0, spaceShips.length -1)]);
+            this.missiles.push(missile);
+            this.missileLastFired = currentTime;
+        }
+
+        for (let i = 0; i < this.missiles.length; i++) {
+            if (this.missiles[i].handleSpaceObjectCollision(spaceObjects)) {
+                this.missiles.splice(i, 1);
+                i--; // Adjust the index after removing an element
+
+            } else if (this.missiles[i].handleBaseSpaceshipsCollision(spaceShips)) {
+                this.missiles.splice(i, 1);
+                i--; // Adjust the index after removing an element
+
+            }
+        }
+    }
+
+    public handleBullets(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
         if (this.fireKey?.isDown && (currentTime - this.lastFired > this.fireRate)) {
@@ -176,17 +212,21 @@ export class BaseSpaceship {
         }
 
         for (let i = 0; i < this.bullets.length; i++) {
-            if (this.bullets[i].process(spaceObjects)) {
+            if (this.bullets[i].handleSpaceObjectCollision(spaceObjects)) {
                 this.bullets.splice(i, 1);
                 i--; // Adjust the index after removing an element
-          
+
+            } else if (this.bullets[i].handleBaseSpaceshipsCollision(spaceShips)) {
+                this.bullets.splice(i, 1);
+                i--; // Adjust the index after removing an element
+
             }
         }
     }
 
-    public handleMines(spaceObjects: SpaceObject[]) {
+    public handleMines(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
-        
+
         if (this.mineKey?.isDown && (currentTime - this.lastMinePlaced > this.mineRate)) {
             const x = this.getPositionX();
             const y = this.getPositionY();
@@ -194,42 +234,45 @@ export class BaseSpaceship {
             this.mines.push(mine);
             this.lastMinePlaced = currentTime;
         }
-        
+
         for (let i = 0; i < this.mines.length; i++) {
-            if (this.mines[i].process(spaceObjects)) {
+            if (this.mines[i].handleSpaceObjectCollision(spaceObjects)) {
+                this.mines.splice(i, 1);
+                i--; // Adjust the index after removing an element
+            } else if (this.mines[i].handleBaseSpaceShipCollision(spaceShips)) {
                 this.mines.splice(i, 1);
                 i--; // Adjust the index after removing an element
             }
         }
     }
-    
+
     public handleSpaceshipCollision(spaceship: BaseSpaceship) {
         const distance = Phaser.Math.Distance.Between(this.getPositionX(), this.getPositionY(), spaceship.getPositionX(), spaceship.getPositionY());
-    
+
         if (distance < (halfBaseWidth * 2)) {
-            
+
             // Calculate the new velocities after collision (simple reflection)
             const enemyVelocity = this.velocity.clone();
             const playerVelocity = spaceship.getVelocity().clone();
-    
+
             // Mass of enemy spaceship and player spaceship (you may need to adjust these)
             const enemyMass = 1;
             const playerMass = 1;
-    
+
             const newEnemyVelocity = enemyVelocity.clone()
                 .scale((enemyMass - playerMass) / (enemyMass + playerMass))
                 .add(playerVelocity.clone().scale((2 * playerMass) / (enemyMass + playerMass)));
-    
+
             const newPlayerVelocity = playerVelocity.clone()
                 .scale((playerMass - enemyMass) / (enemyMass + playerMass))
                 .add(enemyVelocity.clone().scale((2 * enemyMass) / (enemyMass + playerMass)));
-    
+
             // Apply the new velocities
             this.velocity.set(newEnemyVelocity.x, newEnemyVelocity.y);
             spaceship.setVelocity(newPlayerVelocity.x, newPlayerVelocity.y);
         }
     }
-    
+
     public getCentroid(): Phaser.Geom.Point {
         const { x, y } = this.spaceShipShape.getPoints(3).reduce((acc, point) => ({
             x: acc.x + point.x,
@@ -242,8 +285,8 @@ export class BaseSpaceship {
         return new Phaser.Geom.Point(centroidX, centroidY);
     }
 
-     // Add a method to get the X position of the spaceship's centroid
-     public getPositionX(): number {
+    // Add a method to get the X position of the spaceship's centroid
+    public getPositionX(): number {
         return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).x;
     }
 
@@ -251,9 +294,9 @@ export class BaseSpaceship {
     public getPositionY(): number {
         return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).y;
     }
-    
 
-    public detectCollisions(spaceObjects: SpaceObject[]) {
+
+    public detectCollisions(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const centroidSpaceShip = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
         for (const spaceObj of spaceObjects) {
             const collisionPoints = [
@@ -261,31 +304,36 @@ export class BaseSpaceship {
                 new Phaser.Geom.Point(this.spaceShipShape.x2, this.spaceShipShape.y2),
                 new Phaser.Geom.Point(this.spaceShipShape.x3, this.spaceShipShape.y3)
             ];
-            
+
             for (let point of collisionPoints) {
                 if (Phaser.Geom.Polygon.ContainsPoint(spaceObj.getPolygon(), point)) {
                     const centroidSpaceObj = spaceObj.getCentroid();
                     const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
-        
-                    if (distance < (halfBaseWidth *2)) {
+
+                    if (distance < (halfBaseWidth * 2)) {
                         const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
-                        const velocity1 = this.velocity.clone();``
+                        const velocity1 = this.velocity.clone(); ``
                         const velocity2 = spaceObj.getVelocity().clone();
-        
+
                         const m1 = 1; // Mass for PlayerSpaceship. Adjust if needed
                         const m2 = 1; // Mass for SpaceObject. Adjust if needed
-        
+
                         const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
                         const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
-        
+
                         this.velocity.set(newVelocity1.x, newVelocity1.y);
                         spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
                     }
                 }
             }
         }
+
+        spaceShips.forEach((ship) => {
+            this.handleSpaceshipCollision(ship);
+        });
+
     }
-    
-        
-    
+
+
+
 }

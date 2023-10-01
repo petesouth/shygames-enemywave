@@ -14,6 +14,11 @@ export class EnemySpaceship extends BaseSpaceship {
         if (playerSpaceship) {
             this.playerSpaceship = playerSpaceship;
         }
+
+        this.fireKey = undefined;
+        this.missileKey = undefined;
+        this.mineKey = undefined;
+
     }
 
 

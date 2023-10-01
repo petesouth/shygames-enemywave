@@ -7,7 +7,7 @@ const num_ships = 6;
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
-    private enemyspaceship: EnemySpaceship[] = [];
+    private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
 
     private spaceObjects: SpaceObject[] = [];
@@ -23,7 +23,7 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship = new PlayerSpaceship(this);
 
         for (var i = 0; i < num_ships; ++i) {
-            this.enemyspaceship.push(new EnemySpaceship(this, 5000 + (i*1000), this.playerspaceship));
+            this.enemyspaceships.push(new EnemySpaceship(this, 5000 + (i*1000), this.playerspaceship));
         }
 
         this.createAsteroidsBasedOnScreenSize();
@@ -32,32 +32,26 @@ export class MainScene extends Phaser.Scene {
 
     update() {
 
-        this.playerspaceship.detectCollisions(this.spaceObjects);
-        this.playerspaceship.handleBullets(this.spaceObjects);
-        this.playerspaceship.handleMines(this.spaceObjects);
-        this.playerspaceship.render();
-        
-        this.enemyspaceship.forEach((enemy)=>{
-            this.playerspaceship.handleSpaceshipCollision(enemy);
-        })
-        
-        this.enemyspaceship.forEach((tenemyspaceship) => {
-            tenemyspaceship.detectCollisions(this.spaceObjects);
-            tenemyspaceship.handleSpaceshipCollision(this.playerspaceship);
-
-            // Now the enemy ships bounce off of eachother as well pesky things
-            this.enemyspaceship.forEach((ttenemyspaceship)=>{
-                if( tenemyspaceship != ttenemyspaceship ) {
-                    tenemyspaceship.handleSpaceshipCollision(ttenemyspaceship);
-                }
-            });
-
-            tenemyspaceship.render();
-        })
-
         this.spaceObjects.forEach(spaceObj => {
             spaceObj.update(this.spaceObjects);
         });
+        
+        this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships );
+        this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships );
+        this.playerspaceship.render();
+        
+
+        this.enemyspaceships.forEach((tenemyspaceship) => {
+            tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
+            tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
+            tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship] );
+            tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship] );
+            tenemyspaceship.render();
+        });
+
+       
     }
 
     public createAsteroidsBasedOnScreenSize() {

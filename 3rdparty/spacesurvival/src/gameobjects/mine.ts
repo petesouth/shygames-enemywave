@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { SpaceObject } from './spaceobject';
+import { BaseSpaceship } from './basespaceship';
 
 export class Mine {
     private point: Phaser.Geom.Point;
@@ -19,12 +20,12 @@ export class Mine {
 
     update() {
         this.graphics.clear();
-        
+
         const currentTime = this.scene.time.now;
         if (currentTime - this.creationTime >= this.lifeTimer) {
             this.pop();
         }
-        
+
         if (this.isPopping) {
             this.popSize += 2;
             if (this.popSize > 20) {
@@ -33,7 +34,7 @@ export class Mine {
             }
         }
     }
-    
+
     render() {
         this.graphics.clear();
         const colors = [0xffa500, 0xff4500];
@@ -47,28 +48,49 @@ export class Mine {
         }
     }
 
-    process(spaceObjects: SpaceObject[]): boolean {
+    handleSpaceObjectCollision(spaceObjects: SpaceObject[]): boolean {
         this.update();
         this.render();
-    
+
         const minePoint = this.getPoint();
-    
-        if (!this.hit) {
-            for (const spaceObj of spaceObjects) {
-                if (Phaser.Geom.Polygon.ContainsPoint(spaceObj.getPolygon(), minePoint)) {
-                    this.hit = true; // Set the hit flag
-                    this.pop();      // Start the pop animation
-                    break;           // Exit the loop
-                }
+
+        for (const spaceObj of spaceObjects) {
+            if (Phaser.Geom.Polygon.ContainsPoint(spaceObj.getPolygon(), minePoint)) {
+                this.hit = true; // Set the hit flag
+                this.pop();      // Start the pop animation
+                break;           // Exit the loop
             }
         }
-    
+        
         // The mine is removed only when the animation is finished
         if (this.isPopping && this.popSize > 20) {
             this.destroy();
             return true;
         }
-    
+
+        return false;
+    }
+
+    handleBaseSpaceShipCollision(spaceShips: BaseSpaceship[]): boolean {
+        this.update();
+        this.render();
+
+        const minePoint = this.getPoint();
+
+        for (const spaceShip of spaceShips) {
+            if (Phaser.Geom.Triangle.ContainsPoint(spaceShip.getTriangle(), minePoint)) {
+                this.hit = true; // Set the hit flag
+                this.pop();      // Start the pop animation
+                break;           // Exit the loop
+            }
+        }
+        
+        // The mine is removed only when the animation is finished
+        if (this.isPopping && this.popSize > 20) {
+            this.destroy();
+            return true;
+        }
+
         return false;
     }
 
