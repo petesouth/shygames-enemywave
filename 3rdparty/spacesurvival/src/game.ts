@@ -111,14 +111,43 @@ export default class Game extends Phaser.Game {
     constructor() {
         super(config);
 
-        // Adjust game size on window resize
-        window.addEventListener("resize", () => {
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            this.scale.setGameSize(w, h);
-            const mainScene: MainScene = this.scene.getScene("MainScene") as MainScene;
-            mainScene.createStarBackground();
-            mainScene.createAsteroidsBasedOnScreenSize();
-        });
+        // Add event listeners for key presses
+        window.addEventListener("resize", this.handleWindowResize.bind(this));
+        window.addEventListener("keydown", this.handleKeyDown.bind(this));
+    }
+
+    handleWindowResize() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        this.scale.setGameSize(w, h);
+        const mainScene = this.scene.getScene("MainScene") as MainScene;
+        mainScene.createStarBackground();
+        mainScene.createAsteroidsBasedOnScreenSize();
+    }
+
+    handleKeyDown(event: KeyboardEvent) {
+        // Check if the Ctrl key is pressed (key code 17) and the "f" key (key code 70)
+        if (event.ctrlKey && event.keyCode === 70) {
+            this.toggleFullscreen();
+        } else if (event.key === "Escape") {
+            this.exitFullscreen();
+        }
+    }
+
+    toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            const canvas = this.canvas as HTMLCanvasElement;
+            canvas.requestFullscreen().catch((err) => {
+                console.error("Fullscreen request failed:", err);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    }
+
+    exitFullscreen() {
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
     }
 }
