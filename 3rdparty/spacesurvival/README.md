@@ -31,7 +31,7 @@ at this tool wouldn’t be useful if you couldn’t customize it when you are re
 - Up Arrow Thrust Forward
 
 
-###Copyright 2023 ShyGames LLC
+### Copyright 2023 ShyGames LLC
 
 License for Use of "This software"
 
