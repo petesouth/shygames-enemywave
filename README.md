@@ -86,10 +86,9 @@ It gets launched by gohttp.
 
 
 
-====================================================================
-Copyright [Year] Shygames LLC
+### Copyright 2023 ShyGames LLC
 
-License for Use of "Shygames LLC"
+License for Use of "This software"
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to view and use the Software solely for educational and personal purposes. The Software may not be used for commercial purposes, including but not limited to selling, distributing, or profiting from the Software or its derivatives.
 
@@ -101,7 +100,9 @@ You may not sublicense, distribute, sell, or use the Software for commercial pur
 
 All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of [Your Name/Your Company Name]. The Software is protected by copyright, trademark, and other laws of both the [Your Country] and foreign countries.
 
-If you have questions about this license, please contact [Your Contact Information].
+If you have questions about this license, please contact pete_south@yahoo.com 
+
+
 
 
 
