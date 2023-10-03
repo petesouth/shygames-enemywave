@@ -4,12 +4,13 @@ import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
 const num_ships = 6;
+const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
-
+    private timer: any;
     private spaceObjects: SpaceObject[] = [];
 
 
@@ -22,11 +23,12 @@ export class MainScene extends Phaser.Scene {
 
         this.playerspaceship = new PlayerSpaceship(this);
 
-        for (var i = 0; i < num_ships; ++i) {
-            this.enemyspaceships.push(new EnemySpaceship(this, 5000 + (i*1000), this.playerspaceship));
-        }
-
         this.createAsteroidsBasedOnScreenSize();
+
+        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + 500, this.playerspaceship));
+     
+        this.timer = setInterval(()=> { this.spawnEnemy(); }, SPAWN_TIME );
+        
     }
 
 
@@ -51,6 +53,14 @@ export class MainScene extends Phaser.Scene {
             tenemyspaceship.render();
         });
 
+       
+    }
+
+    spawnEnemy() {
+
+        if( this.enemyspaceships.length < num_ships ) {
+            this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth + 500, this.playerspaceship));
+        }
        
     }
 

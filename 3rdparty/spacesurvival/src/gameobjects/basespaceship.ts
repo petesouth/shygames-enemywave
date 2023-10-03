@@ -9,6 +9,7 @@ import { Missile } from './missile';
 
 export const halfBaseWidth = 10;
 export const halfHeight = 15;
+export const MISSILE_WAIT_TIME = 2000;
 
 export class BaseSpaceship {
     protected spaceShipShape: Phaser.Geom.Triangle;
@@ -178,7 +179,7 @@ export class BaseSpaceship {
     public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.missileKey?.isDown && (currentTime - this.missileLastFired > this.missileFireRate)) {
+        if (this.missileKey?.isDown && (currentTime - this.missileLastFired > MISSILE_WAIT_TIME)) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
