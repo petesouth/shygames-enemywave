@@ -43,6 +43,6 @@ The Software is provided "as is", without warranty of any kind, express or impli
 
 You may not sublicense, distribute, sell, or use the Software for commercial purposes other than as explicitly permitted above. You may not modify, reverse-engineer, decompile, or otherwise attempt to extract the source code of the Software, except for educational or personal purposes as permitted above.
 
-All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of [Your Name/Your Company Name]. The Software is protected by copyright, trademark, and other laws of both the [Your Country] and foreign countries.
+All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of [Your Name/Your Company Name]. The Software is protected by copyright, trademark, and other laws of both the United States and foreign countries.
 
 If you have questions about this license, please contact pete_south@yahoo.com
