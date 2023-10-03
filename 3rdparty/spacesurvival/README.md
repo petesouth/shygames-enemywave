@@ -45,5 +45,4 @@ You may not sublicense, distribute, sell, or use the Software for commercial pur
 
 All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of [Your Name/Your Company Name]. The Software is protected by copyright, trademark, and other laws of both the [Your Country] and foreign countries.
 
-If you have questions about this license, please contact [Your Contact Information].
-
+If you have questions about this license, please contact pete_south@yahoo.com
