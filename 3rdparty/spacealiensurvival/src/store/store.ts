@@ -1,11 +1,9 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import {gameReducer} from "./gamestore";
-import {spaceshipReducer} from "./spaceshipstore";
 
 const rootReducer = {
-  game: gameReducer,
-  spaceship: spaceshipReducer,
+  game: gameReducer
 };
 
 const store = configureStore({

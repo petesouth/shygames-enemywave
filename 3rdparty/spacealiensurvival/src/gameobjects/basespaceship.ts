@@ -313,7 +313,7 @@ export class BaseSpaceship {
 
                     if (distance < (halfBaseWidth * 2)) {
                         const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
-                        const velocity1 = this.velocity.clone(); ``
+                        const velocity1 = this.velocity.clone(); 
                         const velocity2 = spaceObj.getVelocity().clone();
 
                         const m1 = 1; // Mass for PlayerSpaceship. Adjust if needed
