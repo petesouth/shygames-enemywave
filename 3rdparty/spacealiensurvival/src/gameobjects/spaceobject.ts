@@ -225,13 +225,13 @@ export class SpaceObject {
 
         // Rest of your code to create mini polygons...
         let attempts = 0;
-        const maxAttempts = 1000;
+        const maxAttempts = 100;
 
         while (this.miniPolygons.length < numMiniPolygons && attempts < maxAttempts) {
             const points = [];
             const sides = Phaser.Math.Between(3, 6);
             // Adjust size as per your requirement
-            const size = Phaser.Math.Between(1, 5);
+            const size = Phaser.Math.Between(5, 20);
 
             // Calculate polar coordinates for distributing mini polygons evenly
             const radius = Phaser.Math.Between(0, maxRadius - size); // Ensure mini polygons stay within the bounding circle
