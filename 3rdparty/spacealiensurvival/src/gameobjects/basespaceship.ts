@@ -12,7 +12,7 @@ export const halfBaseWidth = 10;
 export const halfHeight = 15;
 export const MISSILE_WAIT_TIME = 2000;
 
-export class BaseSpaceship {
+export class BaseSpaceship extends BaseExplodable {
     protected spaceShipShape: Phaser.Geom.Triangle;
     protected innerSpaceShipShape: Phaser.Geom.Triangle;
     protected graphics: Phaser.GameObjects.Graphics;
@@ -52,6 +52,7 @@ export class BaseSpaceship {
 
 
     constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshiptColor: number = 0xC0C0C0) {
+        super(scene);
         this.scene = scene;
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshiptColor;
@@ -82,7 +83,7 @@ export class BaseSpaceship {
 
         this.forceField = new ForceField(scene, this);
         this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
-
+        this._points = this.spaceShipShape.getPoints(3);
 
     }
 
@@ -158,28 +159,39 @@ export class BaseSpaceship {
             this.forceField.hide();
         }
 
+        this._points = this.spaceShipShape.getPoints(3);
+
     }
 
     public render() {
         this.graphics.clear();
 
-        this.updateSpaceshipState();
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
 
-        this.exhaustFlame.update();
-        this.exhaustFlame.render();
+        if (this.isPopping) {
+            this.renderExplosion();
+        } else {
 
-        this.forceField.update();
-        this.forceField.render();
+            this.updateSpaceshipState();
+            this.graphics.strokeTriangleShape(this.spaceShipShape);
+            this.graphics.fillTriangleShape(this.innerSpaceShipShape);
 
+            this.exhaustFlame.update();
+            this.exhaustFlame.render();
+
+            this.forceField.update();
+            this.forceField.render();
+        }
 
     }
 
-    protected testCollisionAgainstGroup(sourceObject: BaseExplodable, 
-                                        targetObjects: {  getCentroid(): Phaser.Geom.Point,
-                                        getObjectWidthHeight(): { width: number, 
-                                                                  height: number } }[]) {
+    protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
+        targetObjects: {
+            getCentroid(): Phaser.Geom.Point,
+            getObjectWidthHeight(): {
+                width: number,
+                height: number
+            }
+        }[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {
             let width = targetObjects[i2].getObjectWidthHeight().width / 2;
@@ -207,7 +219,7 @@ export class BaseSpaceship {
         for (let i = 0; i < this.missiles.length; i++) {
             this.missiles[i].render();
 
-            if (this.testCollisionAgainstGroup( this.missiles[i], [...spaceObjects, ...spaceShips]) ) {
+            if (this.testCollisionAgainstGroup(this.missiles[i], [...spaceObjects, ...spaceShips])) {
                 this.missiles.splice(i, 1);
                 i--; // Adjust the index after removing an element
             }
@@ -228,10 +240,10 @@ export class BaseSpaceship {
         for (let i = 0; i < this.bullets.length; i++) {
             this.bullets[i].render();
 
-             if (this.testCollisionAgainstGroup( this.bullets[i], [...spaceObjects, ...spaceShips]) ) {
-                 this.bullets.splice(i, 1);
-                 i--; // Adjust the index after removing an element
-             }
+            if (this.testCollisionAgainstGroup(this.bullets[i], [...spaceObjects, ...spaceShips])) {
+                this.bullets.splice(i, 1);
+                i--; // Adjust the index after removing an element
+            }
         }
 
 
@@ -251,7 +263,7 @@ export class BaseSpaceship {
         for (let i = 0; i < this.mines.length; i++) {
             this.mines[i].render();
 
-            if (this.testCollisionAgainstGroup( this.mines[i], [...spaceObjects, ...spaceShips]) ) {
+            if (this.testCollisionAgainstGroup(this.mines[i], [...spaceObjects, ...spaceShips])) {
                 this.mines.splice(i, 1);
                 i--; // Adjust the index after removing an element
             }
