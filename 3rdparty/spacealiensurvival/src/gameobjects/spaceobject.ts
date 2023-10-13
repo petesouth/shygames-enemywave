@@ -130,7 +130,7 @@ export class SpaceObject {
         this.graphics.destroy();
     }
 
-    public getSpaceObjectWidthHeight(): { width: number, height: number } {
+    public getObjectWidthHeight(): { width: number, height: number } {
         const maxX = Math.max(...this.polygon.points.map(point => point.x));
         const minX = Math.min(...this.polygon.points.map(point => point.x));
         const maxY = Math.max(...this.polygon.points.map(point => point.y));
@@ -210,8 +210,8 @@ export class SpaceObject {
     }
 
     private createMiniPolygons() {
-        const rockWidth = this.getSpaceObjectWidthHeight().width;
-        const rockHeight = this.getSpaceObjectWidthHeight().height;
+        const rockWidth = this.getObjectWidthHeight().width;
+        const rockHeight = this.getObjectWidthHeight().height;
 
         // Calculate an approximate area of the rock's boundary
         const rockArea = rockWidth * rockHeight;
@@ -221,7 +221,7 @@ export class SpaceObject {
 
 
         // Calculate the radius for distributing mini polygons evenly
-        const maxRadius = Math.min(this.getSpaceObjectWidthHeight().width, this.getSpaceObjectWidthHeight().height) / 2;
+        const maxRadius = Math.min(this.getObjectWidthHeight().width, this.getObjectWidthHeight().height) / 2;
 
         // Rest of your code to create mini polygons...
         let attempts = 0;

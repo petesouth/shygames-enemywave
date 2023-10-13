@@ -17,7 +17,7 @@ export class Missile extends Bullet {
     update() {
         if (this.target && !this.hit) {
             const targetPoint = this.target.getCentroid();
-            const angleToTarget = Phaser.Math.Angle.BetweenPoints(this.getPoint(), targetPoint);
+            const angleToTarget = Phaser.Math.Angle.BetweenPoints(this.getCentroid(), targetPoint);
             this.direction.setTo(Math.cos(angleToTarget), Math.sin(angleToTarget));
         }
 

@@ -5,6 +5,7 @@ import { ForceField } from './forcefield';
 import { Bullet } from './bullet';
 import { Mine } from "./mine";
 import { Missile } from './missile';
+import { BaseExplodable } from './baseExplodable';
 
 
 export const halfBaseWidth = 10;
@@ -81,7 +82,7 @@ export class BaseSpaceship {
 
         this.forceField = new ForceField(scene, this);
         this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
-        
+
 
     }
 
@@ -175,6 +176,21 @@ export class BaseSpaceship {
 
     }
 
+    protected testCollisionAgainstGroup(sourceObject: BaseExplodable, 
+                                        targetObjects: {  getCentroid(): Phaser.Geom.Point,
+                                        getObjectWidthHeight(): { width: number, 
+                                                                  height: number } }[]) {
+
+        for (let i2 = 0; i2 < targetObjects.length; ++i2) {
+            let width = targetObjects[i2].getObjectWidthHeight().width / 2;
+            let height = targetObjects[i2].getObjectWidthHeight().height / 2;
+            if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
+                return true;
+            }
+        }
+        return false;
+
+    }
 
     public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
@@ -183,20 +199,17 @@ export class BaseSpaceship {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
-            missile.setTarget(spaceShips[ Phaser.Math.Between(0, spaceShips.length -1)]);
+            missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
             this.missiles.push(missile);
             this.missileLastFired = currentTime;
         }
 
         for (let i = 0; i < this.missiles.length; i++) {
-            if (this.missiles[i].handleSpaceObjectCollision(spaceObjects)) {
+            this.missiles[i].render();
+
+            if (this.testCollisionAgainstGroup( this.missiles[i], [...spaceObjects, ...spaceShips]) ) {
                 this.missiles.splice(i, 1);
                 i--; // Adjust the index after removing an element
-
-            } else if (this.missiles[i].handleBaseSpaceshipsCollision(spaceShips)) {
-                this.missiles.splice(i, 1);
-                i--; // Adjust the index after removing an element
-
             }
         }
     }
@@ -213,16 +226,15 @@ export class BaseSpaceship {
         }
 
         for (let i = 0; i < this.bullets.length; i++) {
-            if (this.bullets[i].handleSpaceObjectCollision(spaceObjects)) {
-                this.bullets.splice(i, 1);
-                i--; // Adjust the index after removing an element
+            this.bullets[i].render();
 
-            } else if (this.bullets[i].handleBaseSpaceshipsCollision(spaceShips)) {
-                this.bullets.splice(i, 1);
-                i--; // Adjust the index after removing an element
-
-            }
+             if (this.testCollisionAgainstGroup( this.bullets[i], [...spaceObjects, ...spaceShips]) ) {
+                 this.bullets.splice(i, 1);
+                 i--; // Adjust the index after removing an element
+             }
         }
+
+
     }
 
     public handleMines(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
@@ -237,14 +249,14 @@ export class BaseSpaceship {
         }
 
         for (let i = 0; i < this.mines.length; i++) {
-            if (this.mines[i].handleSpaceObjectCollision(spaceObjects)) {
-                this.mines.splice(i, 1);
-                i--; // Adjust the index after removing an element
-            } else if (this.mines[i].handleBaseSpaceShipCollision(spaceShips)) {
+            this.mines[i].render();
+
+            if (this.testCollisionAgainstGroup( this.mines[i], [...spaceObjects, ...spaceShips]) ) {
                 this.mines.splice(i, 1);
                 i--; // Adjust the index after removing an element
             }
         }
+
     }
 
     public handleSpaceshipCollision(spaceship: BaseSpaceship) {
@@ -286,6 +298,19 @@ export class BaseSpaceship {
         return new Phaser.Geom.Point(centroidX, centroidY);
     }
 
+    public getObjectWidthHeight(): { width: number, height: number } {
+        let points = this.spaceShipShape.getPoints(3);
+        const maxX = Math.max(...points.map(point => point.x));
+        const minX = Math.min(...points.map(point => point.x));
+        const maxY = Math.max(...points.map(point => point.y));
+        const minY = Math.min(...points.map(point => point.y));
+
+        return {
+            width: maxX - minX,
+            height: maxY - minY
+        };
+    }
+
     // Add a method to get the X position of the spaceship's centroid
     public getPositionX(): number {
         return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).x;
@@ -313,7 +338,7 @@ export class BaseSpaceship {
 
                     if (distance < (halfBaseWidth * 2)) {
                         const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
-                        const velocity1 = this.velocity.clone(); 
+                        const velocity1 = this.velocity.clone();
                         const velocity2 = spaceObj.getVelocity().clone();
 
                         const m1 = 1; // Mass for PlayerSpaceship. Adjust if needed
