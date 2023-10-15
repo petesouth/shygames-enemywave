@@ -163,7 +163,7 @@ export default class Game extends Phaser.Game {
 
     handleKeyDown(event: KeyboardEvent) {
         // Check if the Ctrl key is pressed (key code 17) and the "f" key (key code 70)
-        if (event.ctrlKey && event.keyCode === 70) {
+        if (event.ctrlKey && event.keyCode === 69) {
             this.toggleFullscreen();
         } else if (event.key === "Escape") {
             this.exitFullscreen();

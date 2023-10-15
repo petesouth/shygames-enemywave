@@ -187,17 +187,17 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
-        targetObjects: {
-            getCentroid(): Phaser.Geom.Point,
-            getObjectWidthHeight(): {
-                width: number,
-                height: number
-            }
-        }[]) {
+        targetObjects: any[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {
             let width = targetObjects[i2].getObjectWidthHeight().width / 2;
             let height = targetObjects[i2].getObjectWidthHeight().height / 2;
+
+            if( targetObjects[i2].forceField?.isVisible === true ) {
+                width = ForceField.circleRadius * 1.5;
+                height = ForceField.circleRadius * 1.5;
+            }
+
             if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
                 return i2;
             }
@@ -212,29 +212,31 @@ export class BaseSpaceship extends BaseExplodable {
             let exploadable = exploadables[i];
             exploadable.render();
 
-            
+
 
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
-            if (  foundIndex !== -1) {
+            if (foundIndex !== -1) {
                 exploadables.splice(i, 1);
                 i--; // Adjust the index after removing an element    
-            
-                spaceShips[foundIndex].hitpoints--;
-                if (spaceShips[foundIndex].hitpoints < 1) {
-                    spaceShips[foundIndex].hit = true;
-                    spaceShips[foundIndex].pop();
+
+                if (spaceShips[foundIndex].forceField.isVisible === false) {
+                    spaceShips[foundIndex].hitpoints--;
+                    if (spaceShips[foundIndex].hitpoints < 1) {
+                        spaceShips[foundIndex].hit = true;
+                        spaceShips[foundIndex].pop();
+                    }
                 }
                 continue;
             }
 
             let rockCollided = (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1);
-            if( rockCollided ) {
+            if (rockCollided) {
                 exploadables.splice(i, 1);
                 i--; // Adjust the index after removing an element    
                 continue;
             }
 
-            
+
         }
     }
 
