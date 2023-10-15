@@ -1,7 +1,9 @@
 import Phaser from 'phaser';
-import { BaseSpaceship } from './basespaceship';
+import { BaseSpaceship, MISSILE_WAIT_TIME } from './basespaceship';
 import { SpaceObject } from './spaceobject';
 import { Bullet } from './bullet';
+import { Missile } from './missile';
+import { Mine } from './mine';
 
 
 
@@ -9,8 +11,8 @@ export class EnemySpaceship extends BaseSpaceship {
 
 
     private playerSpaceship?: BaseSpaceship;
+    static missileFireRate: number = 5000;
     
-
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship?: BaseSpaceship) {
         super( scene, distanceFromLeftCorner, 0xFF0000);
     
@@ -24,7 +26,7 @@ export class EnemySpaceship extends BaseSpaceship {
         this.colors = [0xFF0000];
         this.maxPopSize = 40;
         this.fireRate = 1000;
-    
+        this.mineRate = 10000;
 
     }
 
@@ -40,6 +42,25 @@ export class EnemySpaceship extends BaseSpaceship {
         }
 
         this.collisionCollectionTest(this.bullets, spaceObjects, spaceShips);
+
+    }
+
+
+    public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+        const currentTime = this.scene.time.now;
+
+        if ((currentTime - this.missileLastFired > EnemySpaceship.missileFireRate) &&
+            this.forceField?.isVisible === false &&
+            this.hit === false) {
+            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
+            const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
+            this.missiles.push(missile);
+            this.missileLastFired = currentTime;
+        }
+
+        this.collisionCollectionTest(this.missiles, spaceObjects, spaceShips);
 
     }
 

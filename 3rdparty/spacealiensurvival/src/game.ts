@@ -2,7 +2,6 @@ import Phaser from 'phaser';
 import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
-
 const num_ships = 10;
 const SPAWN_TIME = 30000; // 30 seconds in milliseconds
 
@@ -10,6 +9,7 @@ export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
+    private respawnCharacterText?: Phaser.GameObjects.Text;
     private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
 
@@ -18,14 +18,30 @@ export class MainScene extends Phaser.Scene {
         super('MainScene');
     }
 
+    recreate() {
+        if (this.playerspaceship.hit === true) {
+           // TO DO
+           
+        }
+    }
+
     create() {
         this.createStarBackground();
+
+        this.respawnCharacterText = this.add.text(
+            0, 0,  // Position: 0 pixels from the left, 0 pixels from the top
+            'Push R to Respawn Your Spaceship!!!!',  // Text
+            { font: '16px Arial', color: '#ffffff' }  // Style
+        );
+
+        this.respawnCharacterText.visible = false;
 
         this.playerspaceship = new PlayerSpaceship(this);
 
         this.createAsteroidsBasedOnScreenSize();
 
-        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + 500, this.playerspaceship));
+        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
+
 
         this.timerCount = Date.now();
 
@@ -33,6 +49,18 @@ export class MainScene extends Phaser.Scene {
 
 
     update() {
+
+        if (this.playerspaceship.hit === true) {
+            if (this.respawnCharacterText) {
+                this.respawnCharacterText.visible = true;
+            }
+        } else {
+            if (this.respawnCharacterText) {
+                this.respawnCharacterText.visible = false;
+            }
+
+        }
+
 
         this.spaceObjects.forEach(spaceObj => {
             spaceObj.update(this.spaceObjects);
@@ -43,15 +71,15 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.render();    
-        
+        this.playerspaceship.render();
+
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
             if (tenemyspaceship.isPopping === false && tenemyspaceship.hit === true) {
                 this.enemyspaceships.splice(i, 1);
                 i--;
-            } else if( this.playerspaceship.hit === false ) {
+            } else if (this.playerspaceship.hit === false) {
                 tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship]);
@@ -165,6 +193,9 @@ export default class Game extends Phaser.Game {
         // Check if the Ctrl key is pressed (key code 17) and the "f" key (key code 70)
         if (event.ctrlKey && event.keyCode === 69) {
             this.toggleFullscreen();
+        } else if (event.keyCode === 82) {
+            const mainScene = this.scene.getScene("MainScene") as MainScene;
+            mainScene.recreate();
         } else if (event.key === "Escape") {
             this.exitFullscreen();
         }

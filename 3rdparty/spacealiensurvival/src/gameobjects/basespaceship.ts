@@ -32,7 +32,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected bullets: Bullet[] = [];
     protected lastFired: number = 0;
     protected fireRate: number = 200;  // 1000 ms = 1 second
-    protected hitpoints: number = 10;
+    public hitpoints: number = 10;
 
     protected missiles: Missile[] = [];
     protected missileLastFired: number = 0;
@@ -43,7 +43,6 @@ export class BaseSpaceship extends BaseExplodable {
     protected mineRate: number = 1000;  // 1000 ms = 1 second
 
 
-    protected scene: Phaser.Scene;
     protected exhaustFlame: ExhaustFlame;
     protected initialPositionOffset: number;
     protected spaceshipColor: number;
@@ -52,12 +51,19 @@ export class BaseSpaceship extends BaseExplodable {
 
     constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshiptColor: number = 0xC0C0C0) {
         super(scene);
-        this.scene = scene;
+
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshiptColor;
-        this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: this.spaceshipColor }, fillStyle: { color: this.spaceshipColor } });
+        this.graphics = this.scene.add.graphics({ lineStyle: { width: 2, color: this.spaceshipColor }, fillStyle: { color: this.spaceshipColor } });
 
+        this.leftKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.rightKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+        this.upKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
+        this.shieldKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
 
+        this.fireKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        this.missileKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.G);
+        this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
         this.spaceShipShape = new Phaser.Geom.Triangle(
             this.initialPositionOffset, this.initialPositionOffset - halfHeight,
@@ -71,20 +77,12 @@ export class BaseSpaceship extends BaseExplodable {
             this.initialPositionOffset + halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75
         );
 
-        this.leftKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
-        this.rightKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-        this.upKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.UP);
-        this.shieldKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.forceField = new ForceField(this.scene, this);
+        this.exhaustFlame = new ExhaustFlame(this.scene, this.spaceShipShape);
 
-        this.fireKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-        this.missileKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.G);
-        this.mineKey = scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
-
-        this.forceField = new ForceField(scene, this);
-        this.exhaustFlame = new ExhaustFlame(scene, this.spaceShipShape);
-        this._points = this.spaceShipShape.getPoints(3);
 
     }
+
 
     public getVelocity(): Phaser.Math.Vector2 {
         return this.velocity;
@@ -218,9 +216,9 @@ export class BaseSpaceship extends BaseExplodable {
             this.graphics.fillTriangleShape(this.innerSpaceShipShape);
         }
 
-        this.bullets.forEach((bullet)=>{bullet.render()});
-        this.missiles.forEach((missile)=>{missile.render()});
-        this.mines.forEach((mine)=>{mine.render()});
+        this.bullets.forEach((bullet) => { bullet.render() });
+        this.missiles.forEach((missile) => { missile.render() });
+        this.mines.forEach((mine) => { mine.render() });
 
     }
 
@@ -373,7 +371,7 @@ export class BaseSpaceship extends BaseExplodable {
 
             let exploadable = exploadables[i];
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
-            
+
             if (foundIndex !== -1) {
                 exploadables.splice(i, 1);
                 i--; // Adjust the index after removing an element    
@@ -399,6 +397,6 @@ export class BaseSpaceship extends BaseExplodable {
         }
     }
 
-    
+
 
 }
