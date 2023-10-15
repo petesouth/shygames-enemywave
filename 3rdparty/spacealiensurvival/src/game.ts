@@ -4,7 +4,7 @@ import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
 const num_ships = 10;
-const SPAWN_TIME = 5000; // 30 seconds in milliseconds
+const SPAWN_TIME = 10000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
@@ -38,35 +38,34 @@ export class MainScene extends Phaser.Scene {
             spaceObj.update(this.spaceObjects);
         });
 
-        
-        this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
+
         this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.render();
-        
+
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
             if (tenemyspaceship.isPopping === false && tenemyspaceship.hit === true) {
                 this.enemyspaceships.splice(i, 1);
-                i --;
+                i--;
             } else {
-                tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship]);
-            }
+                tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
+        }
 
             tenemyspaceship.render();
         };
 
         const difference = Date.now() - this.timerCount;
-        if( difference >= SPAWN_TIME ) {
+        if (difference >= SPAWN_TIME) {
             this.spawnEnemy();
             this.timerCount = Date.now();
         }
-
 
     }
 

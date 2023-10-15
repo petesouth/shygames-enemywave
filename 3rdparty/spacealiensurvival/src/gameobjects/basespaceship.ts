@@ -28,12 +28,11 @@ export class BaseSpaceship extends BaseExplodable {
     protected fireKey?: Phaser.Input.Keyboard.Key;
     protected missileKey?: Phaser.Input.Keyboard.Key;
     protected mineKey?: Phaser.Input.Keyboard.Key;
-
     protected mines: Mine[] = [];
     protected bullets: Bullet[] = [];
     protected lastFired: number = 0;
     protected fireRate: number = 200;  // 1000 ms = 1 second
-
+    protected hitpoints: number = 10;
 
     protected missiles: Missile[] = [];
     protected missileLastFired: number = 0;
@@ -170,10 +169,10 @@ export class BaseSpaceship extends BaseExplodable {
         if (this.isPopping) {
 
             this.exhaustFlame.hide();
-
             this.forceField.hide();
             this.renderExplosion();
-        } else if( this.isPopping === false && this.hit === false ) {
+
+        } else if (this.isPopping === false && this.hit === false) {
             this.exhaustFlame.update();
             this.exhaustFlame.render();
 
@@ -213,19 +212,29 @@ export class BaseSpaceship extends BaseExplodable {
             let exploadable = exploadables[i];
             exploadable.render();
 
-            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
-            if (foundIndex !== -1) {
-                exploadables.splice(i, 1);
-                i--; // Adjust the index after removing an element
-                spaceShips[foundIndex].hit = true;
-                spaceShips[foundIndex].pop();
+            
 
-                console.log("HIT....   index", foundIndex);
-            } else if (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1) {
+            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
+            if (  foundIndex !== -1) {
                 exploadables.splice(i, 1);
-                i--; // Adjust the index after removing an element
+                i--; // Adjust the index after removing an element    
+            
+                spaceShips[foundIndex].hitpoints--;
+                if (spaceShips[foundIndex].hitpoints < 1) {
+                    spaceShips[foundIndex].hit = true;
+                    spaceShips[foundIndex].pop();
+                }
+                continue;
             }
 
+            let rockCollided = (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1);
+            if( rockCollided ) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element    
+                continue;
+            }
+
+            
         }
     }
 

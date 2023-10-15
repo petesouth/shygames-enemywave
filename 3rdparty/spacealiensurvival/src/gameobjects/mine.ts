@@ -10,6 +10,8 @@ export class Mine extends BaseExplodable {
         super( scene, [new Phaser.Geom.Point(startX, startY)]);
 
         this.creationTime = scene.time.now;
+        this.maxPopSize = 40;
+        
     }
 
     update() {

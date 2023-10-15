@@ -11,7 +11,7 @@ export abstract class BaseExplodable {
     protected colors: number[] = [0xffa500, 0xff4500];
     protected _points: Phaser.Geom.Point[] = [];
     protected maxPopSize: number = 10;
-
+    
     public get points(): Phaser.Geom.Point[] {
         return this._points;
     }
@@ -37,8 +37,6 @@ export abstract class BaseExplodable {
     }
 
 
-
-
     public handleBaseCollision(target: {  getCentroid(): Phaser.Geom.Point }, distanceTrigger: number): boolean {
 
         const sourcePoint = this.getCentroid();
@@ -48,8 +46,10 @@ export abstract class BaseExplodable {
             const distance = Phaser.Math.Distance.BetweenPoints(sourcePoint, targetPoint);
 
             if (distanceTrigger >= distance) {
+
                 this.hit = true; // Set the hit flag
                 this.pop();      // Start the pop animation
+                
             }
         }
 
