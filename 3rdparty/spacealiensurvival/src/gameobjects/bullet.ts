@@ -32,7 +32,7 @@ export class Bullet extends BaseExplodable {
 
     public update() {
         this.graphics.clear();
-        if (!this.isPopping) {
+        if (!this.isPopping && this.hit === false) {
             const dx = this.direction.x * this.speed;
             const dy = this.direction.y * this.speed;
             this.points[0].x += dx;

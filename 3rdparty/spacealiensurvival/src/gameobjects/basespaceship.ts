@@ -372,10 +372,8 @@ export class BaseSpaceship extends BaseExplodable {
         for (let i = 0; i < exploadables.length; i++) {
 
             let exploadable = exploadables[i];
-            exploadable.render();
-            
-
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
+            
             if (foundIndex !== -1) {
                 exploadables.splice(i, 1);
                 i--; // Adjust the index after removing an element    
