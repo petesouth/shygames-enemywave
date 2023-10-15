@@ -218,6 +218,10 @@ export class BaseSpaceship extends BaseExplodable {
             this.graphics.fillTriangleShape(this.innerSpaceShipShape);
         }
 
+        this.bullets.forEach((bullet)=>{bullet.render()});
+        this.missiles.forEach((missile)=>{missile.render()});
+        this.mines.forEach((mine)=>{mine.render()});
+
     }
 
 
@@ -369,8 +373,7 @@ export class BaseSpaceship extends BaseExplodable {
 
             let exploadable = exploadables[i];
             exploadable.render();
-
-
+            
 
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
             if (foundIndex !== -1) {
@@ -398,5 +401,6 @@ export class BaseSpaceship extends BaseExplodable {
         }
     }
 
+    
 
 }
