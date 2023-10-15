@@ -243,7 +243,7 @@ export class BaseSpaceship extends BaseExplodable {
     public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.missileKey?.isDown && (currentTime - this.missileLastFired > MISSILE_WAIT_TIME)) {
+        if (this.missileKey?.isDown && (currentTime - this.missileLastFired > MISSILE_WAIT_TIME) && this.forceField?.isVisible === false) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -259,7 +259,7 @@ export class BaseSpaceship extends BaseExplodable {
     public handleBullets(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.fireKey?.isDown && (currentTime - this.lastFired > this.fireRate)) {
+        if (this.fireKey?.isDown && (currentTime - this.lastFired > this.fireRate) && this.forceField?.isVisible === false) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -274,7 +274,7 @@ export class BaseSpaceship extends BaseExplodable {
     public handleMines(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.mineKey?.isDown && (currentTime - this.lastMinePlaced > this.mineRate)) {
+        if (this.mineKey?.isDown && (currentTime - this.lastMinePlaced > this.mineRate) && this.forceField?.isVisible === false) {
             const x = this.getPositionX();
             const y = this.getPositionY();
             const mine = new Mine(this.scene, x, y);
