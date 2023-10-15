@@ -202,8 +202,8 @@ export class BaseSpaceship extends BaseExplodable {
 
         if (this.isPopping) {
 
-            this.exhaustFlame.hide();
-            this.forceField.hide();
+            this.exhaustFlame.destroy();
+            this.forceField.destroy();
             this.renderExplosion();
 
         } else if (this.isPopping === false && this.hit === false) {

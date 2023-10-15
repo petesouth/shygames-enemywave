@@ -10,9 +10,11 @@ export class ExhaustFlame {
     private graphics: Phaser.GameObjects.Graphics;
     private visible: boolean = false;
     private base: Phaser.Geom.Triangle;
+    private scene: Phaser.Scene;
 
-    constructor(private scene: Phaser.Scene, base: Phaser.Geom.Triangle) {
+    constructor(scene: Phaser.Scene, base: Phaser.Geom.Triangle) {
         this.base = base;
+        this.scene = scene;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffcc00 } });
         this.points = [];
         for (let i = 0; i < 5; i++) {
@@ -22,10 +24,17 @@ export class ExhaustFlame {
 
     show() {
         this.visible = true;
+        
     }
 
     hide() {
         this.graphics.clear();
+        this.visible = false;
+    }
+
+    destroy() {
+        this.graphics.clear();
+        this.graphics.destroy();
         this.visible = false;
     }
 

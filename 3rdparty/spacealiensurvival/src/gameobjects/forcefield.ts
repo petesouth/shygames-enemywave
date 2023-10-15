@@ -23,9 +23,17 @@ export class ForceField {
 
     show() {
         this.isVisible = true;
+        
     }
 
     hide() {
+        this.graphics.clear();
+        this.isVisible = false;
+    }
+
+    destroy() {
+        this.graphics.clear();
+        this.graphics.destroy();
         this.isVisible = false;
     }
 
