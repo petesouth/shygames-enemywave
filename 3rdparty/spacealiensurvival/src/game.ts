@@ -4,7 +4,7 @@ import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
 const num_ships = 10;
-const SPAWN_TIME = 10000; // 30 seconds in milliseconds
+const SPAWN_TIME = 30000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
