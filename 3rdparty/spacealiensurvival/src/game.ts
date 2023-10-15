@@ -39,24 +39,26 @@ export class MainScene extends Phaser.Scene {
         });
 
 
-        this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.render();
-
+        if( this.playerspaceship.hit === false ) {
+            this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
+            this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
+            this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
+            this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
+        }
+        this.playerspaceship.render();    
+        
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
             if (tenemyspaceship.isPopping === false && tenemyspaceship.hit === true) {
                 this.enemyspaceships.splice(i, 1);
                 i--;
-            } else {
+            } else if( this.playerspaceship.hit === false ) {
                 tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship]);
                 tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
-        }
+            }
 
             tenemyspaceship.render();
         };

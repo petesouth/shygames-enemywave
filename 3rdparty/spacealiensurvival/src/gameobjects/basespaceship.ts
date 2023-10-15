@@ -223,7 +223,9 @@ export class BaseSpaceship extends BaseExplodable {
                     spaceShips[foundIndex].hitpoints--;
                     if (spaceShips[foundIndex].hitpoints < 1) {
                         spaceShips[foundIndex].hit = true;
+                        spaceShips[foundIndex].destroy();
                         spaceShips[foundIndex].pop();
+                       
                     }
                 }
                 continue;
