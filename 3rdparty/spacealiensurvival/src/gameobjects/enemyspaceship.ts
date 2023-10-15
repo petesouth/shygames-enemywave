@@ -29,6 +29,9 @@ export class EnemySpaceship extends BaseSpaceship {
         if( !this.playerSpaceship || this.hit === true) {
             this.exhaustFlame.hide();
             this.forceField.hide();
+            this.exhaustFlame.render();
+            this.forceField.render();
+                
             super.updateSpaceshipState();
         } else {
             this.chasePlayerSpaceship();

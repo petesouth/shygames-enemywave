@@ -168,21 +168,21 @@ export class BaseSpaceship extends BaseExplodable {
 
 
         if (this.isPopping) {
+
             this.exhaustFlame.hide();
+
             this.forceField.hide();
             this.renderExplosion();
-            console.log("WENT BOOM")
-        } else {
-
-            this.updateSpaceshipState();
-            this.graphics.strokeTriangleShape(this.spaceShipShape);
-            this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-
+        } else if( this.isPopping === false && this.hit === false ) {
             this.exhaustFlame.update();
             this.exhaustFlame.render();
 
             this.forceField.update();
             this.forceField.render();
+
+            this.updateSpaceshipState();
+            this.graphics.strokeTriangleShape(this.spaceShipShape);
+            this.graphics.fillTriangleShape(this.innerSpaceShipShape);
         }
 
     }
