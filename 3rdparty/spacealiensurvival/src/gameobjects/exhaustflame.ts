@@ -25,6 +25,8 @@ export class ExhaustFlame {
     }
 
     hide() {
+        this.graphics.clear();
+
         this.visible = false;
     }
 

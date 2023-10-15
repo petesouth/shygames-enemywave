@@ -3,14 +3,14 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 
-const num_ships = 6;
-const SPAWN_TIME = 20000; // 30 seconds in milliseconds
+const num_ships = 10;
+const SPAWN_TIME = 5000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
-    private timer: any;
+    private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
 
 
@@ -26,9 +26,9 @@ export class MainScene extends Phaser.Scene {
         this.createAsteroidsBasedOnScreenSize();
 
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + 500, this.playerspaceship));
-     
-        this.timer = setInterval(()=> { this.spawnEnemy(); }, SPAWN_TIME );
-        
+
+        this.timerCount = Date.now();
+
     }
 
 
@@ -37,31 +37,45 @@ export class MainScene extends Phaser.Scene {
         this.spaceObjects.forEach(spaceObj => {
             spaceObj.update(this.spaceObjects);
         });
+
         
         this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships );
-        this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships );
+        this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.render();
         
 
-        this.enemyspaceships.forEach((tenemyspaceship) => {
-            tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
-            tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
-            tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship] );
-            tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship] );
-            tenemyspaceship.render();
-        });
+        for (let i = 0; i < this.enemyspaceships.length; ++i) {
+            const tenemyspaceship = this.enemyspaceships[i];
+            if (tenemyspaceship.isPopping === false && tenemyspaceship.hit === true) {
+                this.enemyspaceships.splice(i, 1);
+                i --;
+            } else {
+                tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
+                tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
+                tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship]);
+                tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship]);
+            }
 
-       
+            tenemyspaceship.render();
+        };
+
+        const difference = Date.now() - this.timerCount;
+        if( difference >= SPAWN_TIME ) {
+            this.spawnEnemy();
+            this.timerCount = Date.now();
+        }
+
+
     }
 
     spawnEnemy() {
 
-        if( this.enemyspaceships.length < num_ships ) {
+        if (this.enemyspaceships.length < num_ships) {
             this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth + 500, this.playerspaceship));
         }
-       
+
     }
 
     public createAsteroidsBasedOnScreenSize() {
@@ -133,6 +147,8 @@ export default class Game extends Phaser.Game {
         // Add event listeners for key presses
         window.addEventListener("resize", this.handleWindowResize.bind(this));
         window.addEventListener("keydown", this.handleKeyDown.bind(this));
+        document.getElementById("game")?.focus();
+
     }
 
     handleWindowResize() {
@@ -142,6 +158,8 @@ export default class Game extends Phaser.Game {
         const mainScene = this.scene.getScene("MainScene") as MainScene;
         mainScene.createStarBackground();
         mainScene.createAsteroidsBasedOnScreenSize();
+        document.getElementById("game")?.focus();
+
     }
 
     handleKeyDown(event: KeyboardEvent) {

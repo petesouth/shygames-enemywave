@@ -168,7 +168,10 @@ export class BaseSpaceship extends BaseExplodable {
 
 
         if (this.isPopping) {
+            this.exhaustFlame.hide();
+            this.forceField.hide();
             this.renderExplosion();
+            console.log("WENT BOOM")
         } else {
 
             this.updateSpaceshipState();
@@ -197,11 +200,33 @@ export class BaseSpaceship extends BaseExplodable {
             let width = targetObjects[i2].getObjectWidthHeight().width / 2;
             let height = targetObjects[i2].getObjectWidthHeight().height / 2;
             if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
-                return true;
+                return i2;
             }
         }
-        return false;
+        return -1;
+    }
 
+
+    protected collisionCollectionTest(exploadables: BaseExplodable[], spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+        for (let i = 0; i < exploadables.length; i++) {
+
+            let exploadable = exploadables[i];
+            exploadable.render();
+
+            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
+            if (foundIndex !== -1) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element
+                spaceShips[foundIndex].hit = true;
+                spaceShips[foundIndex].pop();
+
+                console.log("HIT....   index", foundIndex);
+            } else if (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element
+            }
+
+        }
     }
 
     public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
@@ -216,14 +241,8 @@ export class BaseSpaceship extends BaseExplodable {
             this.missileLastFired = currentTime;
         }
 
-        for (let i = 0; i < this.missiles.length; i++) {
-            this.missiles[i].render();
+        this.collisionCollectionTest(this.missiles, spaceObjects, spaceShips);
 
-            if (this.testCollisionAgainstGroup(this.missiles[i], [...spaceObjects, ...spaceShips])) {
-                this.missiles.splice(i, 1);
-                i--; // Adjust the index after removing an element
-            }
-        }
     }
 
     public handleBullets(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
@@ -237,15 +256,7 @@ export class BaseSpaceship extends BaseExplodable {
             this.lastFired = currentTime;
         }
 
-        for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].render();
-
-            if (this.testCollisionAgainstGroup(this.bullets[i], [...spaceObjects, ...spaceShips])) {
-                this.bullets.splice(i, 1);
-                i--; // Adjust the index after removing an element
-            }
-        }
-
+        this.collisionCollectionTest(this.bullets, spaceObjects, spaceShips);
 
     }
 
@@ -260,14 +271,8 @@ export class BaseSpaceship extends BaseExplodable {
             this.lastMinePlaced = currentTime;
         }
 
-        for (let i = 0; i < this.mines.length; i++) {
-            this.mines[i].render();
+        this.collisionCollectionTest(this.mines, spaceObjects, spaceShips);
 
-            if (this.testCollisionAgainstGroup(this.mines[i], [...spaceObjects, ...spaceShips])) {
-                this.mines.splice(i, 1);
-                i--; // Adjust the index after removing an element
-            }
-        }
 
     }
 

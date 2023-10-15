@@ -18,12 +18,17 @@ export class EnemySpaceship extends BaseSpaceship {
         this.fireKey = undefined;
         this.missileKey = undefined;
         this.mineKey = undefined;
+        this.colors = [0xFF0000];
+        this.maxPopSize = 40;
+    
 
     }
 
 
     public updateSpaceshipState() {
-        if( !this.playerSpaceship ) {
+        if( !this.playerSpaceship || this.hit === true) {
+            this.exhaustFlame.hide();
+            this.forceField.hide();
             super.updateSpaceshipState();
         } else {
             this.chasePlayerSpaceship();

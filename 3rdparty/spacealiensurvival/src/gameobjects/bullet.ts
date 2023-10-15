@@ -39,8 +39,6 @@ export class Bullet extends BaseExplodable {
             this.points[0].y += dy;
             this.distanceTraveled += Math.sqrt(dx * dx + dy * dy);
             
-            console.log(`Distance Traveled: ${this.distanceTraveled}, Max Distance: ${this.maxDistance}`);
-            
             // Check if the bullet has reached the maximum distance
             if (this.distanceTraveled >= this.maxDistance) {
                 this.pop();
@@ -53,7 +51,6 @@ export class Bullet extends BaseExplodable {
 
 
     public render() {
-        console.log("Bullet render");
         this.update();
 
         if (this.isPopping) {

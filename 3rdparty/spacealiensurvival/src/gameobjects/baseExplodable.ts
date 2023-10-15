@@ -1,15 +1,16 @@
 
 
 
-export class BaseExplodable {
+export abstract class BaseExplodable {
 
     protected scene: Phaser.Scene;
     protected graphics: Phaser.GameObjects.Graphics;
-    protected isPopping: boolean = false;
+    public isPopping: boolean = false;
     protected popSize: number = 0;
     public hit: boolean = false; // Add this line at the top with other properties
     protected colors: number[] = [0xffa500, 0xff4500];
     protected _points: Phaser.Geom.Point[] = [];
+    protected maxPopSize: number = 10;
 
     public get points(): Phaser.Geom.Point[] {
         return this._points;
@@ -26,12 +27,10 @@ export class BaseExplodable {
     }
 
     pop() {
-        console.log("Pop called");
         this.isPopping = true;
     }
 
     public destroy() {
-        console.log("Destroy called");
         this.graphics.clear();
         this.graphics.destroy();
         this.isPopping = false;  // Reset the popping state
@@ -63,12 +62,14 @@ export class BaseExplodable {
         return false;
     }
 
+    abstract render() : void;
+
     public renderExplosion() {
 
         this.popSize += 2;
-        if (this.popSize > 20) {
+        if (this.popSize > this.maxPopSize) {
             this.destroy();
-            return;
+            return true;
         }
 
         const chosenColor = Phaser.Utils.Array.GetRandom(this.colors);
@@ -76,6 +77,7 @@ export class BaseExplodable {
 
         const theCenter = this.getCentroid();
         this.graphics.fillCircle(theCenter.x, theCenter.y, this.popSize);
+        return false;
     }
 
     

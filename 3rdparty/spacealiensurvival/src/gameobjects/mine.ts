@@ -30,7 +30,6 @@ export class Mine extends BaseExplodable {
     }
 
     public render() {
-        console.log("Bullet render");
         this.update();
         
         if (this.isPopping) {
