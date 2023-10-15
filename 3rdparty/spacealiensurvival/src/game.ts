@@ -39,12 +39,10 @@ export class MainScene extends Phaser.Scene {
         });
 
 
-        if( this.playerspaceship.hit === false ) {
-            this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
-            this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
-            this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
-            this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
-        }
+        this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.render();    
         
 

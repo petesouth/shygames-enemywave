@@ -98,9 +98,43 @@ export class BaseSpaceship extends BaseExplodable {
         return this.spaceShipShape;
     }
 
+    public getCentroid(): Phaser.Geom.Point {
+        const { x, y } = this.spaceShipShape.getPoints(3).reduce((acc, point) => ({
+            x: acc.x + point.x,
+            y: acc.y + point.y
+        }), { x: 0, y: 0 });
+
+        const centroidX = x / this.spaceShipShape.getPoints(3).length;
+        const centroidY = y / this.spaceShipShape.getPoints(3).length;
+
+        return new Phaser.Geom.Point(centroidX, centroidY);
+    }
+
+    public getObjectWidthHeight(): { width: number, height: number } {
+        let points = this.spaceShipShape.getPoints(3);
+        const maxX = Math.max(...points.map(point => point.x));
+        const minX = Math.min(...points.map(point => point.x));
+        const maxY = Math.max(...points.map(point => point.y));
+        const minY = Math.min(...points.map(point => point.y));
+
+        return {
+            width: maxX - minX,
+            height: maxY - minY
+        };
+    }
+
+    // Add a method to get the X position of the spaceship's centroid
+    public getPositionX(): number {
+        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).x;
+    }
+
+    // Add a method to get the Y position of the spaceship's centroid
+    public getPositionY(): number {
+        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).y;
+    }
 
 
-    updateSpaceshipState() {
+    public updateSpaceshipState() {
         const centroid = this.getCentroid();
 
         if (this.leftKey?.isDown) {
@@ -186,66 +220,14 @@ export class BaseSpaceship extends BaseExplodable {
 
     }
 
-    protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
-        targetObjects: any[]) {
-
-        for (let i2 = 0; i2 < targetObjects.length; ++i2) {
-            let width = targetObjects[i2].getObjectWidthHeight().width / 2;
-            let height = targetObjects[i2].getObjectWidthHeight().height / 2;
-
-            if( targetObjects[i2].forceField?.isVisible === true ) {
-                width = ForceField.circleRadius * 1.5;
-                height = ForceField.circleRadius * 1.5;
-            }
-
-            if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
-                return i2;
-            }
-        }
-        return -1;
-    }
-
-
-    protected collisionCollectionTest(exploadables: BaseExplodable[], spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
-        for (let i = 0; i < exploadables.length; i++) {
-
-            let exploadable = exploadables[i];
-            exploadable.render();
-
-
-
-            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
-            if (foundIndex !== -1) {
-                exploadables.splice(i, 1);
-                i--; // Adjust the index after removing an element    
-
-                if (spaceShips[foundIndex].forceField.isVisible === false) {
-                    spaceShips[foundIndex].hitpoints--;
-                    if (spaceShips[foundIndex].hitpoints < 1) {
-                        spaceShips[foundIndex].hit = true;
-                        spaceShips[foundIndex].destroy();
-                        spaceShips[foundIndex].pop();
-                       
-                    }
-                }
-                continue;
-            }
-
-            let rockCollided = (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1);
-            if (rockCollided) {
-                exploadables.splice(i, 1);
-                i--; // Adjust the index after removing an element    
-                continue;
-            }
-
-
-        }
-    }
 
     public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.missileKey?.isDown && (currentTime - this.missileLastFired > MISSILE_WAIT_TIME) && this.forceField?.isVisible === false) {
+        if (this.missileKey?.isDown &&
+            (currentTime - this.missileLastFired > MISSILE_WAIT_TIME) &&
+            this.forceField?.isVisible === false &&
+            this.hit === false) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -261,7 +243,10 @@ export class BaseSpaceship extends BaseExplodable {
     public handleBullets(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.fireKey?.isDown && (currentTime - this.lastFired > this.fireRate) && this.forceField?.isVisible === false) {
+        if (this.fireKey?.isDown &&
+            (currentTime - this.lastFired > this.fireRate) &&
+            this.forceField?.isVisible === false &&
+            this.hit === false) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -276,7 +261,10 @@ export class BaseSpaceship extends BaseExplodable {
     public handleMines(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if (this.mineKey?.isDown && (currentTime - this.lastMinePlaced > this.mineRate) && this.forceField?.isVisible === false) {
+        if (this.mineKey?.isDown &&
+            (currentTime - this.lastMinePlaced > this.mineRate) &&
+            this.forceField?.isVisible === false &&
+            this.hit === false) {
             const x = this.getPositionX();
             const y = this.getPositionY();
             const mine = new Mine(this.scene, x, y);
@@ -314,41 +302,6 @@ export class BaseSpaceship extends BaseExplodable {
             this.velocity.set(newEnemyVelocity.x, newEnemyVelocity.y);
             spaceship.setVelocity(newPlayerVelocity.x, newPlayerVelocity.y);
         }
-    }
-
-    public getCentroid(): Phaser.Geom.Point {
-        const { x, y } = this.spaceShipShape.getPoints(3).reduce((acc, point) => ({
-            x: acc.x + point.x,
-            y: acc.y + point.y
-        }), { x: 0, y: 0 });
-
-        const centroidX = x / this.spaceShipShape.getPoints(3).length;
-        const centroidY = y / this.spaceShipShape.getPoints(3).length;
-
-        return new Phaser.Geom.Point(centroidX, centroidY);
-    }
-
-    public getObjectWidthHeight(): { width: number, height: number } {
-        let points = this.spaceShipShape.getPoints(3);
-        const maxX = Math.max(...points.map(point => point.x));
-        const minX = Math.min(...points.map(point => point.x));
-        const maxY = Math.max(...points.map(point => point.y));
-        const minY = Math.min(...points.map(point => point.y));
-
-        return {
-            width: maxX - minX,
-            height: maxY - minY
-        };
-    }
-
-    // Add a method to get the X position of the spaceship's centroid
-    public getPositionX(): number {
-        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).x;
-    }
-
-    // Add a method to get the Y position of the spaceship's centroid
-    public getPositionY(): number {
-        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).y;
     }
 
 
@@ -390,6 +343,60 @@ export class BaseSpaceship extends BaseExplodable {
 
     }
 
+
+    protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
+        targetObjects: any[]) {
+
+        for (let i2 = 0; i2 < targetObjects.length; ++i2) {
+            let width = targetObjects[i2].getObjectWidthHeight().width / 2;
+            let height = targetObjects[i2].getObjectWidthHeight().height / 2;
+
+            if (targetObjects[i2].forceField?.isVisible === true) {
+                width = ForceField.circleRadius * 1.5;
+                height = ForceField.circleRadius * 1.5;
+            }
+
+            if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
+                return i2;
+            }
+        }
+        return -1;
+    }
+
+
+    protected collisionCollectionTest(exploadables: BaseExplodable[], spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+        for (let i = 0; i < exploadables.length; i++) {
+
+            let exploadable = exploadables[i];
+            exploadable.render();
+
+
+
+            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
+            if (foundIndex !== -1) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element    
+
+                if (spaceShips[foundIndex].forceField.isVisible === false) {
+                    spaceShips[foundIndex].hitpoints--;
+                    if (spaceShips[foundIndex].hitpoints < 1) {
+                        spaceShips[foundIndex].hit = true;
+                        spaceShips[foundIndex].pop();
+                    }
+                }
+                continue;
+            }
+
+            let rockCollided = (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1);
+            if (rockCollided) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element    
+                continue;
+            }
+
+
+        }
+    }
 
 
 }
