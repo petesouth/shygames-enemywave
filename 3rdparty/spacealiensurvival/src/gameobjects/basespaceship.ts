@@ -214,12 +214,13 @@ export class BaseSpaceship extends BaseExplodable {
             this.updateSpaceshipState();
             this.graphics.strokeTriangleShape(this.spaceShipShape);
             this.graphics.fillTriangleShape(this.innerSpaceShipShape);
+            this.bullets.forEach((bullet) => { bullet.render() });
+            this.missiles.forEach((missile) => { missile.render() });
+            this.mines.forEach((mine) => { mine.render() });
+    
         }
 
-        this.bullets.forEach((bullet) => { bullet.render() });
-        this.missiles.forEach((missile) => { missile.render() });
-        this.mines.forEach((mine) => { mine.render() });
-
+       
     }
 
 
