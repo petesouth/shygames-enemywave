@@ -9,8 +9,6 @@ export class PlayerSpaceship extends BaseSpaceship {
 
         this.colors = [0xFFFFFF];
         this.maxPopSize = 40;
-        
-
     }  
 
 

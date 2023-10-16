@@ -99,6 +99,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.bullets = [];
         this.missiles = [];
         this.mines = [];
+        this.pop();
         // Optionally, you may also want to reset any other state or properties associated with the spaceship.
     }
 

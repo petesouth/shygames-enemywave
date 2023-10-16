@@ -28,8 +28,8 @@ export class MainScene extends Phaser.Scene {
         this.createStarBackground();
 
         this.respawnCharacterText = this.add.text(
-            0, 0,  // Position: 0 pixels from the left, 0 pixels from the top
-            'Push R to Respawn Your Spaceship!!!!',  // Text
+            (window.innerWidth / 2 ) - 150, window.innerHeight / 2,  // Position: 0 pixels from the left, 0 pixels from the top
+            'Destroyed!!! Push R to Respawn Your Spaceship.',  // Text
             { font: '16px Arial', color: '#ffffff' }  // Style
         );
 
@@ -189,7 +189,7 @@ export default class Game extends Phaser.Game {
     }
 
     handleKeyDown(event: KeyboardEvent) {
-        // Check if the Ctrl key is pressed (key code 17) and the "f" key (key code 70)
+        // Check if the Ctrl key is pressed (key code 17) and the "E" key (key code 69)
         if (event.ctrlKey && event.keyCode === 69) {
             this.toggleFullscreen();
         } else if (event.keyCode === 82) {
