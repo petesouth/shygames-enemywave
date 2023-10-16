@@ -84,6 +84,54 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
+    public destroy(): void {
+        super.destroy();
+        // Clear graphics object
+        this.graphics.clear();
+        // Hide exhaust flame and force field
+        this.exhaustFlame.hide();
+        this.forceField.hide();
+        // Destroy bullets, missiles, and mines
+        this.bullets.forEach(bullet => bullet.destroy());
+        this.missiles.forEach(missile => missile.destroy());
+        this.mines.forEach(mine => mine.destroy());
+        // Reset arrays
+        this.bullets = [];
+        this.missiles = [];
+        this.mines = [];
+        // Optionally, you may also want to reset any other state or properties associated with the spaceship.
+    }
+
+    public spawn(initialPositionOffset: number = 400): void {
+        // Reset initial position offset and color
+        this.initialPositionOffset = initialPositionOffset;
+        // Reset graphics object style
+        this.graphics.lineStyle(2, this.spaceshipColor);
+        this.graphics.fillStyle(this.spaceshipColor);
+        // Reset spaceship shape to initial position
+        this.spaceShipShape.setTo(
+            this.initialPositionOffset, this.initialPositionOffset - halfHeight,
+            this.initialPositionOffset - halfBaseWidth, this.initialPositionOffset + halfHeight,
+            this.initialPositionOffset + halfBaseWidth, this.initialPositionOffset + halfHeight
+        );
+        // Reset inner spaceship shape to initial position
+        this.innerSpaceShipShape.setTo(
+            this.initialPositionOffset, this.initialPositionOffset - halfHeight * 0.6,
+            this.initialPositionOffset - halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75,
+            this.initialPositionOffset + halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75
+        );
+        // Reset velocity
+        this.velocity.set(0, 0);
+        // Reset hitpoints
+        this.hitpoints = 10;
+
+        this.hit = false;
+        this.isPopping = false;
+        
+        // Reset any other state or properties associated with the spaceship as necessary.
+    }
+
+
     public getVelocity(): Phaser.Math.Vector2 {
         return this.velocity;
     }
@@ -199,9 +247,8 @@ export class BaseSpaceship extends BaseExplodable {
 
 
         if (this.isPopping) {
-
-            this.exhaustFlame.destroy();
-            this.forceField.destroy();
+            this.exhaustFlame.hide();
+            this.forceField.hide();
             this.renderExplosion();
 
         } else if (this.isPopping === false && this.hit === false) {

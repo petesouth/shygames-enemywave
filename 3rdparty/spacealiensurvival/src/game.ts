@@ -20,8 +20,7 @@ export class MainScene extends Phaser.Scene {
 
     recreate() {
         if (this.playerspaceship.hit === true) {
-           // TO DO
-           
+            this.playerspaceship.spawn();
         }
     }
 
