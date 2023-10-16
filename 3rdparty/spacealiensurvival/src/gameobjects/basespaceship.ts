@@ -5,7 +5,7 @@ import { ForceField } from './forcefield';
 import { Bullet } from './bullet';
 import { Mine } from "./mine";
 import { Missile } from './missile';
-import { BaseExplodable } from './baseExplodable';
+import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 
 
 export const halfBaseWidth = 10;
@@ -15,46 +15,43 @@ export const MISSILE_WAIT_TIME = 2000;
 export class BaseSpaceship extends BaseExplodable {
     protected spaceShipShape: Phaser.Geom.Triangle;
     protected innerSpaceShipShape: Phaser.Geom.Triangle;
-    protected graphics: Phaser.GameObjects.Graphics;
     protected rotationRate: number = 0.2;
     protected thrust: number = 0.5;
     protected damping: number = 0.98;
     protected velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
+    protected lastFired: number = 0;
+    protected fireRate: number = 200;  // 1000 ms = 1 second
+    protected missileLastFired: number = 0;
+    protected missileFireRate: number = 200;  // 1000 ms = 1 second
+    protected lastMinePlaced: number = 0;
+    protected mineRate: number = 1000;  // 1000 ms = 1 second
+    protected initialPositionOffset: number;
+    protected spaceshipColor: number;
+    
+    protected exhaustFlame: ExhaustFlame;
+    
+    protected mines: Mine[] = [];
+    protected bullets: Bullet[] = [];
+    protected missiles: Missile[] = [];
+
+
     protected leftKey?: Phaser.Input.Keyboard.Key;
     protected rightKey?: Phaser.Input.Keyboard.Key;
     protected upKey?: Phaser.Input.Keyboard.Key;
     protected shieldKey?: Phaser.Input.Keyboard.Key;
-    protected forceField: ForceField;
     protected fireKey?: Phaser.Input.Keyboard.Key;
     protected missileKey?: Phaser.Input.Keyboard.Key;
     protected mineKey?: Phaser.Input.Keyboard.Key;
-    protected mines: Mine[] = [];
-    protected bullets: Bullet[] = [];
-    protected lastFired: number = 0;
-    protected fireRate: number = 200;  // 1000 ms = 1 second
+
     public hitpoints: number = 10;
-
-    protected missiles: Missile[] = [];
-    protected missileLastFired: number = 0;
-    protected missileFireRate: number = 200;  // 1000 ms = 1 second
+    public forceField: ForceField;
 
 
-    protected lastMinePlaced: number = 0;
-    protected mineRate: number = 1000;  // 1000 ms = 1 second
-
-
-    protected exhaustFlame: ExhaustFlame;
-    protected initialPositionOffset: number;
-    protected spaceshipColor: number;
-
-
-
-    constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshiptColor: number = 0xC0C0C0) {
-        super(scene);
+    constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
+        super(scene, scene.add.graphics({ lineStyle: { width: 2, color: spaceshipColor }, fillStyle: { color: spaceshipColor } }));
 
         this.initialPositionOffset = initialPositionOffset;
-        this.spaceshipColor = spaceshiptColor;
-        this.graphics = this.scene.add.graphics({ lineStyle: { width: 2, color: this.spaceshipColor }, fillStyle: { color: this.spaceshipColor } });
+        this.spaceshipColor = spaceshipColor;
 
         this.leftKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
         this.rightKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
@@ -86,8 +83,7 @@ export class BaseSpaceship extends BaseExplodable {
 
     public destroy(): void {
         super.destroy();
-        // Clear graphics object
-        this.graphics.clear();
+
         // Hide exhaust flame and force field
         this.exhaustFlame.hide();
         this.forceField.hide();
@@ -95,15 +91,18 @@ export class BaseSpaceship extends BaseExplodable {
         this.bullets.forEach(bullet => bullet.destroy());
         this.missiles.forEach(missile => missile.destroy());
         this.mines.forEach(mine => mine.destroy());
+
         // Reset arrays
         this.bullets = [];
         this.missiles = [];
         this.mines = [];
-        this.pop();
+        this.explode();
         // Optionally, you may also want to reset any other state or properties associated with the spaceship.
     }
 
     public spawn(initialPositionOffset: number = 400): void {
+        this.respawn();
+
         // Reset initial position offset and color
         this.initialPositionOffset = initialPositionOffset;
         // Reset graphics object style
@@ -125,11 +124,6 @@ export class BaseSpaceship extends BaseExplodable {
         this.velocity.set(0, 0);
         // Reset hitpoints
         this.hitpoints = 10;
-
-        this.hit = false;
-        this.isPopping = false;
-        
-        // Reset any other state or properties associated with the spaceship as necessary.
     }
 
 
@@ -139,10 +133,6 @@ export class BaseSpaceship extends BaseExplodable {
 
     public setVelocity(x: number, y: number) {
         this.velocity.set(x, y);
-    }
-
-    public getTriangle() {
-        return this.spaceShipShape;
     }
 
     public getCentroid(): Phaser.Geom.Point {
@@ -157,31 +147,8 @@ export class BaseSpaceship extends BaseExplodable {
         return new Phaser.Geom.Point(centroidX, centroidY);
     }
 
-    public getObjectWidthHeight(): { width: number, height: number } {
-        let points = this.spaceShipShape.getPoints(3);
-        const maxX = Math.max(...points.map(point => point.x));
-        const minX = Math.min(...points.map(point => point.x));
-        const maxY = Math.max(...points.map(point => point.y));
-        const minY = Math.min(...points.map(point => point.y));
 
-        return {
-            width: maxX - minX,
-            height: maxY - minY
-        };
-    }
-
-    // Add a method to get the X position of the spaceship's centroid
-    public getPositionX(): number {
-        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).x;
-    }
-
-    // Add a method to get the Y position of the spaceship's centroid
-    public getPositionY(): number {
-        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape).y;
-    }
-
-
-    public updateSpaceshipState() {
+    public drawObjectAlive(): void {
         const centroid = this.getCentroid();
 
         if (this.leftKey?.isDown) {
@@ -239,46 +206,32 @@ export class BaseSpaceship extends BaseExplodable {
             this.forceField.hide();
         }
 
+        this.exhaustFlame.update();
+        this.exhaustFlame.render();
+
+        this.forceField.update();
+        this.forceField.render();
+
+        this.graphics.strokeTriangleShape(this.spaceShipShape);
+        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
+        this.bullets.forEach((bullet) => { bullet.render() });
+        this.missiles.forEach((missile) => { missile.render() });
+        this.mines.forEach((mine) => { mine.render() });
+
+
         this._points = this.spaceShipShape.getPoints(3);
 
     }
 
-    public render() {
-        this.graphics.clear();
 
 
-        if (this.isPopping) {
-            this.exhaustFlame.hide();
-            this.forceField.hide();
-            this.renderExplosion();
-
-        } else if (this.isPopping === false && this.hit === false) {
-            this.exhaustFlame.update();
-            this.exhaustFlame.render();
-
-            this.forceField.update();
-            this.forceField.render();
-
-            this.updateSpaceshipState();
-            this.graphics.strokeTriangleShape(this.spaceShipShape);
-            this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-            this.bullets.forEach((bullet) => { bullet.render() });
-            this.missiles.forEach((missile) => { missile.render() });
-            this.mines.forEach((mine) => { mine.render() });
-    
-        }
-
-       
-    }
-
-
-    public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public handleMissiles(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
         if (this.missileKey?.isDown &&
             (currentTime - this.missileLastFired > MISSILE_WAIT_TIME) &&
-            this.forceField?.isVisible === false &&
-            this.hit === false) {
+            this.forceField.isVisible === false &&
+            this.state === BaseExplodableState.ALIVE) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -287,17 +240,17 @@ export class BaseSpaceship extends BaseExplodable {
             this.missileLastFired = currentTime;
         }
 
-        this.collisionCollectionTest(this.missiles, spaceObjects, spaceShips);
+        this.collisionCollectionTest(this.missiles, spaceShips);
 
     }
 
-    public handleBullets(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public handleBullets(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
         if (this.fireKey?.isDown &&
             (currentTime - this.lastFired > this.fireRate) &&
-            this.forceField?.isVisible === false &&
-            this.hit === false) {
+            this.forceField.isVisible === false &&
+            this.state === BaseExplodableState.ALIVE) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -305,31 +258,33 @@ export class BaseSpaceship extends BaseExplodable {
             this.lastFired = currentTime;
         }
 
-        this.collisionCollectionTest(this.bullets, spaceObjects, spaceShips);
+        this.collisionCollectionTest(this.bullets, spaceShips);
 
     }
 
-    public handleMines(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public handleMines(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
         if (this.mineKey?.isDown &&
             (currentTime - this.lastMinePlaced > this.mineRate) &&
-            this.forceField?.isVisible === false &&
-            this.hit === false) {
-            const x = this.getPositionX();
-            const y = this.getPositionY();
+            this.forceField.isVisible === false &&
+            this.state === BaseExplodableState.ALIVE) {
+            const x = this.getCentroid().x;
+            const y = this.getCentroid().y;
             const mine = new Mine(this.scene, x, y);
             this.mines.push(mine);
             this.lastMinePlaced = currentTime;
         }
 
-        this.collisionCollectionTest(this.mines, spaceObjects, spaceShips);
+        this.collisionCollectionTest(this.mines, spaceShips);
 
 
     }
 
     public handleSpaceshipCollision(spaceship: BaseSpaceship) {
-        const distance = Phaser.Math.Distance.Between(this.getPositionX(), this.getPositionY(), spaceship.getPositionX(), spaceship.getPositionY());
+        const centroid = this.getCentroid();
+        const spaceshipCentroid = spaceship.getCentroid();
+        const distance = Phaser.Math.Distance.Between(centroid.x, centroid.y, spaceshipCentroid.x, spaceshipCentroid.y);
 
         if (distance < (halfBaseWidth * 2)) {
 
@@ -356,7 +311,7 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
-    public detectCollisions(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public detectNonExplosiveBounceCollisions(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
         const centroidSpaceShip = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
         for (const spaceObj of spaceObjects) {
             const collisionPoints = [
@@ -396,16 +351,11 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
-        targetObjects: any[]) {
+        targetObjects: BaseExplodable[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {
             let width = targetObjects[i2].getObjectWidthHeight().width / 2;
             let height = targetObjects[i2].getObjectWidthHeight().height / 2;
-
-            if (targetObjects[i2].forceField?.isVisible === true) {
-                width = ForceField.circleRadius * 1.5;
-                height = ForceField.circleRadius * 1.5;
-            }
 
             if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
                 return i2;
@@ -415,7 +365,7 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
-    protected collisionCollectionTest(exploadables: BaseExplodable[], spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    protected collisionCollectionTest(exploadables: BaseExplodable[], spaceShips: BaseSpaceship[]) {
         for (let i = 0; i < exploadables.length; i++) {
 
             let exploadable = exploadables[i];
@@ -428,20 +378,11 @@ export class BaseSpaceship extends BaseExplodable {
                 if (spaceShips[foundIndex].forceField.isVisible === false) {
                     spaceShips[foundIndex].hitpoints--;
                     if (spaceShips[foundIndex].hitpoints < 1) {
-                        spaceShips[foundIndex].hit = true;
-                        spaceShips[foundIndex].pop();
+                        spaceShips[foundIndex].explode();
                     }
                 }
                 continue;
             }
-
-            let rockCollided = (this.testCollisionAgainstGroup(exploadable, spaceObjects) !== -1);
-            if (rockCollided) {
-                exploadables.splice(i, 1);
-                i--; // Adjust the index after removing an element    
-                continue;
-            }
-
 
         }
     }

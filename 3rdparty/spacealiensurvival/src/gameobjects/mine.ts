@@ -7,49 +7,29 @@ export class Mine extends BaseExplodable {
 
 
     constructor(scene: Phaser.Scene, startX: number, startY: number) {
-        super( scene, [new Phaser.Geom.Point(startX, startY)]);
+        super( scene, scene.add.graphics(), [new Phaser.Geom.Point(startX, startY)]);
 
         this.creationTime = scene.time.now;
         this.maxPopSize = 40;
         
     }
 
-    public destroy() {
-        this.graphics.clear();
-        this.graphics.destroy();
-        this.isPopping = false;  // Reset the popping state
-    }
 
-    update() {
-        this.graphics.clear();
+    public drawObjectAlive() : void {
 
         const currentTime = this.scene.time.now;
         if (currentTime - this.creationTime >= this.lifeTimer) {
-            this.pop();
+            this.explode();
         }
 
-        if (this.isPopping) {
-            this.popSize += 2;
-            if (this.popSize > 20) {
-                this.destroy();
-                return;
-            }
-        }
+        const chosenColor = Phaser.Utils.Array.GetRandom(this.explosionColors);
+        this.graphics.fillStyle(chosenColor);
+        const theCenter = this.getCentroid();
+        this.graphics.fillCircle(theCenter.x, theCenter.y, 8);  // 4 pixel radius
+       
     }
 
-    public render() {
-        this.update();
-        
-        if (this.isPopping) {
-            this.renderExplosion();
-        } else {
-            const chosenColor = Phaser.Utils.Array.GetRandom(this.colors);
-            this.graphics.fillStyle(chosenColor);
-            const theCenter = this.getCentroid();
-            this.graphics.fillCircle(theCenter.x, theCenter.y, 8);  // 4 pixel radius
-        }
-    }
-
+    
 
     
 }

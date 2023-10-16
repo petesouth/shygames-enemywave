@@ -2,7 +2,8 @@ import Phaser from 'phaser';
 import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
-const num_ships = 10;
+import { BaseExplodableState } from './gameobjects/baseExplodable';
+const num_ships = 2;
 const SPAWN_TIME = 30000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
@@ -19,7 +20,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     recreate() {
-        if (this.playerspaceship.hit === true) {
+        if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
             this.playerspaceship.spawn();
         }
     }
@@ -29,19 +30,15 @@ export class MainScene extends Phaser.Scene {
 
         this.respawnCharacterText = this.add.text(
             (window.innerWidth / 2 ) - 150, window.innerHeight / 2,  // Position: 0 pixels from the left, 0 pixels from the top
-            'Destroyed!!! Push R to Respawn Your Spaceship.',  // Text
+            'Push R to Spawn/Re-Spawn Your Spaceship.',  // Text
             { font: '16px Arial', color: '#ffffff' }  // Style
         );
 
-        this.respawnCharacterText.visible = false;
-
+        this.respawnCharacterText.visible = true;
         this.playerspaceship = new PlayerSpaceship(this);
-
-        this.createAsteroidsBasedOnScreenSize();
-
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
-
-
+        this.createAsteroidsBasedOnScreenSize();
+        
         this.timerCount = Date.now();
 
     }
@@ -49,7 +46,7 @@ export class MainScene extends Phaser.Scene {
 
     update() {
 
-        if (this.playerspaceship.hit === true) {
+        if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
             if (this.respawnCharacterText) {
                 this.respawnCharacterText.visible = true;
             }
@@ -62,29 +59,28 @@ export class MainScene extends Phaser.Scene {
 
 
         this.spaceObjects.forEach(spaceObj => {
-            spaceObj.update(this.spaceObjects);
+            spaceObj.renderSpaceObject(this.spaceObjects);
         });
 
 
-        this.playerspaceship.handleBullets(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.handleMines(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.handleMissiles(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.detectCollisions(this.spaceObjects, this.enemyspaceships);
+        this.playerspaceship.handleBullets(this.enemyspaceships);
+        this.playerspaceship.handleMines(this.enemyspaceships);
+        this.playerspaceship.handleMissiles(this.enemyspaceships);
+        this.playerspaceship.detectNonExplosiveBounceCollisions(this.spaceObjects, this.enemyspaceships);
         this.playerspaceship.render();
 
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
-            if (tenemyspaceship.isPopping === false && tenemyspaceship.hit === true) {
+            if (tenemyspaceship.state === BaseExplodableState.DESTROYED) {
                 this.enemyspaceships.splice(i, 1);
                 i--;
-            } else if (this.playerspaceship.hit === false) {
-                tenemyspaceship.handleBullets(this.spaceObjects, [this.playerspaceship]);
-                tenemyspaceship.handleMines(this.spaceObjects, [this.playerspaceship]);
-                tenemyspaceship.handleMissiles(this.spaceObjects, [this.playerspaceship]);
-                tenemyspaceship.detectCollisions(this.spaceObjects, [this.playerspaceship]);
-            }
-
+            } 
+            
+            tenemyspaceship.handleBullets([this.playerspaceship]);
+            tenemyspaceship.handleMines([this.playerspaceship]);
+            tenemyspaceship.handleMissiles([this.playerspaceship]);
+            tenemyspaceship.detectNonExplosiveBounceCollisions(this.spaceObjects, [this.playerspaceship]);
             tenemyspaceship.render();
         };
 
@@ -125,7 +121,7 @@ export class MainScene extends Phaser.Scene {
 
         numobjects = Phaser.Math.Between(numobjects * .6, numobjects);
 
-        for (let i = 0; i < numobjects; i++) {
+        for (let i = 0; i < 0; i++) {
             const spaceObj = new SpaceObject(this);
             this.spaceObjects.push(spaceObj);
         }

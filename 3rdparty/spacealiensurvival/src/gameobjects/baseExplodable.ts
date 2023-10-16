@@ -1,69 +1,55 @@
 
 
+export enum BaseExplodableState {
+    ALIVE,
+    EXPLODING,
+    DESTROYED
+}
 
 export abstract class BaseExplodable {
 
     protected scene: Phaser.Scene;
     protected graphics: Phaser.GameObjects.Graphics;
-    public isPopping: boolean = false;
     protected popSize: number = 0;
-    public hit: boolean = false; // Add this line at the top with other properties
-    protected colors: number[] = [0xffa500, 0xff4500];
+    protected maxPopSize: number = 30;
+    protected explosionColors: number[] = [0xffa500, 0xff4500];
     protected _points: Phaser.Geom.Point[] = [];
-    protected maxPopSize: number = 10;
-    
-    public get points(): Phaser.Geom.Point[] {
+    public state: BaseExplodableState = BaseExplodableState.ALIVE;
+
+    public getPoints(): Phaser.Geom.Point[] {
         return this._points;
     }
 
-    public set points(value: Phaser.Geom.Point[]) {
+    public setPoints(value: Phaser.Geom.Point[]) {
         this._points = value;
     }
 
-    constructor( scene: Phaser.Scene, points: Phaser.Geom.Point[] = []) {
-        this.graphics = scene.add.graphics();
+    constructor( scene: Phaser.Scene,  graphics: Phaser.GameObjects.Graphics, points: Phaser.Geom.Point[] = []) {
+        this.graphics = graphics
         this.scene = scene;
-        this.points = points;
+        this._points = points;
     }
 
-    pop() {
-        this.isPopping = true;
+    public respawn() {
+        this.state = BaseExplodableState.ALIVE;
+    }
+
+    public explode() {
+        this.state = BaseExplodableState.EXPLODING;
     }
 
     public destroy() {
-        this.graphics.clear();
-        this.isPopping = false;  // Reset the popping state
+        this.state = BaseExplodableState.DESTROYED;
     }
 
+  
+    public abstract drawObjectAlive() : void;
 
-    public handleBaseCollision(target: {  getCentroid(): Phaser.Geom.Point }, distanceTrigger: number): boolean {
-
-        const sourcePoint = this.getCentroid();
-        const targetPoint = target.getCentroid();
-
-        if (!this.hit) {
-            const distance = Phaser.Math.Distance.BetweenPoints(sourcePoint, targetPoint);
-
-            if (distanceTrigger >= distance) {
-
-                this.hit = true; // Set the hit flag
-                this.pop();      // Start the pop animation
-                
-            }
-        }
-
-        // The bullet is removed only when the animation is finished
-        if ((this.isPopping && this.popSize > 30) || (this.hit && !this.isPopping)) {
-            this.destroy();
-            return true;
-        }
-
-        return false;
+    public drawObjectIsDead() : void {
+        // NO OP
     }
 
-    abstract render() : void;
-
-    public renderExplosion() {
+    public drawExplosion() {
 
         this.popSize += 2;
         if (this.popSize > this.maxPopSize) {
@@ -71,12 +57,29 @@ export abstract class BaseExplodable {
             return true;
         }
 
-        const chosenColor = Phaser.Utils.Array.GetRandom(this.colors);
+        const chosenColor = Phaser.Utils.Array.GetRandom(this.explosionColors);
         this.graphics.fillStyle(chosenColor);
 
         const theCenter = this.getCentroid();
         this.graphics.fillCircle(theCenter.x, theCenter.y, this.popSize);
         return false;
+    }
+
+    public render() {
+        this.graphics.clear();
+
+        switch(this.state) {
+            case BaseExplodableState.ALIVE:
+                this.drawObjectAlive();
+                break;
+            case BaseExplodableState.EXPLODING:
+                this.drawExplosion();
+                break;
+            case BaseExplodableState.DESTROYED:
+                this.drawObjectIsDead();
+                break;
+            
+        }
     }
 
     
@@ -104,5 +107,30 @@ export abstract class BaseExplodable {
             height: maxY - minY
         };
     }
+
+    public handleBaseCollision(target: BaseExplodable, distanceTrigger: number): boolean {
+
+        const sourcePoint = this.getCentroid();
+        const targetPoint = target.getCentroid();
+
+        if (this.state === BaseExplodableState.ALIVE) {
+            const distance = Phaser.Math.Distance.BetweenPoints(sourcePoint, targetPoint);
+
+            if (distanceTrigger >= distance) {
+
+                this.explode();      // Start the pop animation
+                
+            }
+        }
+
+        // The bullet is removed only when the animation is finished
+        if ((this.state === BaseExplodableState.EXPLODING && this.popSize > this.maxPopSize )) {
+            this.destroy();
+            return true;
+        }
+
+        return false;
+    }
+
 
 }

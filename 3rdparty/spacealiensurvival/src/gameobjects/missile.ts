@@ -10,28 +10,22 @@ export class Missile extends Bullet {
     constructor(scene: Phaser.Scene, startX: number, startY: number, angle: number) {
         super(scene, startX, startY, angle);
         this.startTime = scene.time.now;
-        this.colors = [0xffffff, 0xff4500];
+        this.explosionColors = [0xffffff, 0xff4500];
         this.speed = 4;
     }
 
-    public destroy() {
-        this.graphics.clear();
-        this.graphics.destroy();
-        this.isPopping = false;  // Reset the popping state
-    }
-
-    update() {
-        if (this.target && !this.hit) {
+    public drawObjectAlive() : void {
+        if (this.target) {
             const targetPoint = this.target.getCentroid();
             const angleToTarget = Phaser.Math.Angle.BetweenPoints(this.getCentroid(), targetPoint);
             this.direction.setTo(Math.cos(angleToTarget), Math.sin(angleToTarget));
         }
 
         // Adjust the missile's speed (slower by half)
-        super.update();
+        super.drawObjectAlive();
 
         if (this.scene.time.now - this.startTime > this.lifespan) {
-            this.pop();
+            this.explode();
         }
     }
 

@@ -1,5 +1,6 @@
 // forcefield.ts
 import Phaser from 'phaser';
+import { BaseSpaceship } from './basespaceship';
 
 export class ForceField {
     private graphics: Phaser.GameObjects.Graphics;
@@ -9,9 +10,9 @@ export class ForceField {
     public isVisible: boolean = false;
     public static circleRadius: number = 40;  // Adjust to your needs
         
-    constructor(private scene: Phaser.Scene, private parent: any) { // parent is your spaceship
+    constructor(private scene: Phaser.Scene, private parent: BaseSpaceship) { // parent is your spaceship
         this.graphics = scene.add.graphics();
-        const parentPosition = { x: parent.getPositionX(), y: parent.getPositionY() };
+        const parentPosition = parent.getCentroid();
         this.circle = new Phaser.Geom.Circle(parentPosition.x, parentPosition.y, ForceField.circleRadius);
         
         for (let i = 0; i < 360; i += 45) {  // Adding 8 dots around the circle
@@ -38,7 +39,7 @@ export class ForceField {
     }
 
     update() {
-        const parentPosition = { x: this.parent.getPositionX(), y: this.parent.getPositionY() };
+        const parentPosition = this.parent.getCentroid();
         this.circle.setPosition(parentPosition.x, parentPosition.y);
         const circleRadius = this.circle.radius;
 

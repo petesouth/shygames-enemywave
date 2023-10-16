@@ -4,36 +4,38 @@ import { SpaceObject } from './spaceobject';
 import { Bullet } from './bullet';
 import { Missile } from './missile';
 import { Mine } from './mine';
+import { BaseExplodable, BaseExplodableState } from './baseExplodable';
+import { PlayerSpaceship } from './playerspaceship';
+import { ForceField } from './forcefield';
 
 
 
 export class EnemySpaceship extends BaseSpaceship {
 
 
-    private playerSpaceship?: BaseSpaceship;
+    private playerSpaceship: BaseSpaceship;
     static missileFireRate: number = 5000;
-    
-    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship?: BaseSpaceship) {
-        super( scene, distanceFromLeftCorner, 0xFF0000);
-    
-        if (playerSpaceship) {
-            this.playerSpaceship = playerSpaceship;
-        }
 
+    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship) {
+        super(scene, distanceFromLeftCorner, 0xFF0000);
+
+        this.playerSpaceship = playerSpaceship;
         this.fireKey = undefined;
         this.missileKey = undefined;
         this.mineKey = undefined;
-        this.colors = [0xFF0000];
+        this.explosionColors = [0xFF0000];
         this.maxPopSize = 40;
         this.fireRate = 1000;
         this.mineRate = 10000;
 
     }
 
-    public handleBullets(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public handleBullets(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if ((currentTime - this.lastFired > this.fireRate) && this.playerSpaceship?.hit === false) {
+        if ((currentTime - this.lastFired > this.fireRate) &&
+            this.playerSpaceship?.state === BaseExplodableState.ALIVE) {
+
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -41,17 +43,17 @@ export class EnemySpaceship extends BaseSpaceship {
             this.lastFired = currentTime;
         }
 
-        this.collisionCollectionTest(this.bullets, spaceObjects, spaceShips);
+        this.collisionCollectionTest(this.bullets, spaceShips);
 
     }
 
 
-    public handleMissiles(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public handleMissiles(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
         if ((currentTime - this.missileLastFired > EnemySpaceship.missileFireRate) &&
-            this.forceField?.isVisible === false &&
-            this.hit === false) {
+            this.playerSpaceship?.state === BaseExplodableState.ALIVE) {
+
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
             const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
             const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
@@ -60,20 +62,17 @@ export class EnemySpaceship extends BaseSpaceship {
             this.missileLastFired = currentTime;
         }
 
-        this.collisionCollectionTest(this.missiles, spaceObjects, spaceShips);
+        this.collisionCollectionTest(this.missiles, spaceShips);
 
     }
 
 
-    public updateSpaceshipState() {
-         if (!this.playerSpaceship) {
-            return;
-        }
-
+    public drawObjectAlive(): void {
         const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-        const directionX = this.playerSpaceship.getPositionX() - centroid.x;
-        const directionY = this.playerSpaceship.getPositionY() - centroid.y;
-        const distanceToPlayer = Phaser.Math.Distance.Between(centroid.x, centroid.y, this.playerSpaceship.getPositionX(), this.playerSpaceship.getPositionY());
+        const playerCentroid = this.playerSpaceship.getCentroid();
+        const directionX = playerCentroid?.x - centroid.x;
+        const directionY = playerCentroid?.y - centroid.y;
+        const distanceToPlayer = Phaser.Math.Distance.Between(centroid.x, centroid.y, playerCentroid.x, playerCentroid.y);
         const angle = Math.atan2(directionY, directionX);
 
         // Rotate the spaceship to point towards the player
@@ -97,11 +96,47 @@ export class EnemySpaceship extends BaseSpaceship {
 
         Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
         Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
-        this.exhaustFlame.show();
-        
 
+
+        this.graphics.strokeTriangleShape(this.spaceShipShape);
+        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
+        this.bullets.forEach((bullet) => { bullet.render() });
+        this.missiles.forEach((missile) => { missile.render() });
+        this.mines.forEach((mine) => { mine.render() });
+
+        this.exhaustFlame.show();
+        this.exhaustFlame.update();
+        this.exhaustFlame.render();
+
+
+        this._points = this.spaceShipShape.getPoints(3);
     }
 
     
-    
+    protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
+        targetObjects: BaseExplodable[]) {
+
+        for (let i2 = 0; i2 < targetObjects.length; ++i2) {
+            let width = targetObjects[i2].getObjectWidthHeight().width / 2;
+            let height = targetObjects[i2].getObjectWidthHeight().height / 2;
+
+
+            if( targetObjects[i2] instanceof PlayerSpaceship) {
+                let player = targetObjects[i2] as PlayerSpaceship;
+
+                if (player.forceField?.isVisible === true) {
+                    width =  ForceField.circleRadius * 1.5;
+                    height = ForceField.circleRadius * 1.5;
+                }
+            }
+            
+
+            if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
+                return i2;
+            }
+        }
+        return -1;
+    }
+
+
 }
