@@ -48,7 +48,11 @@ export class Bullet extends BaseExplodable {
         this.handleScreenWrap();
     }
     
-
+    public destroy() {
+        this.graphics.clear();
+        this.graphics.destroy();
+        this.isPopping = false;  // Reset the popping state
+    }
 
     public render() {
         this.update();

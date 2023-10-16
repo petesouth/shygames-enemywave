@@ -14,6 +14,12 @@ export class Mine extends BaseExplodable {
         
     }
 
+    public destroy() {
+        this.graphics.clear();
+        this.graphics.destroy();
+        this.isPopping = false;  // Reset the popping state
+    }
+
     update() {
         this.graphics.clear();
 

@@ -14,6 +14,12 @@ export class Missile extends Bullet {
         this.speed = 4;
     }
 
+    public destroy() {
+        this.graphics.clear();
+        this.graphics.destroy();
+        this.isPopping = false;  // Reset the popping state
+    }
+
     update() {
         if (this.target && !this.hit) {
             const targetPoint = this.target.getCentroid();
