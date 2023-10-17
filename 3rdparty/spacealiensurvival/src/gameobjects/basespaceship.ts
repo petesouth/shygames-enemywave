@@ -27,9 +27,9 @@ export class BaseSpaceship extends BaseExplodable {
     protected mineRate: number = 1000;  // 1000 ms = 1 second
     protected initialPositionOffset: number;
     protected spaceshipColor: number;
-    
+
     protected exhaustFlame: ExhaustFlame;
-    
+
     protected mines: Mine[] = [];
     protected bullets: Bullet[] = [];
     protected missiles: Missile[] = [];
@@ -97,30 +97,30 @@ export class BaseSpaceship extends BaseExplodable {
     public isEverythingDestroyed() {
         let isEverythingDestroyed = true;
 
-        for( let i = 0; i < this.bullets.length; ++ i ) {
-            if( this.bullets[i].state !== BaseExplodableState.DESTROYED ) {
+        for (let i = 0; i < this.bullets.length; ++i) {
+            if (this.bullets[i].state !== BaseExplodableState.DESTROYED) {
                 isEverythingDestroyed = false;
                 break;
             }
         }
 
-        if( isEverythingDestroyed === true ) {
-            for( let i = 0; i < this.missiles.length; ++ i ) {
-                if( this.missiles[i].state !== BaseExplodableState.DESTROYED ) {
+        if (isEverythingDestroyed === true) {
+            for (let i = 0; i < this.missiles.length; ++i) {
+                if (this.missiles[i].state !== BaseExplodableState.DESTROYED) {
                     isEverythingDestroyed = false;
                     break;
                 }
-            }   
+            }
         }
 
-        
-        if( isEverythingDestroyed === true ) {
-            for( let i = 0; i < this.mines.length; ++ i ) {
-                if( this.mines[i].state !== BaseExplodableState.DESTROYED ) {
+
+        if (isEverythingDestroyed === true) {
+            for (let i = 0; i < this.mines.length; ++i) {
+                if (this.mines[i].state !== BaseExplodableState.DESTROYED) {
                     isEverythingDestroyed = false;
                     break;
                 }
-            }   
+            }
         }
 
         return (this.state === BaseExplodableState.DESTROYED && isEverythingDestroyed);
@@ -397,15 +397,22 @@ export class BaseSpaceship extends BaseExplodable {
         for (let i = 0; i < exploadables.length; i++) {
 
             let exploadable = exploadables[i];
-            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);   
             
+            if (exploadable.state === BaseExplodableState.DESTROYED) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element    
+            }
+
+            if (exploadable.state === BaseExplodableState.DESTROYED || exploadable.state === BaseExplodableState.EXPLODING) {
+                continue;
+            }
+            
+            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
+
             if (foundIndex !== -1) {
 
-                if( exploadable.state === BaseExplodableState.DESTROYED) {
-                    exploadables.splice(i, 1);
-                    i--; // Adjust the index after removing an element    
-                }
                 
+
                 if (spaceShips[foundIndex].forceField.isVisible === false && spaceShips[foundIndex].state === BaseExplodableState.ALIVE) {
                     spaceShips[foundIndex].hitpoints--;
                     if (spaceShips[foundIndex].hitpoints < 1) {
