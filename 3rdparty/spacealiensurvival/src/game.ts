@@ -159,18 +159,6 @@ export class MainScene extends Phaser.Scene {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
-                'R - Spawn Your Spaceship',
-                { font: '12px Arial', color: '#ffffff' }
-            );
-            text.setOrigin(0.5);
-            return text;
-        })());
-        offset += 15;
-
-        this.instructions?.push((() => {
-            let text = this.add.text(
-                (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
                 'G - Guided Missiles',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -266,8 +254,6 @@ export class MainScene extends Phaser.Scene {
             this.instructions[11].setPosition(w / 2, h / 2 + offset);
             offset += 15;
 
-            this.instructions[12].setPosition(w / 2, h / 2 + offset);
-            offset += 15;
         }
     }
 
