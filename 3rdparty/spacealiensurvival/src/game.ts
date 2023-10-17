@@ -3,8 +3,8 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
-const num_ships = 1;
-const SPAWN_TIME = 30000; // 30 seconds in milliseconds
+const num_ships = 4;
+const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
