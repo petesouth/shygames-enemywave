@@ -1,9 +1,9 @@
-import store from './store';
+import gGameStore from './store';
 
 export function useGameState() {
   return {
-    dispatch: store.dispatch,
-    state: store.getState()
+    dispatch: gGameStore.dispatch,
+    state: gGameStore.getState()
   }
 }
 

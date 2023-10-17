@@ -3,8 +3,9 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
-import { off } from 'process';
-import { useDispatch } from 'react-redux';
+import gGameStore from './store/store';
+
+
 const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
@@ -14,10 +15,13 @@ export class MainScene extends Phaser.Scene {
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
     public gameNameText?: Phaser.GameObjects.Text;
+    public scoreText?: Phaser.GameObjects.Text;
     public instructions?: Phaser.GameObjects.Text[] = [];
 
     private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
+
+    private store = gGameStore;    
 
 
     constructor() {
@@ -35,6 +39,15 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
         this.createAsteroidsBasedOnScreenSize();
+
+
+        this.scoreText = this.add.text(
+            20,
+            20,
+            'Player Kills: 0  Enemey Kills: 0',
+            { font: '16px Arial', color: '#ffffff' }
+        );
+        
 
         let offset = 60;
         // Create two lines of text as class properties
@@ -285,6 +298,10 @@ export class MainScene extends Phaser.Scene {
                 instruction.visible = false;
             });
         }
+
+        let { game } = this.store.getState();  // Fetch the game state from the Redux store
+        this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}  Enemy Kills: ${game.enemiesKilled}`);
+
     }
 
     update() {

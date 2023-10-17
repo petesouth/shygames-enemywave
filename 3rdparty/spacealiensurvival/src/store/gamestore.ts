@@ -8,7 +8,7 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 */
 const gameSliceInitialState = {
   message: "Welcome to Space Survive. Press Start to play.",
-  currentScore: 0,
+  playerSpaceShipKilled: 0,
   enemiesKilled: 0,
 };
 
@@ -16,9 +16,11 @@ const gameSlice = createSlice({
   name: 'game',
   initialState: gameSliceInitialState,
   reducers: {
-    incrementScore: (state, action : PayloadAction<{ score: number, killCount: number }>) => {
-      state.currentScore += action.payload.score;
-      state.enemiesKilled += action.payload.killCount;
+    incrementPlayersScore: (state, action : PayloadAction<{ }>) => {
+      state.playerSpaceShipKilled += 1;
+    },
+    incrementEnemiesScore: (state, action : PayloadAction<{  }>) => {
+      state.enemiesKilled += 1;
     },
   },
 });

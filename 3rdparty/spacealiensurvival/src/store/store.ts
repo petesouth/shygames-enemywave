@@ -6,9 +6,9 @@ const rootReducer = {
   game: gameReducer
 };
 
-const store = configureStore({
+const gGameStore = configureStore({
   reducer: rootReducer,
 });
 
 
-export default store;
+export default gGameStore;

@@ -7,6 +7,8 @@ import { Mine } from './mine';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 import { PlayerSpaceship } from './playerspaceship';
 import { ForceField } from './forcefield';
+import gGameStore from '../store/store';
+import { gameActions } from '../store/gamestore';
 
 
 
@@ -15,6 +17,7 @@ export class EnemySpaceship extends BaseSpaceship {
 
     private playerSpaceship: BaseSpaceship;
     static missileFireRate: number = 5000;
+    private store = gGameStore;
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship) {
         super(scene, distanceFromLeftCorner, 0xFF0000);
@@ -29,6 +32,13 @@ export class EnemySpaceship extends BaseSpaceship {
         this.mineRate = 10000;
         this.exhaustFlame.show();
     }
+
+    
+    public destroy(): void {
+        super.destroy();    
+        this.store.dispatch( gameActions.incrementEnemiesScore({}) );
+    }
+
 
     public handleBullets(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
