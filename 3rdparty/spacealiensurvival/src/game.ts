@@ -3,6 +3,7 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
+import { off } from 'process';
 const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
@@ -10,7 +11,9 @@ export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
-    private respawnCharacterText?: Phaser.GameObjects.Text;
+    private gameNameText?: Phaser.GameObjects.Text;
+    private instructions?: Phaser.GameObjects.Text[] = [];
+
     private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
 
@@ -28,13 +31,136 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.createStarBackground();
 
-        this.respawnCharacterText = this.add.text(
-            (window.innerWidth / 2) - 150, window.innerHeight / 2,  // Position: 0 pixels from the left, 0 pixels from the top
-            'Push R to Spawn/Re-Spawn Your Spaceship.',  // Text
-            { font: '16px Arial', color: '#ffffff' }  // Style
+        let offset = -80;
+        // Create two lines of text as class properties
+        this.gameNameText = this.add.text(
+            (window.innerWidth / 2),
+            window.innerHeight / 2 + offset,
+            'Space Alien Survival',
+            { font: '16px Arial', color: '#ffffff' }
         );
+        this.gameNameText.setOrigin(0.5);
+        offset += 40;
 
-        this.respawnCharacterText.visible = true;
+
+        this.gameNameText = this.add.text(
+            (window.innerWidth / 2),
+            window.innerHeight / 2 + offset,
+            'Movement',
+            { font: '14px Arial', color: '#ffffff' }
+        );
+        this.gameNameText.setOrigin(0.5);
+        offset += 40;
+
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                '\u2191 - Thrust Forward',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                '\u2190 - Rotate Left',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                '\u2192 - Rotate Right',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 40;
+
+        this.gameNameText = this.add.text(
+            (window.innerWidth / 2),
+            window.innerHeight / 2 + offset,
+            'Weapons',
+            { font: '14px Arial', color: '#ffffff' }
+        );
+        this.gameNameText.setOrigin(0.5);
+        offset += 40;
+
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'Space - Fire Cannon',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'R - Spawn Your Spaceship',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'G - Guided Missiles',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'M - Floating Mines',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((()=>{
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'S - Shields',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        
+        
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
         this.createAsteroidsBasedOnScreenSize();
@@ -47,16 +173,18 @@ export class MainScene extends Phaser.Scene {
     update() {
 
         if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
-            if (this.respawnCharacterText) {
-                this.respawnCharacterText.visible = true;
+            if (this.gameNameText) {
+                this.gameNameText.visible = true; // Show the bottom text
             }
+
+            this.instructions?.forEach((instruction)=>{
+                instruction.visible = true;
+            });
         } else {
-            if (this.respawnCharacterText) {
-                this.respawnCharacterText.visible = false;
-            }
-
+            this.instructions?.forEach((instruction)=>{
+                instruction.visible = false;
+            });
         }
-
 
         this.spaceObjects.forEach(spaceObj => {
             spaceObj.renderSpaceObject(this.spaceObjects);
@@ -65,17 +193,17 @@ export class MainScene extends Phaser.Scene {
 
 
 
-        if (this.respawnCharacterText?.visible === false) {
+        if (this.gameNameText?.visible === false) {
             this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
             this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
-           
+
             this.playerspaceship.handleBullets(this.enemyspaceships);
             this.playerspaceship.handleMines(this.enemyspaceships);
             this.playerspaceship.handleMissiles(this.enemyspaceships);
-            
+
         }
-        
-        this.playerspaceship.render();        
+
+        this.playerspaceship.render();
         this.playerspaceship.renderWeapons();
 
 
@@ -89,7 +217,7 @@ export class MainScene extends Phaser.Scene {
             }
 
 
-            if (this.respawnCharacterText?.visible === false) {
+            if (this.gameNameText?.visible === false) {
                 tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
                 tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
                 tenemyspaceship.handleBullets([this.playerspaceship]);
@@ -143,6 +271,10 @@ export class MainScene extends Phaser.Scene {
             const spaceObj = new SpaceObject(this);
             this.spaceObjects.push(spaceObj);
         }
+
+
+
+
     }
 
     public createStarBackground() {
