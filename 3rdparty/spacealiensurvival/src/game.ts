@@ -3,7 +3,7 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
-const num_ships = 2;
+const num_ships = 1;
 const SPAWN_TIME = 30000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
@@ -85,6 +85,7 @@ export class MainScene extends Phaser.Scene {
             if (isEverythingDestroyed) {
                 this.enemyspaceships.splice(i, 1);
                 i--;
+                break;
             }
 
 

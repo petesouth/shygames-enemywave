@@ -92,12 +92,6 @@ export class BaseSpaceship extends BaseExplodable {
         this.missiles.forEach(missile => missile.destroy());
         this.mines.forEach(mine => mine.destroy());
 
-        // Reset arrays
-        this.bullets = [];
-        this.missiles = [];
-        this.mines = [];
-        this.explode();
-        // Optionally, you may also want to reset any other state or properties associated with the spaceship.
     }
 
     public isEverythingDestroyed() {
