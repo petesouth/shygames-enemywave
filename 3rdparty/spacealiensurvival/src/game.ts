@@ -3,7 +3,7 @@ import { PlayerSpaceship } from './gameobjects/playerspaceship';
 import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
-const num_ships = 4;
+const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
@@ -139,7 +139,7 @@ export class MainScene extends Phaser.Scene {
 
         numobjects = Phaser.Math.Between(numobjects * .6, numobjects);
 
-        for (let i = 0; i < 0; i++) {
+        for (let i = 0; i < numobjects; i++) {
             const spaceObj = new SpaceObject(this);
             this.spaceObjects.push(spaceObj);
         }

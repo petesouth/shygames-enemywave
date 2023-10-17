@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 
 // Constants derived from the polygon creation logic
 const MAX_SIZE = 28;
@@ -8,9 +7,11 @@ const SCALE = 1.6;
 const MIN_SIDES = 5;
 const MAX_SIDES = 12;
 
-export class SpaceObject extends BaseExplodable {
+export class SpaceObject {
+    private graphics: Phaser.GameObjects.Graphics;
     private polygon: Phaser.Geom.Polygon;
     private velocity: Phaser.Math.Vector2;
+    private scene: Phaser.Scene;
     private rotationSpeed: number; // Add this property
     private angle: number;
     private angularVelocity: number;
@@ -20,8 +21,8 @@ export class SpaceObject extends BaseExplodable {
 
 
     constructor(scene: Phaser.Scene) {
-        super(scene, scene.add.graphics())
-        
+        this.scene = scene;
+
         // Initialize the angle and angular velocity properties
         this.angle = Phaser.Math.Between(0, 360); // Initial random angle
         this.angularVelocity = Phaser.Math.Between(-1, 2); // Adjust the range as needed for rotation speed
@@ -48,7 +49,6 @@ export class SpaceObject extends BaseExplodable {
             points.push(new Phaser.Geom.Point(px, py));
         }
 
-        this._points = points;
         this.polygon = new Phaser.Geom.Polygon(points);
 
         this.velocity = new Phaser.Math.Vector2(
@@ -67,23 +67,6 @@ export class SpaceObject extends BaseExplodable {
         this.graphics.strokePoints(this.polygon.points, true);
         this.createMiniPolygons();
     }
-
-    getPolygon() {
-        return this.polygon;
-    }
-
-    getVelocity() {
-        return this.velocity;
-    }
-
-    setVelocity(x: number, y: number) {
-        this.velocity.set(x, y);
-    }
-    
-    public drawObjectAlive(): void {
-        throw new Error('Method not implemented.');
-    }
-    
 
     public renderSpaceObject(spaceObjects: SpaceObject[]) {
         // Update position and velocity
@@ -147,6 +130,17 @@ export class SpaceObject extends BaseExplodable {
         this.graphics.destroy();
     }
 
+    public getSpaceObjectWidthHeight(): { width: number, height: number } {
+        const maxX = Math.max(...this.polygon.points.map(point => point.x));
+        const minX = Math.min(...this.polygon.points.map(point => point.x));
+        const maxY = Math.max(...this.polygon.points.map(point => point.y));
+        const minY = Math.min(...this.polygon.points.map(point => point.y));
+
+        return {
+            width: maxX - minX,
+            height: maxY - minY
+        };
+    }
 
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
         const maxDiameter = MAX_SIZE * SCALE * 2; // Diameter = 2 * Radius
@@ -156,6 +150,21 @@ export class SpaceObject extends BaseExplodable {
         };
     }
 
+    public getCentroid(): Phaser.Geom.Point {
+        return this.getCentroidOfPolygon(this.polygon);
+    }
+
+    private getCentroidOfPolygon(polygon: Phaser.Geom.Polygon): Phaser.Geom.Point {
+        const { x, y } = polygon.points.reduce((acc, point) => ({
+            x: acc.x + point.x,
+            y: acc.y + point.y
+        }), { x: 0, y: 0 });
+
+        const centroidX = x / polygon.points.length;
+        const centroidY = y / polygon.points.length;
+
+        return new Phaser.Geom.Point(centroidX, centroidY);
+    }
 
     private detectCollisions(spaceObjects: SpaceObject[]) {
         const centroidSpaceObj = this.getCentroid();
@@ -164,18 +173,20 @@ export class SpaceObject extends BaseExplodable {
                 const collisionPoints = spaceObj.getPolygon().points;
 
                 for (let point of collisionPoints) {
-                    const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
+                    if (Phaser.Geom.Polygon.ContainsPoint(this.getPolygon(), point)) {
+                        const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
 
-                    if (distance < 40) {
-                        // Calculate the repelling force direction
-                        const repelDirection = new Phaser.Math.Vector2(
-                            centroidSpaceObj.x - point.x,
-                            centroidSpaceObj.y - point.y
-                        ).normalize();
+                        if (distance < 40) {
+                            // Calculate the repelling force direction
+                            const repelDirection = new Phaser.Math.Vector2(
+                                centroidSpaceObj.x - point.x,
+                                centroidSpaceObj.y - point.y
+                            ).normalize();
 
-                        // Apply the repelling force
-                        const repelForce = 0.1; // Adjust as needed
-                        this.velocity.add(repelDirection.scale(repelForce));
+                            // Apply the repelling force
+                            const repelForce = 0.1; // Adjust as needed
+                            this.velocity.add(repelDirection.scale(repelForce));
+                        }
                     }
                 }
             }
@@ -199,8 +210,8 @@ export class SpaceObject extends BaseExplodable {
     }
 
     private createMiniPolygons() {
-        const rockWidth = this.getObjectWidthHeight().width;
-        const rockHeight = this.getObjectWidthHeight().height;
+        const rockWidth = this.getSpaceObjectWidthHeight().width;
+        const rockHeight = this.getSpaceObjectWidthHeight().height;
 
         // Calculate an approximate area of the rock's boundary
         const rockArea = rockWidth * rockHeight;
@@ -210,7 +221,7 @@ export class SpaceObject extends BaseExplodable {
 
 
         // Calculate the radius for distributing mini polygons evenly
-        const maxRadius = Math.min(this.getObjectWidthHeight().width, this.getObjectWidthHeight().height) / 2;
+        const maxRadius = Math.min(this.getSpaceObjectWidthHeight().width, this.getSpaceObjectWidthHeight().height) / 2;
 
         // Rest of your code to create mini polygons...
         let attempts = 0;
@@ -264,5 +275,15 @@ export class SpaceObject extends BaseExplodable {
     }
 
 
-    
+    getPolygon() {
+        return this.polygon;
+    }
+
+    getVelocity() {
+        return this.velocity;
+    }
+
+    setVelocity(x: number, y: number) {
+        this.velocity.set(x, y);
+    }
 }
