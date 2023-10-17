@@ -4,6 +4,7 @@ import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
 import { off } from 'process';
+import { useDispatch } from 'react-redux';
 const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
@@ -42,6 +43,43 @@ export class MainScene extends Phaser.Scene {
         );
         this.gameNameText.setOrigin(0.5);
         offset += 30;
+
+        this.instructions?.push((() => {
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'Game',
+                { font: '14px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 30;
+
+
+        this.instructions?.push((() => {
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'R - Spawn/Respawn',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
+
+        this.instructions?.push((() => {
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'CTRL-E - Fullscreen',
+                { font: '12px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 15;
 
 
         this.instructions?.push((() => {
@@ -200,34 +238,40 @@ export class MainScene extends Phaser.Scene {
 
             this.instructions[2].setPosition(w / 2, h / 2 + offset);
             offset += 15;
-
+            
             this.instructions[3].setPosition(w / 2, h / 2 + offset);
             offset += 30;
 
             this.instructions[4].setPosition(w / 2, h / 2 + offset);
-            offset += 30;
+            offset += 15;
 
             this.instructions[5].setPosition(w / 2, h / 2 + offset);
             offset += 15;
 
             this.instructions[6].setPosition(w / 2, h / 2 + offset);
-            offset += 15;
+            offset += 30;
 
             this.instructions[7].setPosition(w / 2, h / 2 + offset);
-            offset += 15;
+            offset += 30;
 
             this.instructions[8].setPosition(w / 2, h / 2 + offset);
             offset += 15;
 
             this.instructions[9].setPosition(w / 2, h / 2 + offset);
             offset += 15;
+
+            this.instructions[10].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[11].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[12].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
         }
     }
 
-
-
-    update() {
-
+    displayGameText() {
         if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
             if (this.gameNameText) {
                 this.gameNameText.visible = true; // Show the bottom text
@@ -237,10 +281,20 @@ export class MainScene extends Phaser.Scene {
                 instruction.visible = true;
             });
         } else {
+
+            if (this.gameNameText) {
+                this.gameNameText.visible = false; // Show the bottom text
+            }
+
             this.instructions?.forEach((instruction) => {
                 instruction.visible = false;
             });
         }
+    }
+
+    update() {
+
+        this.displayGameText();
 
         this.spaceObjects.forEach(spaceObj => {
             spaceObj.renderSpaceObject(this.spaceObjects);
