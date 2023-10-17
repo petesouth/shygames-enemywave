@@ -8,11 +8,12 @@ const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
+
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
-    private gameNameText?: Phaser.GameObjects.Text;
-    private instructions?: Phaser.GameObjects.Text[] = [];
+    public gameNameText?: Phaser.GameObjects.Text;
+    public instructions?: Phaser.GameObjects.Text[] = [];
 
     private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
@@ -40,20 +41,23 @@ export class MainScene extends Phaser.Scene {
             { font: '16px Arial', color: '#ffffff' }
         );
         this.gameNameText.setOrigin(0.5);
-        offset += 40;
+        offset += 30;
 
 
-        this.gameNameText = this.add.text(
-            (window.innerWidth / 2),
-            window.innerHeight / 2 + offset,
-            'Movement',
-            { font: '14px Arial', color: '#ffffff' }
-        );
-        this.gameNameText.setOrigin(0.5);
-        offset += 40;
+        this.instructions?.push((() => {
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'Movement',
+                { font: '14px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 30;
 
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -65,7 +69,7 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -77,7 +81,7 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -87,19 +91,21 @@ export class MainScene extends Phaser.Scene {
             text.setOrigin(0.5);
             return text;
         })());
-        offset += 40;
+        offset += 30;
 
-        this.gameNameText = this.add.text(
-            (window.innerWidth / 2),
-            window.innerHeight / 2 + offset,
-            'Weapons',
-            { font: '14px Arial', color: '#ffffff' }
-        );
-        this.gameNameText.setOrigin(0.5);
-        offset += 40;
+        this.instructions?.push((() => {
+            let text = this.add.text(
+                (window.innerWidth / 2),
+                window.innerHeight / 2 + offset,
+                'Weapons',
+                { font: '14px Arial', color: '#ffffff' }
+            );
+            text.setOrigin(0.5);
+            return text;
+        })());
+        offset += 30;
 
-
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -111,7 +117,7 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -123,7 +129,7 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -135,7 +141,7 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -147,7 +153,7 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        this.instructions?.push((()=>{
+        this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 window.innerHeight / 2 + offset,
@@ -159,8 +165,8 @@ export class MainScene extends Phaser.Scene {
         })());
         offset += 15;
 
-        
-        
+
+
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
         this.createAsteroidsBasedOnScreenSize();
@@ -170,6 +176,56 @@ export class MainScene extends Phaser.Scene {
     }
 
 
+
+    handleWindowResize() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        this.scale.setGameSize(w, h);
+        this.createStarBackground();
+        this.createAsteroidsBasedOnScreenSize();
+
+        let offset = -80;
+
+        // Set the position for gameNameText
+        this.gameNameText?.setPosition(w / 2, h / 2 + offset);
+        offset += 30;
+
+        // Set positions for each instruction text
+        if (this.instructions) {
+            this.instructions[0].setPosition(w / 2, h / 2 + offset);
+            offset += 30;
+
+            this.instructions[1].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[2].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[3].setPosition(w / 2, h / 2 + offset);
+            offset += 30;
+
+            this.instructions[4].setPosition(w / 2, h / 2 + offset);
+            offset += 30;
+
+            this.instructions[5].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[6].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[7].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[8].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+
+            this.instructions[9].setPosition(w / 2, h / 2 + offset);
+            offset += 15;
+        }
+    }
+
+
+
     update() {
 
         if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
@@ -177,11 +233,11 @@ export class MainScene extends Phaser.Scene {
                 this.gameNameText.visible = true; // Show the bottom text
             }
 
-            this.instructions?.forEach((instruction)=>{
+            this.instructions?.forEach((instruction) => {
                 instruction.visible = true;
             });
         } else {
-            this.instructions?.forEach((instruction)=>{
+            this.instructions?.forEach((instruction) => {
                 instruction.visible = false;
             });
         }
@@ -324,14 +380,8 @@ export default class Game extends Phaser.Game {
     }
 
     handleWindowResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        this.scale.setGameSize(w, h);
         const mainScene = this.scene.getScene("MainScene") as MainScene;
-        mainScene.createStarBackground();
-        mainScene.createAsteroidsBasedOnScreenSize();
-        document.getElementById("game")?.focus();
-
+        mainScene.handleWindowResize();
     }
 
     handleKeyDown(event: KeyboardEvent) {
