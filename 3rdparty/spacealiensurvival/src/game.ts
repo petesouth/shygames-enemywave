@@ -299,7 +299,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         let { game } = gGameStore.getState();  // Fetch the game state from the Redux store
-        this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}  Enemy Kills: ${game.enemiesKilled}`);
+        this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}`);
 
     }
 
@@ -319,11 +319,10 @@ export class MainScene extends Phaser.Scene {
             this.playerspaceship.handleBullets(this.enemyspaceships);
             this.playerspaceship.handleMines(this.enemyspaceships);
             this.playerspaceship.handleMissiles(this.enemyspaceships);
-
-        }
-
-        this.playerspaceship.render();
-        this.playerspaceship.renderWeapons();
+         }
+         
+         this.playerspaceship.render();
+         this.playerspaceship.renderWeapons();
 
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
