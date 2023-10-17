@@ -49,7 +49,7 @@ export abstract class BaseExplodable {
         // NO OP
     }
 
-    public drawExplosion() {
+    public drawExplosion() : boolean {
 
         this.popSize += 2;
         if (this.popSize > this.maxPopSize) {

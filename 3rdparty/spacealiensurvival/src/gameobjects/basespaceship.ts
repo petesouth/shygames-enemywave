@@ -7,7 +7,6 @@ import { Mine } from "./mine";
 import { Missile } from './missile';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 
-
 export const halfBaseWidth = 10;
 export const halfHeight = 15;
 export const MISSILE_WAIT_TIME = 2000;
@@ -91,7 +90,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.bullets.forEach(bullet => bullet.destroy());
         this.missiles.forEach(missile => missile.destroy());
         this.mines.forEach(mine => mine.destroy());
-
+    
     }
 
     public isEverythingDestroyed() {
@@ -388,6 +387,7 @@ export class BaseSpaceship extends BaseExplodable {
             if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
                 return i2;
             }
+            
         }
         return -1;
     }
@@ -410,12 +410,11 @@ export class BaseSpaceship extends BaseExplodable {
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
 
             if (foundIndex !== -1) {
-
-                
-
-                if (spaceShips[foundIndex].forceField.isVisible === false && spaceShips[foundIndex].state === BaseExplodableState.ALIVE) {
+                if (spaceShips[foundIndex].forceField.isVisible === false && 
+                    spaceShips[foundIndex].state === BaseExplodableState.ALIVE && 
+                    spaceShips[foundIndex].hitpoints > 0) {
                     spaceShips[foundIndex].hitpoints--;
-                    if (spaceShips[foundIndex].hitpoints < 1) {
+                    if (spaceShips[foundIndex].hitpoints === 0) {
                         spaceShips[foundIndex].explode();
                     }
                 }

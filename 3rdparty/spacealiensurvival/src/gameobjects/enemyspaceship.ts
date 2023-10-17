@@ -17,8 +17,7 @@ export class EnemySpaceship extends BaseSpaceship {
 
     private playerSpaceship: BaseSpaceship;
     static missileFireRate: number = 5000;
-    private store = gGameStore;
-
+    
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship) {
         super(scene, distanceFromLeftCorner, 0xFF0000);
 
@@ -33,12 +32,10 @@ export class EnemySpaceship extends BaseSpaceship {
         this.exhaustFlame.show();
     }
 
-    
-    public destroy(): void {
-        super.destroy();    
-        this.store.dispatch( gameActions.incrementEnemiesScore({}) );
+    public explode(): void {
+        super.explode();
+        gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
     }
-
 
     public handleBullets(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;

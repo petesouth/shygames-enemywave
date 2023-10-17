@@ -21,8 +21,7 @@ export class MainScene extends Phaser.Scene {
     private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
 
-    private store = gGameStore;    
-
+   
 
     constructor() {
         super('MainScene');
@@ -299,7 +298,7 @@ export class MainScene extends Phaser.Scene {
             });
         }
 
-        let { game } = this.store.getState();  // Fetch the game state from the Redux store
+        let { game } = gGameStore.getState();  // Fetch the game state from the Redux store
         this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}  Enemy Kills: ${game.enemiesKilled}`);
 
     }
@@ -313,7 +312,7 @@ export class MainScene extends Phaser.Scene {
         });
 
 
-        if (this.gameNameText?.visible === false) {
+        if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
             this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
             this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
 
@@ -337,7 +336,7 @@ export class MainScene extends Phaser.Scene {
             }
 
 
-            if (this.gameNameText?.visible === false) {
+            if (this.playerspaceship.state === BaseExplodableState.ALIVE && this.playerspaceship.hitpoints > 0 ) {
                 tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
                 tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
                 tenemyspaceship.handleBullets([this.playerspaceship]);
@@ -387,7 +386,7 @@ export class MainScene extends Phaser.Scene {
 
         numobjects = Phaser.Math.Between(numobjects * .6, numobjects);
 
-        for (let i = 0; i < numobjects; i++) {
+        for (let i = 0; i < 0; i++) {
             const spaceObj = new SpaceObject(this);
             this.spaceObjects.push(spaceObj);
         }
