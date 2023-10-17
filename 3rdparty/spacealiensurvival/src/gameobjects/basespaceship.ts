@@ -100,6 +100,38 @@ export class BaseSpaceship extends BaseExplodable {
         // Optionally, you may also want to reset any other state or properties associated with the spaceship.
     }
 
+    public isEverythingDestroyed() {
+        let isEverythingDestroyed = true;
+
+        for( let i = 0; i < this.bullets.length; ++ i ) {
+            if( this.bullets[i].state !== BaseExplodableState.DESTROYED ) {
+                isEverythingDestroyed = false;
+                break;
+            }
+        }
+
+        if( isEverythingDestroyed === true ) {
+            for( let i = 0; i < this.missiles.length; ++ i ) {
+                if( this.missiles[i].state !== BaseExplodableState.DESTROYED ) {
+                    isEverythingDestroyed = false;
+                    break;
+                }
+            }   
+        }
+
+        
+        if( isEverythingDestroyed === true ) {
+            for( let i = 0; i < this.mines.length; ++ i ) {
+                if( this.mines[i].state !== BaseExplodableState.DESTROYED ) {
+                    isEverythingDestroyed = false;
+                    break;
+                }
+            }   
+        }
+
+        return (this.state === BaseExplodableState.DESTROYED && isEverythingDestroyed);
+    }
+
     public spawn(initialPositionOffset: number = 400): void {
         this.respawn();
 
@@ -214,13 +246,13 @@ export class BaseSpaceship extends BaseExplodable {
 
         this.graphics.strokeTriangleShape(this.spaceShipShape);
         this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-        this.bullets.forEach((bullet) => { bullet.render() });
+        this._points = this.spaceShipShape.getPoints(3);
+    }
+
+    public renderWeapons() {
+        this.bullets.forEach((bullet) => { bullet.render(); });
         this.missiles.forEach((missile) => { missile.render() });
         this.mines.forEach((mine) => { mine.render() });
-
-
-        this._points = this.spaceShipShape.getPoints(3);
-
     }
 
 
@@ -311,7 +343,13 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
-    public detectNonExplosiveBounceCollisions(spaceObjects: SpaceObject[], spaceShips: BaseSpaceship[]) {
+    public detectSpaceshipBounceCollisions(spaceShips: BaseSpaceship[]) {
+        spaceShips.forEach((ship) => {
+            this.handleSpaceshipCollision(ship);
+        });
+    }
+
+    public detectSpaceObjctBounceCollisions(spaceObjects: SpaceObject[]) {
         const centroidSpaceShip = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
         for (const spaceObj of spaceObjects) {
             const collisionPoints = [
@@ -343,10 +381,6 @@ export class BaseSpaceship extends BaseExplodable {
             }
         }
 
-        spaceShips.forEach((ship) => {
-            this.handleSpaceshipCollision(ship);
-        });
-
     }
 
 
@@ -369,23 +403,27 @@ export class BaseSpaceship extends BaseExplodable {
         for (let i = 0; i < exploadables.length; i++) {
 
             let exploadable = exploadables[i];
-            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
-
+            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);   
+            
             if (foundIndex !== -1) {
-                exploadables.splice(i, 1);
-                i--; // Adjust the index after removing an element    
 
-                if (spaceShips[foundIndex].forceField.isVisible === false) {
+                if( exploadable.state === BaseExplodableState.DESTROYED) {
+                    exploadables.splice(i, 1);
+                    i--; // Adjust the index after removing an element    
+                }
+                
+                if (spaceShips[foundIndex].forceField.isVisible === false && spaceShips[foundIndex].state === BaseExplodableState.ALIVE) {
                     spaceShips[foundIndex].hitpoints--;
                     if (spaceShips[foundIndex].hitpoints < 1) {
                         spaceShips[foundIndex].explode();
                     }
                 }
-                continue;
             }
 
         }
     }
+
+
 
 
 

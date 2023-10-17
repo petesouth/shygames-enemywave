@@ -27,7 +27,7 @@ export class EnemySpaceship extends BaseSpaceship {
         this.maxPopSize = 40;
         this.fireRate = 1000;
         this.mineRate = 10000;
-
+        this.exhaustFlame.show();
     }
 
     public handleBullets(spaceShips: BaseSpaceship[]) {
@@ -100,14 +100,12 @@ export class EnemySpaceship extends BaseSpaceship {
 
         this.graphics.strokeTriangleShape(this.spaceShipShape);
         this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-        this.bullets.forEach((bullet) => { bullet.render() });
-        this.missiles.forEach((missile) => { missile.render() });
-        this.mines.forEach((mine) => { mine.render() });
-
-        this.exhaustFlame.show();
+        
         this.exhaustFlame.update();
         this.exhaustFlame.render();
 
+        this.forceField.update();
+        this.forceField.render();
 
         this._points = this.spaceShipShape.getPoints(3);
     }

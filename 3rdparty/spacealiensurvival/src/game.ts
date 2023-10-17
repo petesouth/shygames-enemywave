@@ -29,7 +29,7 @@ export class MainScene extends Phaser.Scene {
         this.createStarBackground();
 
         this.respawnCharacterText = this.add.text(
-            (window.innerWidth / 2 ) - 150, window.innerHeight / 2,  // Position: 0 pixels from the left, 0 pixels from the top
+            (window.innerWidth / 2) - 150, window.innerHeight / 2,  // Position: 0 pixels from the left, 0 pixels from the top
             'Push R to Spawn/Re-Spawn Your Spaceship.',  // Text
             { font: '16px Arial', color: '#ffffff' }  // Style
         );
@@ -38,7 +38,7 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
         this.createAsteroidsBasedOnScreenSize();
-        
+
         this.timerCount = Date.now();
 
     }
@@ -63,25 +63,42 @@ export class MainScene extends Phaser.Scene {
         });
 
 
-        this.playerspaceship.handleBullets(this.enemyspaceships);
-        this.playerspaceship.handleMines(this.enemyspaceships);
-        this.playerspaceship.handleMissiles(this.enemyspaceships);
-        this.playerspaceship.detectNonExplosiveBounceCollisions(this.spaceObjects, this.enemyspaceships);
-        this.playerspaceship.render();
+
+
+        if (this.respawnCharacterText?.visible === false) {
+            this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
+            this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+           
+            this.playerspaceship.handleBullets(this.enemyspaceships);
+            this.playerspaceship.handleMines(this.enemyspaceships);
+            this.playerspaceship.handleMissiles(this.enemyspaceships);
+            
+        }
+        
+        this.playerspaceship.render();        
+        this.playerspaceship.renderWeapons();
 
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
-            if (tenemyspaceship.state === BaseExplodableState.DESTROYED) {
+            const isEverythingDestroyed = tenemyspaceship.isEverythingDestroyed();
+            if (isEverythingDestroyed) {
                 this.enemyspaceships.splice(i, 1);
                 i--;
-            } 
-            
-            tenemyspaceship.handleBullets([this.playerspaceship]);
-            tenemyspaceship.handleMines([this.playerspaceship]);
-            tenemyspaceship.handleMissiles([this.playerspaceship]);
-            tenemyspaceship.detectNonExplosiveBounceCollisions(this.spaceObjects, [this.playerspaceship]);
+            }
+
+
+            if (this.respawnCharacterText?.visible === false) {
+                tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
+                tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+                tenemyspaceship.handleBullets([this.playerspaceship]);
+                tenemyspaceship.handleMines([this.playerspaceship]);
+                tenemyspaceship.handleMissiles([this.playerspaceship]);
+            }
+
             tenemyspaceship.render();
+            tenemyspaceship.renderWeapons();
+
         };
 
         const difference = Date.now() - this.timerCount;
@@ -95,7 +112,7 @@ export class MainScene extends Phaser.Scene {
     spawnEnemy() {
 
         if (this.enemyspaceships.length < num_ships) {
-            this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth + 500, this.playerspaceship));
+            this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth, this.playerspaceship));
         }
 
     }

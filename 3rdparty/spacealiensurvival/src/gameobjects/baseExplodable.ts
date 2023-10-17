@@ -80,6 +80,9 @@ export abstract class BaseExplodable {
                 break;
             
         }
+
+        
+
     }
 
     
@@ -117,19 +120,12 @@ export abstract class BaseExplodable {
             const distance = Phaser.Math.Distance.BetweenPoints(sourcePoint, targetPoint);
 
             if (distanceTrigger >= distance) {
-
                 this.explode();      // Start the pop animation
-                
             }
         }
 
-        // The bullet is removed only when the animation is finished
-        if ((this.state === BaseExplodableState.EXPLODING && this.popSize > this.maxPopSize )) {
-            this.destroy();
-            return true;
-        }
-
-        return false;
+        
+        return this.state !== BaseExplodableState.ALIVE;
     }
 
 
