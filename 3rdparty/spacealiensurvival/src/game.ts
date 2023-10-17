@@ -33,11 +33,11 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.createStarBackground();
 
-        let offset = -80;
+        let offset = 60;
         // Create two lines of text as class properties
         this.gameNameText = this.add.text(
             (window.innerWidth / 2),
-            window.innerHeight / 2 + offset,
+            offset,
             'Space Alien Survival',
             { font: '16px Arial', color: '#ffffff' }
         );
@@ -47,7 +47,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'Game',
                 { font: '14px Arial', color: '#ffffff' }
             );
@@ -60,7 +60,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'R - Spawn/Respawn',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -72,20 +72,20 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'CTRL-E - Fullscreen',
                 { font: '12px Arial', color: '#ffffff' }
             );
             text.setOrigin(0.5);
             return text;
         })());
-        offset += 15;
+        offset += 30;
 
 
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'Movement',
                 { font: '14px Arial', color: '#ffffff' }
             );
@@ -98,7 +98,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 '\u2191 - Thrust Forward',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -110,7 +110,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 '\u2190 - Rotate Left',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -122,7 +122,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 '\u2192 - Rotate Right',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -134,7 +134,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'Weapons',
                 { font: '14px Arial', color: '#ffffff' }
             );
@@ -146,7 +146,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'Space - Fire Cannon',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -158,7 +158,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'G - Guided Missiles',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -170,7 +170,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'M - Floating Mines',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -182,7 +182,7 @@ export class MainScene extends Phaser.Scene {
         this.instructions?.push((() => {
             let text = this.add.text(
                 (window.innerWidth / 2),
-                window.innerHeight / 2 + offset,
+                offset,
                 'S - Shields',
                 { font: '12px Arial', color: '#ffffff' }
             );
@@ -210,48 +210,48 @@ export class MainScene extends Phaser.Scene {
         this.createStarBackground();
         this.createAsteroidsBasedOnScreenSize();
 
-        let offset = -80;
+        let offset = 60;
 
         // Set the position for gameNameText
-        this.gameNameText?.setPosition(w / 2, h / 2 + offset);
+        this.gameNameText?.setPosition(w / 2, offset);
         offset += 30;
 
         // Set positions for each instruction text
         if (this.instructions) {
-            this.instructions[0].setPosition(w / 2, h / 2 + offset);
+            this.instructions[0].setPosition(w / 2, offset);
             offset += 30;
 
-            this.instructions[1].setPosition(w / 2, h / 2 + offset);
+            this.instructions[1].setPosition(w / 2, offset);
             offset += 15;
 
-            this.instructions[2].setPosition(w / 2, h / 2 + offset);
-            offset += 15;
+            this.instructions[2].setPosition(w / 2, offset);
+            offset += 30;
             
-            this.instructions[3].setPosition(w / 2, h / 2 + offset);
+            this.instructions[3].setPosition(w / 2, offset);
             offset += 30;
 
-            this.instructions[4].setPosition(w / 2, h / 2 + offset);
+            this.instructions[4].setPosition(w / 2, offset);
             offset += 15;
 
-            this.instructions[5].setPosition(w / 2, h / 2 + offset);
+            this.instructions[5].setPosition(w / 2, offset);
             offset += 15;
 
-            this.instructions[6].setPosition(w / 2, h / 2 + offset);
+            this.instructions[6].setPosition(w / 2, offset);
             offset += 30;
 
-            this.instructions[7].setPosition(w / 2, h / 2 + offset);
+            this.instructions[7].setPosition(w / 2, offset);
             offset += 30;
 
-            this.instructions[8].setPosition(w / 2, h / 2 + offset);
+            this.instructions[8].setPosition(w / 2, offset);
             offset += 15;
 
-            this.instructions[9].setPosition(w / 2, h / 2 + offset);
+            this.instructions[9].setPosition(w / 2, offset);
             offset += 15;
 
-            this.instructions[10].setPosition(w / 2, h / 2 + offset);
+            this.instructions[10].setPosition(w / 2, offset);
             offset += 15;
 
-            this.instructions[11].setPosition(w / 2, h / 2 + offset);
+            this.instructions[11].setPosition(w / 2, offset);
             offset += 15;
 
         }
