@@ -323,9 +323,9 @@ export class MainScene extends Phaser.Scene {
          
          
         this.playerspaceship.render();
-        this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
         this.playerspaceship.renderWeapons();
-
+        this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
+        
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
@@ -347,9 +347,9 @@ export class MainScene extends Phaser.Scene {
             }
 
             tenemyspaceship.render();
-            tenemyspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
             tenemyspaceship.renderWeapons();
-
+            tenemyspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
+        
         };
 
         const difference = Date.now() - this.timerCount;
