@@ -315,11 +315,13 @@ export class MainScene extends Phaser.Scene {
         if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
             this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
             this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
-
             this.playerspaceship.handleBullets(this.enemyspaceships);
             this.playerspaceship.handleMines(this.enemyspaceships);
             this.playerspaceship.handleMissiles(this.enemyspaceships);
-         }
+      
+        }
+         
+         
          
          this.playerspaceship.render();
          this.playerspaceship.renderWeapons();
@@ -334,10 +336,11 @@ export class MainScene extends Phaser.Scene {
                 break;
             }
 
+            tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
+            tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+                
 
             if (this.playerspaceship.state === BaseExplodableState.ALIVE && this.playerspaceship.hitpoints > 0 ) {
-                tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
-                tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
                 tenemyspaceship.handleBullets([this.playerspaceship]);
                 tenemyspaceship.handleMines([this.playerspaceship]);
                 tenemyspaceship.handleMissiles([this.playerspaceship]);
