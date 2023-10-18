@@ -249,7 +249,13 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
+    public handleWeaponsAgainstSpaceObjets(spaceObjects: SpaceObject[]) {
+        this.collisionCollectionSpaceObjectTest(this.bullets, spaceObjects);
+        this.collisionCollectionSpaceObjectTest(this.mines, spaceObjects);
+        this.collisionCollectionSpaceObjectTest(this.missiles, spaceObjects);
+    }
 
+    
     public handleMissiles(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
@@ -378,7 +384,8 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
-        targetObjects: BaseExplodable[]) {
+        targetObjects: {  getObjectWidthHeight(): { width: number, height: number },
+                          getCentroid(): Phaser.Geom.Point }[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {
             let width = targetObjects[i2].getObjectWidthHeight().width / 2;
@@ -419,6 +426,30 @@ export class BaseSpaceship extends BaseExplodable {
                     }
                 }
             }
+
+        }
+    }
+
+
+
+
+
+    protected collisionCollectionSpaceObjectTest(exploadables: BaseExplodable[], spaceObjects: SpaceObject[]) {
+        for (let i = 0; i < exploadables.length; i++) {
+
+            let exploadable = exploadables[i];
+            
+            if (exploadable.state === BaseExplodableState.DESTROYED) {
+                exploadables.splice(i, 1);
+                i--; // Adjust the index after removing an element    
+            }
+
+            if (exploadable.state === BaseExplodableState.DESTROYED || exploadable.state === BaseExplodableState.EXPLODING) {
+                continue;
+            }
+            
+            const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceObjects);
+            // No Op.  SpaceObjects don't blow up.  They just suck down exploadables.
 
         }
     }

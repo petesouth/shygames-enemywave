@@ -111,7 +111,7 @@ export abstract class BaseExplodable {
         };
     }
 
-    public handleBaseCollision(target: BaseExplodable, distanceTrigger: number): boolean {
+    public handleBaseCollision(target: {  getCentroid(): Phaser.Geom.Point }, distanceTrigger: number): boolean {
 
         const sourcePoint = this.getCentroid();
         const targetPoint = target.getCentroid();
