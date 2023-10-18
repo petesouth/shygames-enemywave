@@ -9,7 +9,6 @@ import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 
 export const halfBaseWidth = 10;
 export const halfHeight = 15;
-export const MISSILE_WAIT_TIME = 2000;
 
 export class BaseSpaceship extends BaseExplodable {
     protected spaceShipShape: Phaser.Geom.Triangle;
@@ -21,9 +20,9 @@ export class BaseSpaceship extends BaseExplodable {
     protected lastFired: number = 0;
     protected fireRate: number = 200;  // 1000 ms = 1 second
     protected missileLastFired: number = 0;
-    protected missileFireRate: number = 200;  // 1000 ms = 1 second
+    protected missileFireRate: number = 500;  // 1000 ms = 1 second
     protected lastMinePlaced: number = 0;
-    protected mineRate: number = 1000;  // 1000 ms = 1 second
+    protected mineRate: number = 500;  // 1000 ms = 1 second
     protected initialPositionOffset: number;
     protected spaceshipColor: number;
 
@@ -260,7 +259,7 @@ export class BaseSpaceship extends BaseExplodable {
         const currentTime = this.scene.time.now;
 
         if (this.missileKey?.isDown &&
-            (currentTime - this.missileLastFired > MISSILE_WAIT_TIME) &&
+            (currentTime - this.missileLastFired > this.missileFireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);

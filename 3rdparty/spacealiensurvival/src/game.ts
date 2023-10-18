@@ -6,7 +6,7 @@ import { BaseExplodableState } from './gameobjects/baseExplodable';
 import gGameStore from './store/store';
 
 
-const num_ships = 2;
+const num_ships = 3;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
@@ -299,8 +299,13 @@ export class MainScene extends Phaser.Scene {
         }
 
         let { game } = gGameStore.getState();  // Fetch the game state from the Redux store
-        this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}`);
-
+        
+        if( this.playerspaceship?.state === BaseExplodableState.ALIVE ) {
+            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}  Player HitPoints: ${this.playerspaceship.hitpoints}`);    
+        } else {
+            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}`);
+        }
+        this.scoreText?.setDepth(1);
     }
 
     update() {
@@ -338,8 +343,7 @@ export class MainScene extends Phaser.Scene {
 
             tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
             tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
-                
-
+            
             if (this.playerspaceship.state === BaseExplodableState.ALIVE && this.playerspaceship.hitpoints > 0 ) {
                 tenemyspaceship.handleBullets([this.playerspaceship]);
                 tenemyspaceship.handleMines([this.playerspaceship]);
@@ -363,7 +367,10 @@ export class MainScene extends Phaser.Scene {
     spawnEnemy() {
 
         if (this.enemyspaceships.length < num_ships) {
-            this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth, this.playerspaceship));
+            // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
+            const isBoss = (this.enemyspaceships.length == 0);
+            this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth, this.playerspaceship, isBoss ));
+            
         }
 
     }

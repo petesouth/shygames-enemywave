@@ -1,9 +1,7 @@
 import Phaser from 'phaser';
-import { BaseSpaceship, MISSILE_WAIT_TIME } from './basespaceship';
-import { SpaceObject } from './spaceobject';
+import { BaseSpaceship } from './basespaceship';
 import { Bullet } from './bullet';
 import { Missile } from './missile';
-import { Mine } from './mine';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 import { PlayerSpaceship } from './playerspaceship';
 import { ForceField } from './forcefield';
@@ -16,25 +14,40 @@ export class EnemySpaceship extends BaseSpaceship {
 
 
     private playerSpaceship: BaseSpaceship;
-    static missileFireRate: number = 5000;
+    public isBoss: boolean = false;
     
-    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship) {
-        super(scene, distanceFromLeftCorner, 0xFF0000);
+    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode=false) {
+        super(scene, distanceFromLeftCorner, (bossmode == true) ? 0x006400 : 0xFF0000);
 
+        this.isBoss = bossmode;
         this.playerSpaceship = playerSpaceship;
         this.fireKey = undefined;
         this.missileKey = undefined;
         this.mineKey = undefined;
-        this.explosionColors = [0xFF0000];
         this.maxPopSize = 40;
-        this.fireRate = 1000;
-        this.mineRate = 10000;
+        this.explosionColors = [0xFF0000];
+        this.fireRate = 1200;
+        this.missileFireRate = 5000;
         this.exhaustFlame.show();
+
+        if( bossmode === true ) {
+            this.explosionColors = [0x006400, 0xFF0000];
+            this.fireRate = 500;
+            this.missileFireRate = 1000;
+            this.hitpoints += 5; // 10 is default.  
+        }
     }
 
     public explode(): void {
         super.explode();
-        gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
+
+        if( this.isBoss ) {
+            // Boss counts as two ships.
+            gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
+            gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
+        } else {
+            gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
+        }
     }
 
     public handleBullets(spaceShips: BaseSpaceship[]) {
@@ -58,7 +71,7 @@ export class EnemySpaceship extends BaseSpaceship {
     public handleMissiles(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
-        if ((currentTime - this.missileLastFired > EnemySpaceship.missileFireRate) &&
+        if ((currentTime - this.missileLastFired > this.missileFireRate) &&
             this.playerSpaceship?.state === BaseExplodableState.ALIVE) {
 
             const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
