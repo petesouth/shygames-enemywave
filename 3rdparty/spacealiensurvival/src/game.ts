@@ -211,7 +211,6 @@ export class MainScene extends Phaser.Scene {
         setInterval(()=>{
             if( this.scale.width < window.innerWidth || 
                 this.scale.height < window.innerHeight ) {
-                    alert("test")
                     this.handleWindowResize();
                 }
         }, 500)
