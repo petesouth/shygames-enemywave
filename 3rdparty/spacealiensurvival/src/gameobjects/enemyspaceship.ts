@@ -61,6 +61,8 @@ export class EnemySpaceship extends BaseSpaceship {
             const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
             this.bullets.push(bullet);
             this.lastFired = currentTime;
+            this.playBulletSound();
+        
         }
 
         this.collisionCollectionTest(this.bullets, spaceShips);
@@ -80,6 +82,8 @@ export class EnemySpaceship extends BaseSpaceship {
             missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
             this.missiles.push(missile);
             this.missileLastFired = currentTime;
+            this.playMissileSound();
+        
         }
 
         this.collisionCollectionTest(this.missiles, spaceShips);

@@ -28,7 +28,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected flashColorIndex: number = 0;
     protected flashLastTime: number = Date.now();
     protected flashLightChangeWaitLength: number = 200; // when the spaceship it weaks it flashes.  This controls 
-                                                         // how long  each color lasts before oscilatingto different color.
+    // how long  each color lasts before oscilatingto different color.
     protected exhaustFlame: ExhaustFlame;
 
     protected mines: Mine[] = [];
@@ -44,17 +44,18 @@ export class BaseSpaceship extends BaseExplodable {
     protected missileKey?: Phaser.Input.Keyboard.Key;
     protected mineKey?: Phaser.Input.Keyboard.Key;
     protected thrustSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    protected bulletSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    protected shieldSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    
     public hitpoints: number = 10;
     public forceField: ForceField;
-    
+
 
     constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
         super(scene, scene.add.graphics({ lineStyle: { width: 2, color: spaceshipColor }, fillStyle: { color: spaceshipColor } }));
 
         this.thrustSound = this.scene.sound.add('thrust', { loop: true });
-        this.bulletSound = this.scene.sound.add('bullet', { loop: true });
-
+        this.shieldSound = this.scene.sound.add('shield', { loop: true });
+    
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshipColor;
 
@@ -96,7 +97,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.bullets.forEach(bullet => bullet.destroy());
         this.missiles.forEach(missile => missile.destroy());
         this.mines.forEach(mine => mine.destroy());
-    
+
     }
 
     public isEverythingDestroyed() {
@@ -181,26 +182,44 @@ export class BaseSpaceship extends BaseExplodable {
     public playThrustSound(): void {
         if (!this.thrustSound.isPlaying) {
             this.thrustSound.play();
-       }
+        }
     }
 
     public stopThrustSound(): void {
-       if (this.thrustSound.isPlaying) {
+        if (this.thrustSound.isPlaying) {
             this.thrustSound.stop();
         }
     }
 
-    public playBulletSound(): void {
-       if (!this.bulletSound.isPlaying) {
-            this.bulletSound.play();
-       }
+    public playShieldSound(): void {
+        if (!this.shieldSound.isPlaying) {
+            this.shieldSound.play();
+        }
     }
 
-    public stopBulletSound(): void {
-      if (this.thrustSound.isPlaying) {
-            this.thrustSound.stop();
-      }
+    public stopSheildSound(): void {
+        if (this.shieldSound.isPlaying) {
+            this.shieldSound.stop();
+        }
     }
+
+    public playBulletSound(): void {
+        let bulletSound = this.scene.sound.add('bullet', { loop: false });
+        bulletSound.play();
+    }
+
+    public playMissileSound(): void {
+        let missileSound = this.scene.sound.add('missile', { loop: false });
+        missileSound.play();
+    }
+
+    public playImpactSound(): void {
+        let impactSound = this.scene.sound.add('impact', { loop: false });
+        impactSound.play();
+    }
+
+    
+
 
 
     public drawObjectAlive(): void {
@@ -260,8 +279,10 @@ export class BaseSpaceship extends BaseExplodable {
 
         if (this.shieldKey?.isDown) {
             this.forceField.show();
+            this.playShieldSound();
         } else {
             this.forceField.hide();
+            this.stopSheildSound();
         }
 
         this.exhaustFlame.update();
@@ -278,17 +299,17 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     protected weakHitpointsFlashIndicator() {
-      if( this.hitpoints < 5 && this.explosionColors.length > 0 &&
-        (Date.now() - this.flashLastTime) > this.flashLightChangeWaitLength ) {
+        if (this.hitpoints < 5 && this.explosionColors.length > 0 &&
+            (Date.now() - this.flashLastTime) > this.flashLightChangeWaitLength) {
             this.flashLastTime = Date.now();
-            if( this.flashColorIndex > (this.explosionColors.length - 1)) {
+            if (this.flashColorIndex > (this.explosionColors.length - 1)) {
                 this.flashColorIndex = 0;
             } else {
-                this.flashColorIndex ++;
+                this.flashColorIndex++;
             }
             const chosenColor = this.explosionColors[this.flashColorIndex];
             this.graphics.fillStyle(chosenColor);
-       }
+        }
     }
 
     public renderWeapons() {
@@ -304,7 +325,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.collisionCollectionSpaceObjectTest(this.missiles, spaceObjects);
     }
 
-    
+
     public handleMissiles(spaceShips: BaseSpaceship[]) {
         const currentTime = this.scene.time.now;
 
@@ -318,9 +339,8 @@ export class BaseSpaceship extends BaseExplodable {
             missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
             this.missiles.push(missile);
             this.missileLastFired = currentTime;
-            this.playBulletSound();
-        } else {
-            this.stopBulletSound();
+            this.playMissileSound();
+                
         }
 
         this.collisionCollectionTest(this.missiles, spaceShips);
@@ -339,6 +359,7 @@ export class BaseSpaceship extends BaseExplodable {
             const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
             this.bullets.push(bullet);
             this.lastFired = currentTime;
+            this.playBulletSound();
         }
 
         this.collisionCollectionTest(this.bullets, spaceShips);
@@ -436,8 +457,10 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
-        targetObjects: {  getObjectWidthHeight(): { width: number, height: number },
-                          getCentroid(): Phaser.Geom.Point }[]) {
+        targetObjects: {
+            getObjectWidthHeight(): { width: number, height: number },
+            getCentroid(): Phaser.Geom.Point
+        }[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {
             let width = targetObjects[i2].getObjectWidthHeight().width / 2;
@@ -446,7 +469,7 @@ export class BaseSpaceship extends BaseExplodable {
             if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
                 return i2;
             }
-            
+
         }
         return -1;
     }
@@ -456,7 +479,7 @@ export class BaseSpaceship extends BaseExplodable {
         for (let i = 0; i < exploadables.length; i++) {
 
             let exploadable = exploadables[i];
-            
+
             if (exploadable.state === BaseExplodableState.DESTROYED) {
                 exploadables.splice(i, 1);
                 i--; // Adjust the index after removing an element    
@@ -465,13 +488,16 @@ export class BaseSpaceship extends BaseExplodable {
             if (exploadable.state === BaseExplodableState.DESTROYED || exploadable.state === BaseExplodableState.EXPLODING) {
                 continue;
             }
-            
+
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
 
             if (foundIndex !== -1) {
-                if (spaceShips[foundIndex].forceField.isVisible === false && 
-                    spaceShips[foundIndex].state === BaseExplodableState.ALIVE && 
+                
+                
+                if (spaceShips[foundIndex].forceField.isVisible === false &&
+                    spaceShips[foundIndex].state === BaseExplodableState.ALIVE &&
                     spaceShips[foundIndex].hitpoints > 0) {
+                    this.playImpactSound();
                     spaceShips[foundIndex].hitpoints--;
                     if (spaceShips[foundIndex].hitpoints === 0) {
                         spaceShips[foundIndex].explode();
@@ -490,7 +516,7 @@ export class BaseSpaceship extends BaseExplodable {
         for (let i = 0; i < exploadables.length; i++) {
 
             let exploadable = exploadables[i];
-            
+
             if (exploadable.state === BaseExplodableState.DESTROYED) {
                 exploadables.splice(i, 1);
                 i--; // Adjust the index after removing an element    
@@ -499,7 +525,7 @@ export class BaseSpaceship extends BaseExplodable {
             if (exploadable.state === BaseExplodableState.DESTROYED || exploadable.state === BaseExplodableState.EXPLODING) {
                 continue;
             }
-            
+
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceObjects);
             // No Op.  SpaceObjects don't blow up.  They just suck down exploadables.
 

@@ -36,6 +36,10 @@ export class MainScene extends Phaser.Scene {
     preload() {
         this.load.audio('thrust', 'thrust.mp3');
         this.load.audio('bullet', 'bullet.mp3');
+        this.load.audio('missile', 'missile.mp3');
+        this.load.audio('impact', 'impact.mp3');
+        this.load.audio('shield', 'shield.mp3');
+        this.load.audio('explosion', 'explosion.mp3');
     }
 
     create() {

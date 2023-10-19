@@ -15,6 +15,7 @@ export abstract class BaseExplodable {
     protected explosionColors: number[] = [0xffa500, 0xff4500];
     protected _points: Phaser.Geom.Point[] = [];
     public state: BaseExplodableState = BaseExplodableState.ALIVE;
+    
 
     public getPoints(): Phaser.Geom.Point[] {
         return this._points;
@@ -36,11 +37,18 @@ export abstract class BaseExplodable {
 
     public explode() {
         this.state = BaseExplodableState.EXPLODING;
+        this.playExplosionSound();
     }
 
     public destroy() {
         this.state = BaseExplodableState.DESTROYED;
     }
+
+    public playExplosionSound(): void {
+        let explosionSound = this.scene.sound.add('explosion', { loop: false });
+        explosionSound.play();
+    }
+
 
   
     public abstract drawObjectAlive() : void;
