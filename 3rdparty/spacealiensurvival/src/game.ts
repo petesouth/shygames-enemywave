@@ -208,6 +208,14 @@ export class MainScene extends Phaser.Scene {
         
         this.timerCount = Date.now();
 
+        setInterval(()=>{
+            if( this.scale.width < window.innerWidth || 
+                this.scale.height < window.innerHeight ) {
+                    alert("test")
+                    this.handleWindowResize();
+                }
+        }, 500)
+
     }
 
     handleWindowResize() {

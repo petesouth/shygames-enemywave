@@ -25,7 +25,7 @@ export class EnemySpaceship extends BaseSpaceship {
         this.missileKey = undefined;
         this.mineKey = undefined;
         this.maxPopSize = 40;
-        this.explosionColors = [0xFF0000];
+        this.explosionColors = [0xFF0000, 0xffa500];
         this.fireRate = 1200;
         this.missileFireRate = 5000;
         this.exhaustFlame.show();
@@ -117,15 +117,16 @@ export class EnemySpaceship extends BaseSpaceship {
         Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
         Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
 
-
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-        
         this.exhaustFlame.update();
         this.exhaustFlame.render();
 
         this.forceField.update();
         this.forceField.render();
+
+        this.weakHitpointsFlashIndicator();
+        this.graphics.strokeTriangleShape(this.spaceShipShape);
+        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
+        
 
         this._points = this.spaceShipShape.getPoints(3);
     }

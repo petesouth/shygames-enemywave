@@ -25,7 +25,10 @@ export class BaseSpaceship extends BaseExplodable {
     protected mineRate: number = 500;  // 1000 ms = 1 second
     protected initialPositionOffset: number;
     protected spaceshipColor: number;
-
+    protected flashColorIndex: number = 0;
+    protected flashLastTime: number = Date.now();
+    protected flashLightChangeWaitLength: number = 600; // when the spaceship it weaks it flashes.  This controls 
+                                                         // how long  each color lasts before oscilatingto different color.
     protected exhaustFlame: ExhaustFlame;
 
     protected mines: Mine[] = [];
@@ -236,9 +239,25 @@ export class BaseSpaceship extends BaseExplodable {
         this.forceField.update();
         this.forceField.render();
 
+        this.weakHitpointsFlashIndicator();
+
         this.graphics.strokeTriangleShape(this.spaceShipShape);
         this.graphics.fillTriangleShape(this.innerSpaceShipShape);
         this._points = this.spaceShipShape.getPoints(3);
+    }
+
+    protected weakHitpointsFlashIndicator() {
+      if( this.hitpoints < 5 && this.explosionColors.length > 0 &&
+        (Date.now() - this.flashLastTime) > this.flashLightChangeWaitLength ) {
+            this.flashLastTime = Date.now();
+            if( this.flashColorIndex > (this.explosionColors.length - 1)) {
+                this.flashColorIndex = 0;
+            } else {
+                this.flashColorIndex ++;
+            }
+            const chosenColor = this.explosionColors[this.flashColorIndex];
+            this.graphics.fillStyle(chosenColor);
+       }
     }
 
     public renderWeapons() {
