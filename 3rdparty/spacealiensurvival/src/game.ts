@@ -53,7 +53,7 @@ export class MainScene extends Phaser.Scene {
         this.gameNameText = this.add.text(
             (window.innerWidth / 2),
             offset,
-            'Space Alien Survival',
+            'ShyGames LLC - Space Alien Survival',
             { font: '16px Arial', color: '#ffffff' }
         );
         this.gameNameText.setOrigin(0.5);
