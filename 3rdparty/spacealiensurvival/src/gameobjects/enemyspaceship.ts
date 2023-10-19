@@ -31,7 +31,7 @@ export class EnemySpaceship extends BaseSpaceship {
         this.exhaustFlame.show();
 
         if( bossmode === true ) {
-            this.explosionColors = [0x006400, 0xFF0000];
+            this.explosionColors = [0x006400, 0xffa500];
             this.fireRate = 500;
             this.missileFireRate = 1000;
             this.hitpoints += 5; // 10 is default.  

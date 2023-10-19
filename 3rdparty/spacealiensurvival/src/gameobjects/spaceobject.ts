@@ -227,7 +227,7 @@ export class SpaceObject {
 
         // Rest of your code to create mini polygons...
         let attempts = 0;
-        const maxAttempts = 100;
+        const maxAttempts = 10;
 
         while (this.miniPolygons.length < numMiniPolygons && attempts < maxAttempts) {
             const points = [];

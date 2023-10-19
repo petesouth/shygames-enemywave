@@ -11,7 +11,7 @@ export class PlayerSpaceship extends BaseSpaceship {
     constructor(scene: Phaser.Scene) {
         super(scene, 500);
 
-        this.explosionColors = [0xFFFFFF];
+        this.explosionColors = [0xFFFFFF,  0xffa500];
         this.maxPopSize = 40;
         this.state = BaseExplodableState.DESTROYED;  // Starts off in destroed state.
 

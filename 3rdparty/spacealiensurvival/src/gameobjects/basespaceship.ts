@@ -27,7 +27,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected spaceshipColor: number;
     protected flashColorIndex: number = 0;
     protected flashLastTime: number = Date.now();
-    protected flashLightChangeWaitLength: number = 600; // when the spaceship it weaks it flashes.  This controls 
+    protected flashLightChangeWaitLength: number = 200; // when the spaceship it weaks it flashes.  This controls 
                                                          // how long  each color lasts before oscilatingto different color.
     protected exhaustFlame: ExhaustFlame;
 

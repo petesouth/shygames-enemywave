@@ -6,7 +6,7 @@ import { BaseExplodableState } from './gameobjects/baseExplodable';
 import gGameStore from './store/store';
 
 
-const num_ships = 3;
+const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 export class MainScene extends Phaser.Scene {
