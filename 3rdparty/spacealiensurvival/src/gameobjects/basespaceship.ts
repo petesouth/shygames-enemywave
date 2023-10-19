@@ -43,13 +43,17 @@ export class BaseSpaceship extends BaseExplodable {
     protected fireKey?: Phaser.Input.Keyboard.Key;
     protected missileKey?: Phaser.Input.Keyboard.Key;
     protected mineKey?: Phaser.Input.Keyboard.Key;
-
+    protected thrustSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    protected bulletSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     public hitpoints: number = 10;
     public forceField: ForceField;
-
+    
 
     constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
         super(scene, scene.add.graphics({ lineStyle: { width: 2, color: spaceshipColor }, fillStyle: { color: spaceshipColor } }));
+
+        this.thrustSound = this.scene.sound.add('thrust', { loop: true });
+        this.bulletSound = this.scene.sound.add('bullet', { loop: true });
 
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshipColor;
@@ -174,6 +178,30 @@ export class BaseSpaceship extends BaseExplodable {
         return new Phaser.Geom.Point(centroidX, centroidY);
     }
 
+    public playThrustSound(): void {
+        if (!this.thrustSound.isPlaying) {
+            this.thrustSound.play();
+       }
+    }
+
+    public stopThrustSound(): void {
+       if (this.thrustSound.isPlaying) {
+            this.thrustSound.stop();
+        }
+    }
+
+    public playBulletSound(): void {
+       if (!this.bulletSound.isPlaying) {
+            this.bulletSound.play();
+       }
+    }
+
+    public stopBulletSound(): void {
+      if (this.thrustSound.isPlaying) {
+            this.thrustSound.stop();
+      }
+    }
+
 
     public drawObjectAlive(): void {
         const centroid = this.getCentroid();
@@ -187,11 +215,14 @@ export class BaseSpaceship extends BaseExplodable {
         }
 
         if (this.upKey?.isDown) {
+            this.playThrustSound();
             const deltaX = this.spaceShipShape.x1 - centroid.x;
             const deltaY = this.spaceShipShape.y1 - centroid.y;
             const angle = Math.atan2(deltaY, deltaX);
             this.velocity.x += this.thrust * Math.cos(angle);
             this.velocity.y += this.thrust * Math.sin(angle);
+        } else {
+            this.stopThrustSound();
         }
 
         this.velocity.x *= this.damping;
@@ -287,6 +318,9 @@ export class BaseSpaceship extends BaseExplodable {
             missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
             this.missiles.push(missile);
             this.missileLastFired = currentTime;
+            this.playBulletSound();
+        } else {
+            this.stopBulletSound();
         }
 
         this.collisionCollectionTest(this.missiles, spaceShips);

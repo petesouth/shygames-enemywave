@@ -33,6 +33,11 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
+    preload() {
+        this.load.audio('thrust', 'thrust.mp3');
+        this.load.audio('bullet', 'bullet.mp3');
+    }
+
     create() {
         this.createStarBackground();
         this.playerspaceship = new PlayerSpaceship(this);
