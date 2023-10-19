@@ -1,4 +1,4 @@
-module github.com/petesouth/shygames-gamefeed/tools/gohttp
+module github.com/petesouth/shyhumangames-gamefeed/tools/gohttp
 
 go 1.17
 

@@ -2,7 +2,7 @@
 
 # dependencies
 
-./shygamesnative/node_modules
+./shyhumangamesnative/node_modules
 node_modules
 /.pnp
 .pnp.js

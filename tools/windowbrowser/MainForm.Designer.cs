@@ -36,7 +36,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.Name = "MainForm";
-            this.Text = "Shygames Web Game Runner";
+            this.Text = "ShyHumanGames Web Game Runner";
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.ResumeLayout(false);
 

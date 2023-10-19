@@ -61,7 +61,7 @@ at this tool wouldn’t be useful if you couldn’t customize it when you are re
 -OR....
 
 -- npm run build
--- shygame-gamefeed/3rdparty/spacesurvival/dist/  
+-- shyhumangame-gamefeed/3rdparty/spacesurvival/dist/  
 -- Copy this foler somewhere or leave it in place.  Double click indext.html and run it locally from your file system. (The code contains no images all drawn so there's no secruity issue)
 
 
@@ -77,7 +77,7 @@ at this tool wouldn’t be useful if you couldn’t customize it when you are re
 - Up Arrow Thrust Forward
 
 
-### Copyright 2023 ShyGames LLC
+### Copyright 2023 ShyHumanGames LLC
 
 License for Use of "This software"
 
@@ -89,6 +89,6 @@ The Software is provided "as is", without warranty of any kind, express or impli
 
 You may not sublicense, distribute, sell, or use the Software for commercial purposes other than as explicitly permitted above. You may not modify, reverse-engineer, decompile, or otherwise attempt to extract the source code of the Software, except for educational or personal purposes as permitted above.
 
-All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of ShyGames LLC. The Software is protected by copyright, trademark, and other laws of both the United States and foreign countries.
+All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of ShyHumanGames LLC. The Software is protected by copyright, trademark, and other laws of both the United States and foreign countries.
 
 If you have questions about this license, please contact pete_south@yahoo.com

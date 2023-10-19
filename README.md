@@ -1,5 +1,5 @@
 
-SHYGAMES PROJECT
+ShyHumanGames PROJECT
 
 # Getting Started with Create React App
 
@@ -69,7 +69,7 @@ up a browser windows to display the configured index.  You'd use this to package
 a web application as a downloadable game.  Lets the game play in a browser over http
 BUT it's running local (not internet).  This is for things like steam, and other downloadable exclusive game services.
 
-### Shygames native
+### ShyHumanGames native
 Excatly the same purpose as gohttp except as a localhost on the phone app. Doin this using react-native-webview and react-native-http-server
 
 ### Window Browser 
@@ -81,12 +81,12 @@ It gets launched by gohttp.
 - Compile gohttp copy that you your webgames root directory (index.html should live there).
 - Compile and copy the Windowbrowser into the same directory.
 - Run gohttp this will start up a local host web server and launch the Windowbrowser to play the game in the window broser.
-- Same deal with the shygames Native.  This is just a react-native program running react-native-http-server and react-native-browser streteched over. Running a web game url
+- Same deal with the shyhumangames Native.  This is just a react-native program running react-native-http-server and react-native-browser streteched over. Running a web game url
 
 
 
 
-### Copyright 2023 ShyGames LLC
+### Copyright 2023 ShyHumanGames LLC
 
 License for Use of "This software"
 
@@ -98,7 +98,7 @@ The Software is provided "as is", without warranty of any kind, express or impli
 
 You may not sublicense, distribute, sell, or use the Software for commercial purposes other than as explicitly permitted above. You may not modify, reverse-engineer, decompile, or otherwise attempt to extract the source code of the Software, except for educational or personal purposes as permitted above.
 
-All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of ShyGames LLC. The Software is protected by copyright, trademark, and other laws of both the United States and foreign countries.
+All rights, title, and interest in and to the Software (excluding content provided by users) are and will remain the exclusive property of ShyHumanGames LLC. The Software is protected by copyright, trademark, and other laws of both the United States and foreign countries.
 
 If you have questions about this license, please contact pete_south@yahoo.com
 

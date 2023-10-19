@@ -6,7 +6,7 @@ import { GameFeedGamePanel } from "../components/gamefeed/GameFeedGamePanel";
 import { useEffect, useState } from "react";
 import { AnyAction } from "redux";
 
-import shyGamesRobotImage from "../assets/ShyGamesRobot.png";
+import shyhumanGamesRobotImage from "../assets/ShyHumanGamesRobot.png";
 import { useNavigate } from "react-router-dom";
 
 const appName: string = (process.env.REACT_APP_APP_NAME) ? process.env.REACT_APP_APP_NAME : "REACT_APP_APP_NAME NOT FOUND PLEASE DEFINE"
@@ -33,7 +33,7 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
 
       <div className={classes.header}>
         <h4 style={{ color: "grey" }}>{appName}</h4>
-        <Image width={30} height={30} src={shyGamesRobotImage} />
+        <Image width={30} height={30} src={shyhumanGamesRobotImage} />
       </div>
 
       <div className={classes.content}>

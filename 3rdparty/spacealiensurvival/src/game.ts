@@ -9,6 +9,62 @@ import gGameStore from './store/store';
 const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
+
+export class SplashScreen extends Phaser.Scene {
+    public splashText?: Phaser.GameObjects.Text;
+    
+    constructor() {
+        super('SplashScreen');
+    }
+
+    preload() {
+        this.load.audio('thrust', 'thrust.mp3');
+        this.load.audio('bullet', 'bullet.mp3');
+        this.load.audio('missile', 'missile.mp3');
+        this.load.audio('impact', 'impact.mp3');
+        this.load.audio('shield', 'shield.mp3');
+        this.load.audio('explosion', 'explosion.mp3');
+        this.load.audio('gamesong','gamesong.mp3');
+    }
+
+    create() {
+        this.splashText = this.add.text(
+            this.scale.width / 2, 
+            this.scale.height / 2, 
+            'ShyHumanGames LLC - Click to Start', 
+            { font: '18px Arial', color: '#ffffff' }
+        );
+        this.splashText.setOrigin(0.5);
+        this.splashText.setDepth(1);
+
+        this.input.on('pointerdown', () => {
+            this.scene.start('MainScene');
+        });
+
+        setInterval(()=>{
+            if( this.scale.width < window.innerWidth || 
+                this.scale.height < window.innerHeight ) {
+                    this.handleWindowResize();
+                }
+        }, 500);
+
+        
+    }
+
+    
+    handleWindowResize() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        
+        this.scale.setGameSize(w, h);
+        this.splashText?.setPosition(w / 2, h / 2);
+        this.splashText?.setDepth(1);
+        
+    }
+
+}
+
 export class MainScene extends Phaser.Scene {
 
     private playerspaceship!: PlayerSpaceship;
@@ -20,29 +76,37 @@ export class MainScene extends Phaser.Scene {
 
     private timerCount: number = 0;
     private spaceObjects: SpaceObject[] = [];
-
+    private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
+    
    
 
     constructor() {
         super('MainScene');
+
+    }
+
+
+    public playGameSongSound(): void {
+        if (this.gamesongSound && !this.gamesongSound.isPlaying) {
+            this.gamesongSound.play();
+        } 
+    }
+
+    public stopGameSongSound(): void {
+        if (this.gamesongSound && this.gamesongSound.isPlaying) {
+            this.gamesongSound.stop();
+        } 
     }
 
     recreate() {
-        if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
+        if (this.playerspaceship && this.playerspaceship.state === BaseExplodableState.DESTROYED) {
             this.playerspaceship.spawn();
         }
     }
 
-    preload() {
-        this.load.audio('thrust', 'thrust.mp3');
-        this.load.audio('bullet', 'bullet.mp3');
-        this.load.audio('missile', 'missile.mp3');
-        this.load.audio('impact', 'impact.mp3');
-        this.load.audio('shield', 'shield.mp3');
-        this.load.audio('explosion', 'explosion.mp3');
-    }
-
     create() {
+        this.gamesongSound = this.sound.add('gamesong', { loop: true, volume: 1 });
+            
         this.createStarBackground();
         this.playerspaceship = new PlayerSpaceship(this);
         this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
@@ -62,7 +126,7 @@ export class MainScene extends Phaser.Scene {
         this.gameNameText = this.add.text(
             (window.innerWidth / 2),
             offset,
-            'ShyGames LLC - Space Alien Survival',
+            'ShyHumanGames LLC - Space Alien Survival',
             { font: '16px Arial', color: '#ffffff' }
         );
         this.gameNameText.setOrigin(0.5);
@@ -222,8 +286,9 @@ export class MainScene extends Phaser.Scene {
                 this.scale.height < window.innerHeight ) {
                     this.handleWindowResize();
                 }
-        }, 500)
+        }, 500);
 
+       this.playGameSongSound();
     }
 
     handleWindowResize() {
@@ -240,7 +305,7 @@ export class MainScene extends Phaser.Scene {
         offset += 30;
 
         // Set positions for each instruction text
-        if (this.instructions) {
+        if (this.instructions && this.instructions.length > 0) {
             
             this.instructions[0].setPosition(w / 2, offset);
             this.instructions[0].setDepth(1);
@@ -296,22 +361,30 @@ export class MainScene extends Phaser.Scene {
 
     displayGameText() {
         if (this.playerspaceship.state === BaseExplodableState.DESTROYED) {
-            if (this.gameNameText) {
+            
+            if (this.gameNameText && this.gameNameText.visible !== true) {
                 this.gameNameText.visible = true; // Show the bottom text
+                this.playGameSongSound();
+        
             }
 
             this.instructions?.forEach((instruction) => {
                 instruction.visible = true;
             });
-        } else {
 
-            if (this.gameNameText) {
+            
+            
+        } else {
+            if (this.gameNameText && this.gameNameText.visible !== false) {
                 this.gameNameText.visible = false; // Show the bottom text
+                this.stopGameSongSound();
             }
 
             this.instructions?.forEach((instruction) => {
                 instruction.visible = false;
             });
+
+            
         }
 
         let { game } = gGameStore.getState();  // Fetch the game state from the Redux store
@@ -322,6 +395,8 @@ export class MainScene extends Phaser.Scene {
             this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled}`);
         }
         this.scoreText?.setDepth(1);
+
+
     }
 
     update() {
@@ -450,7 +525,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: window.innerWidth,
     height: window.innerHeight,
     parent: 'game',
-    scene: [MainScene],
+    scene: [SplashScreen, MainScene],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
@@ -471,6 +546,9 @@ export default class Game extends Phaser.Game {
     handleWindowResize() {
         const mainScene = this.scene.getScene("MainScene") as MainScene;
         mainScene.handleWindowResize();
+        const splashScreen = this.scene.getScene("SplashScreen") as MainScene;
+        splashScreen.handleWindowResize();
+    
     }
 
     handleKeyDown(event: KeyboardEvent) {
