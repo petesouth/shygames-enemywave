@@ -521,7 +521,6 @@ export class MainScene extends Phaser.Scene {
 }
 
 
-const game = new Phaser.Game(config);
 
 
 const config: Phaser.Types.Core.GameConfig = {
@@ -538,6 +537,8 @@ const config: Phaser.Types.Core.GameConfig = {
         autoCenter: Phaser.Scale.CENTER_BOTH
     }
 };
+
+const game = new Phaser.Game(config);
 
 export default class Game extends Phaser.Game {
     constructor() {
