@@ -520,11 +520,18 @@ export class MainScene extends Phaser.Scene {
 
 }
 
+
+const game = new Phaser.Game(config);
+
+
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
     parent: 'game',
+    fps: {
+        limit: 60,  // This will limit the game to 60 frames per second
+    },
     scene: [SplashScreen, MainScene],
     scale: {
         mode: Phaser.Scale.FIT,
