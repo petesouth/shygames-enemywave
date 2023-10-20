@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33530.505
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "windowbrowser", "windowbrowser.csproj", "{23BC8A34-0A33-4306-AD00-213CED7275BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "shyhumangamesrunner", "shyhumangamesrunner.csproj", "{23BC8A34-0A33-4306-AD00-213CED7275BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

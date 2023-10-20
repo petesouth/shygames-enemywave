@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("windowbrowser")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("shyhumangames")]
+[assembly: AssemblyDescription("ShyHumanGames Runner")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("windowbrowser")]
+[assembly: AssemblyCompany("ShyHumanGames")]
+[assembly: AssemblyProduct("shyhumangamesrunner")]
 [assembly: AssemblyCopyright("Copyright ©  2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

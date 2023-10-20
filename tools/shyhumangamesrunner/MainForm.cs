@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using CefSharp;
 using CefSharp.WinForms;
 
-namespace windowbrowser
+namespace shyhumangamesrunner
 {
     public partial class MainForm : Form
     {

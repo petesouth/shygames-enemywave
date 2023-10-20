@@ -36,7 +36,7 @@ func main() {
 
     go func () {
         time.Sleep(15000)
-        app := "./windowbrowser.exe"
+        app := "./shyhumangamesrunner.exe"
         arg0 := "http://" + (*addr) + ":" + (*port) + "/index.html"
         fmt.Println("Executing: App %s %s", app, arg0 )
         cmd := exec.Command(app, arg0)

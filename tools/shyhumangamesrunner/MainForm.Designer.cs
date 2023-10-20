@@ -1,4 +1,4 @@
-﻿namespace windowbrowser
+﻿namespace shyhumangamesrunner
 {
     partial class MainForm
     {
