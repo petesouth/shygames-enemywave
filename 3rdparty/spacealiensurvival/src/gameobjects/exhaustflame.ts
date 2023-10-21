@@ -1,5 +1,6 @@
 // gameobjects/exhaustflame.ts
 import Phaser from 'phaser';
+import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
 
 class FlamePoint extends Phaser.Geom.Point {
     visible: boolean = true;
@@ -9,18 +10,10 @@ export class ExhaustFlame {
     private points: FlamePoint[];
     private graphics: Phaser.GameObjects.Graphics;
     private visible: boolean = false;
-    private base: {
-        getCentroid(): Phaser.Geom.Point,
-        getReverseAngle(): number,
-        getDistanceFromTopToBottom(): number
-    };
+    private base: BaseSpaceshipDisplay;
     private scene: Phaser.Scene;
 
-    constructor(scene: Phaser.Scene, base: {
-        getCentroid(): Phaser.Geom.Point,
-        getReverseAngle(): number,
-        getDistanceFromTopToBottom(): number
-    }) {
+    constructor(scene: Phaser.Scene, base: BaseSpaceshipDisplay) {
         this.base = base;
         this.scene = scene;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffcc00 } });

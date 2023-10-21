@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BaseSpaceship } from './basespaceship';
+import { BaseSpaceship, SpaceShipType } from './basespaceship';
 import { Bullet } from './bullet';
 import { Missile } from './missile';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
@@ -17,7 +17,7 @@ export class EnemySpaceship extends BaseSpaceship {
     public isBoss: boolean = false;
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
-        super(scene, distanceFromLeftCorner, (bossmode == true) ? 0x006400 : 0xFF0000);
+        super(scene, SpaceShipType.TRIANGLES, distanceFromLeftCorner, (bossmode == true) ? 0x006400 : 0xFF0000);
 
         this.isBoss = bossmode;
         this.playerSpaceship = playerSpaceship;
@@ -51,6 +51,9 @@ export class EnemySpaceship extends BaseSpaceship {
     }
 
     public handleBullets(spaceShips: BaseSpaceship[]) {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
         const currentTime = this.scene.time.now;
 
         if ((currentTime - this.lastFired > this.fireRate) &&
@@ -71,6 +74,10 @@ export class EnemySpaceship extends BaseSpaceship {
 
 
     public handleMissiles(spaceShips: BaseSpaceship[]) {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const currentTime = this.scene.time.now;
 
         if ((currentTime - this.missileLastFired > this.missileFireRate) &&
@@ -92,6 +99,10 @@ export class EnemySpaceship extends BaseSpaceship {
 
 
     public drawObjectAlive(): void {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const centroid = this.getCentroid();
         const playerCentroid = this.playerSpaceship.getCentroid();
         const directionX = playerCentroid?.x - centroid.x;
@@ -126,7 +137,7 @@ export class EnemySpaceship extends BaseSpaceship {
         this.forceField.update();
         this.forceField.render();
 
-        this.hitpoints = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
+        this.flashColorIndex = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
     
     }
 

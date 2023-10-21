@@ -6,186 +6,13 @@ import { Bullet } from './bullet';
 import { Mine } from "./mine";
 import { Missile } from './missile';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
-
-class BaseSpaceshipDisplayTriangles {
-    protected spaceShipShape: Phaser.Geom.Triangle;
-    protected innerSpaceShipShape: Phaser.Geom.Triangle;
-    protected initialPositionOffset: number;
-    protected scene: Phaser.Scene;
-    protected graphics: Phaser.GameObjects.Graphics;
-    protected spaceshipColor: number;
+import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
+import { BaseSpaceshipDisplayTriangles } from './basespaceshipdisplaytriangles';
 
 
-    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
-        this.initialPositionOffset = initialPositionOffset;
-        this.scene = scene
-        this.graphics = graphics;
-        this.spaceshipColor = spaceshipColor;
-
-        this.spaceShipShape = new Phaser.Geom.Triangle(
-            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight,
-            this.initialPositionOffset - BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight,
-            this.initialPositionOffset + BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight
-        );
-
-        this.innerSpaceShipShape = new Phaser.Geom.Triangle(
-            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight * 0.6,
-            this.initialPositionOffset - BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75,
-            this.initialPositionOffset + BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75
-        );
-    }
-
-    public getCentroid(): Phaser.Geom.Point {
-        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-    }
-
-    public rotateAroundPoint(rotationDifference:number ) {
-        let centroid = this.getCentroid();
-        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationDifference);
-        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, rotationDifference);
-    }
-    
-
-    public rotateRight(rotationRate: number) {
-        let centroid = this.getCentroid();
-        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationRate);
-        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, rotationRate);
-
-    }
-
-    public rotateLeft(rotationRate: number) {
-        let centroid = this.getCentroid();
-        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -rotationRate);
-        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -rotationRate);
-    }
-
-    public thrustForward(thrust: number, centroid: Phaser.Geom.Point, velocity: Phaser.Math.Vector2): Phaser.Math.Vector2 {
-        const deltaX = this.spaceShipShape.x1 - centroid.x;
-        const deltaY = this.spaceShipShape.y1 - centroid.y;
-        const angle = Math.atan2(deltaY, deltaX);
-        velocity.x += thrust * Math.cos(angle);
-        velocity.y += thrust * Math.sin(angle);
-        return velocity;
-    }
-
-    public spawn(initialPositionOffset: number = 400): void {
-
-        // Reset graphics object style
-        this.graphics.lineStyle(2, this.spaceshipColor);
-        this.graphics.fillStyle(this.spaceshipColor);
-        // Reset spaceship shape to initial position
-        this.spaceShipShape.setTo(
-            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight,
-            this.initialPositionOffset - BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight,
-            this.initialPositionOffset + BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight
-        );
-        // Reset inner spaceship shape to initial position
-        this.innerSpaceShipShape.setTo(
-            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight * 0.6,
-            this.initialPositionOffset - BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75,
-            this.initialPositionOffset + BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75
-        );
-        
-
-        // Reset initial position offset and color
-        this.initialPositionOffset = initialPositionOffset;
-        // Reset graphics object style
-        this.graphics.lineStyle(2, this.spaceshipColor);
-        this.graphics.fillStyle(this.spaceshipColor);
-        // Reset spaceship shape to initial position
-        this.spaceShipShape.setTo(
-            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight,
-            this.initialPositionOffset - BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight,
-            this.initialPositionOffset + BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight
-        );
-        // Reset inner spaceship shape to initial position
-        this.innerSpaceShipShape.setTo(
-            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight * 0.6,
-            this.initialPositionOffset - BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75,
-            this.initialPositionOffset + BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75
-        );
-    }
-
-    public drawObjectAlive(velocity: Phaser.Math.Vector2): Phaser.Geom.Point[] {
-        Phaser.Geom.Triangle.Offset(this.spaceShipShape, velocity.x, velocity.y);
-        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, velocity.x, velocity.y);
-
-        const maxX = Math.max(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
-        const minX = Math.min(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
-        const maxY = Math.max(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
-        const minY = Math.min(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
-
-        if (maxX < 0) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.scene.scale.width, 0);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.scene.scale.width, 0);
-        } else if (minX > this.scene.scale.width) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, -this.scene.scale.width, 0);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, -this.scene.scale.width, 0);
-        }
-
-        if (maxY < 0) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, this.scene.scale.height);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, this.scene.scale.height);
-        } else if (minY > this.scene.scale.height) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, -this.scene.scale.height);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
-        }
-
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-        return this.spaceShipShape.getPoints(3);
-    }
-
-    public weakHitpointsFlashIndicator(hitpoints: number, flashLastTime: number, flashColorIndex: number, flashLightChangeWaitLength: number, explosionColors: number[]): number {
-        if (hitpoints < 5 && explosionColors.length > 0 &&
-            (Date.now() - flashLastTime) > flashLightChangeWaitLength) {
-            flashLastTime = Date.now();
-            if (flashColorIndex > (explosionColors.length - 1)) {
-                flashColorIndex = 0;
-            } else {
-                flashColorIndex++;
-            }
-            const chosenColor = explosionColors[flashColorIndex];
-            this.graphics.fillStyle(chosenColor);
-        }
-        return flashColorIndex;
-    }
-
-    public getForwardAngle(): number {
-        const centroid = this.getCentroid();
-        const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
-        return angle;
-    }
-
-    public getReverseAngle(): number {
-        const centroid = this.getCentroid();
-        const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x) + Math.PI;
-        return angle;
-    }
-
-
-
-    public getCurrentRotation() : number {
-        let centroid = this.getCentroid();
-        return Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
-    }
-
-    public getDistanceFromTopToBottom(): number{
-        const centroid = this.getCentroid();
-        return Phaser.Math.Distance.Between(centroid.x, centroid.y, this.spaceShipShape.x1, this.spaceShipShape.y1);
-    }
-
-    public getCollisionPoints(): Phaser.Geom.Point[] {
-        return [
-            new Phaser.Geom.Point(this.spaceShipShape.x1, this.spaceShipShape.y1),
-            new Phaser.Geom.Point(this.spaceShipShape.x2, this.spaceShipShape.y2),
-            new Phaser.Geom.Point(this.spaceShipShape.x3, this.spaceShipShape.y3)
-        ];
-
-    }
-
-
-
+export enum SpaceShipType {
+    TRIANGLES,
+    IMAGE
 }
 
 export class BaseSpaceship extends BaseExplodable {
@@ -214,7 +41,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected mines: Mine[] = [];
     protected bullets: Bullet[] = [];
     protected missiles: Missile[] = [];
-    protected baseSpaceshipDisplay: BaseSpaceshipDisplayTriangles;
+    protected baseSpaceshipDisplay?: BaseSpaceshipDisplay;
 
 
     protected leftKey?: Phaser.Input.Keyboard.Key;
@@ -231,7 +58,7 @@ export class BaseSpaceship extends BaseExplodable {
     public forceField: ForceField;
 
 
-    constructor(scene: Phaser.Scene, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
+    constructor(scene: Phaser.Scene, spaceShipType: SpaceShipType, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
         super(scene, scene.add.graphics({ lineStyle: { width: 2, color: spaceshipColor }, fillStyle: { color: spaceshipColor } }));
 
         this.thrustSound = this.scene.sound.add('thrust', { loop: true });
@@ -249,11 +76,12 @@ export class BaseSpaceship extends BaseExplodable {
         this.missileKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.G);
         this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
-        this.baseSpaceshipDisplay = new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor );
+        this.baseSpaceshipDisplay = new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor);
+        
         this.forceField = new ForceField(this.scene, this);
         this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay);
 
-
+        
     }
 
 
@@ -303,12 +131,15 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public spawn(initialPositionOffset: number = 400): void {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         this.respawn();
 
         // Reset initial position offset and color
         this.initialPositionOffset = initialPositionOffset;
-        
-        this.baseSpaceshipDisplay.spawn();
+        this.baseSpaceshipDisplay.spawn(initialPositionOffset);
 
         // Reset velocity
         this.velocity.set(0, 0);
@@ -326,7 +157,11 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public getCentroid(): Phaser.Geom.Point {
-        return this.baseSpaceshipDisplay.getCentroid();
+        if( !this.baseSpaceshipDisplay ) {
+            return new Phaser.Geom.Point(0,0);
+        }
+        
+        return this.baseSpaceshipDisplay?.getCentroid();
     }
 
     public playThrustSound(): void {
@@ -372,6 +207,10 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     public drawObjectAlive(): void {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const centroid = this.getCentroid();
 
         if (this.leftKey?.isDown) {
@@ -414,7 +253,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.forceField.update();
         this.forceField.render();
 
-        this.hitpoints = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
+        this.flashColorIndex = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
     }
 
     
@@ -433,6 +272,10 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     public handleMissiles(spaceShips: BaseSpaceship[]) {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const currentTime = this.scene.time.now;
 
         if (this.missileKey?.isDown &&
@@ -454,6 +297,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public handleBullets(spaceShips: BaseSpaceship[]) {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const currentTime = this.scene.time.now;
 
         if (this.fireKey?.isDown &&
@@ -473,6 +320,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public handleMines(spaceShips: BaseSpaceship[]) {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const currentTime = this.scene.time.now;
 
         if (this.mineKey?.isDown &&
@@ -529,6 +380,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public detectSpaceObjctBounceCollisions(spaceObjects: SpaceObject[]) {
+        if( !this.baseSpaceshipDisplay ) {
+            return;
+        }
+        
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
 
         for (const spaceObj of spaceObjects) {
@@ -612,10 +467,6 @@ export class BaseSpaceship extends BaseExplodable {
         }
     }
 
-
-
-
-
     protected collisionCollectionSpaceObjectTest(exploadables: BaseExplodable[], spaceObjects: SpaceObject[]) {
         for (let i = 0; i < exploadables.length; i++) {
 
@@ -635,9 +486,5 @@ export class BaseSpaceship extends BaseExplodable {
 
         }
     }
-
-
-
-
 
 }
