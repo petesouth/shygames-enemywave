@@ -58,7 +58,7 @@ export class ExhaustFlame {
             const point = this.points[i];
 
             if (i < activeDots) {
-                const offset = (i - (this.points.length / 2)) * 10 + 34;
+                const offset = (i - (this.points.length / 2)) * 10 + 30;
                 point.x = centroid.x + (distance + offset) * Math.cos(angle);
                 point.y = centroid.y + (distance + offset * 2.5) * Math.sin(angle);
             } else {
