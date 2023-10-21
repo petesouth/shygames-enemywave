@@ -9,10 +9,18 @@ export class ExhaustFlame {
     private points: FlamePoint[];
     private graphics: Phaser.GameObjects.Graphics;
     private visible: boolean = false;
-    private base: Phaser.Geom.Triangle;
+    private base: {
+        getCentroid(): Phaser.Geom.Point,
+        getReverseAngle(): number,
+        getDistanceFromTopToBottom(): number
+    };
     private scene: Phaser.Scene;
 
-    constructor(scene: Phaser.Scene, base: Phaser.Geom.Triangle) {
+    constructor(scene: Phaser.Scene, base: {
+        getCentroid(): Phaser.Geom.Point,
+        getReverseAngle(): number,
+        getDistanceFromTopToBottom(): number
+    }) {
         this.base = base;
         this.scene = scene;
         this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffcc00 } });
@@ -24,7 +32,7 @@ export class ExhaustFlame {
 
     show() {
         this.visible = true;
-        
+
     }
 
     hide() {
@@ -39,26 +47,27 @@ export class ExhaustFlame {
     }
 
     update() {
-        const centroid = Phaser.Geom.Triangle.Centroid(this.base);
-        const angle = Math.atan2(this.base.y1 - centroid.y, this.base.x1 - centroid.x) + Math.PI;
-        const distance = Phaser.Math.Distance.Between(this.base.x2, this.base.y2, this.base.x3, this.base.y3) / 2;
-    
+        const centroid = this.base.getCentroid();
+
+        const angle = this.base.getReverseAngle();
+        const distance = this.base.getDistanceFromTopToBottom();
+
         const activeDots = Phaser.Math.Between(1, 3); // Randomly choose between 1 and 4 dots for sputtering effect
-    
+
         for (let i = 0; i < this.points.length; i++) {
             const point = this.points[i];
-    
+
             if (i < activeDots) {
-                const offset = (i - (this.points.length / 2)) * 10 + 34; 
+                const offset = (i - (this.points.length / 2)) * 10 + 34;
                 point.x = centroid.x + (distance + offset) * Math.cos(angle);
-                point.y = centroid.y + (distance + offset * 2.5) * Math.sin(angle); 
+                point.y = centroid.y + (distance + offset * 2.5) * Math.sin(angle);
             } else {
                 point.x = -10; // Move the inactive dots off screen
-                point.y = -10; 
+                point.y = -10;
             }
         }
     }
-    
+
 
     render() {
         this.graphics.clear();
@@ -70,9 +79,9 @@ export class ExhaustFlame {
         this.points.forEach((point) => {
             const colors = [0xffa500, 0xff4500, 0xffd700, 0xff8c00]; // Colors representing fire: orange, red-orange, gold, dark orange
             const chosenColor = Phaser.Utils.Array.GetRandom(colors); // Pick a random color from the list
-    
+
             this.graphics.fillStyle(chosenColor);
-           
+
             if (point.visible) {
                 this.graphics.fillPointShape(point, 8);
             }

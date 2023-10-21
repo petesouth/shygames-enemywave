@@ -14,7 +14,6 @@ export class PlayerSpaceship extends BaseSpaceship {
         this.explosionColors = [0xFFFFFF,  0xffa500];
         this.maxPopSize = 40;
         this.state = BaseExplodableState.DESTROYED;  // Starts off in destroed state.
-
     }
 
 

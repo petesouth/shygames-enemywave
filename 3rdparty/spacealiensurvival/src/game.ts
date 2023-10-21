@@ -4,12 +4,16 @@ import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
 import gGameStore from './store/store';
+import { BaseSpaceship } from './gameobjects/basespaceship';
 
 
 const num_ships = 2;
 const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
 
+  
+ 
+  
 export class SplashScreen extends Phaser.Scene {
     public splashText?: Phaser.GameObjects.Text;
     
@@ -25,8 +29,16 @@ export class SplashScreen extends Phaser.Scene {
         this.load.audio('shield', 'shield.mp3');
         this.load.audio('explosion', 'explosion.mp3');
         this.load.audio('gamesong','gamesong.mp3');
+        this.load.image('spaceship', 'spaceship.png');
+
     }
 
+    spaceshipImageCreate() {
+        const spaceship = this.add.image(300, 200, 'spaceship');
+        //spaceship.setDisplaySize(BaseSpaceship.halfBaseWidth * 2, BaseSpaceship.halfHeight * 2);
+        spaceship.setDisplaySize(33.03, 30);
+    }
+    
     create() {
         this.splashText = this.add.text(
             this.scale.width / 2, 
@@ -48,7 +60,7 @@ export class SplashScreen extends Phaser.Scene {
                 }
         }, 500);
 
-        
+        this.spaceshipImageCreate(); 
     }
 
     

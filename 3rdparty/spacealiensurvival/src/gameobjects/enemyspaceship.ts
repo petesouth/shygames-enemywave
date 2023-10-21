@@ -15,8 +15,8 @@ export class EnemySpaceship extends BaseSpaceship {
 
     private playerSpaceship: BaseSpaceship;
     public isBoss: boolean = false;
-    
-    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode=false) {
+
+    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
         super(scene, distanceFromLeftCorner, (bossmode == true) ? 0x006400 : 0xFF0000);
 
         this.isBoss = bossmode;
@@ -30,7 +30,7 @@ export class EnemySpaceship extends BaseSpaceship {
         this.missileFireRate = 5000;
         this.exhaustFlame.show();
 
-        if( bossmode === true ) {
+        if (bossmode === true) {
             this.explosionColors = [0x006400, 0xffa500];
             this.fireRate = 500;
             this.missileFireRate = 1000;
@@ -41,12 +41,12 @@ export class EnemySpaceship extends BaseSpaceship {
     public explode(): void {
         super.explode();
 
-        if( this.isBoss ) {
+        if (this.isBoss) {
             // Boss counts as two ships.
-            gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
-            gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
+            gGameStore.dispatch(gameActions.incrementPlayersScore({}));
+            gGameStore.dispatch(gameActions.incrementPlayersScore({}));
         } else {
-            gGameStore.dispatch( gameActions.incrementPlayersScore({}) );
+            gGameStore.dispatch(gameActions.incrementPlayersScore({}));
         }
     }
 
@@ -56,13 +56,13 @@ export class EnemySpaceship extends BaseSpaceship {
         if ((currentTime - this.lastFired > this.fireRate) &&
             this.playerSpaceship?.state === BaseExplodableState.ALIVE) {
 
-            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
-            const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            const centroid = this.baseSpaceshipDisplay.getCentroid();
+            const angle = this.baseSpaceshipDisplay.getForwardAngle();
+            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
             this.bullets.push(bullet);
             this.lastFired = currentTime;
             this.playBulletSound();
-        
+
         }
 
         this.collisionCollectionTest(this.bullets, spaceShips);
@@ -76,14 +76,14 @@ export class EnemySpaceship extends BaseSpaceship {
         if ((currentTime - this.missileLastFired > this.missileFireRate) &&
             this.playerSpaceship?.state === BaseExplodableState.ALIVE) {
 
-            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
-            const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            const centroid = this.baseSpaceshipDisplay.getCentroid();
+            const angle = this.baseSpaceshipDisplay.getForwardAngle();
+            const missile = new Missile(this.scene, centroid.x, centroid.y, angle);
             missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
             this.missiles.push(missile);
             this.missileLastFired = currentTime;
             this.playMissileSound();
-        
+
         }
 
         this.collisionCollectionTest(this.missiles, spaceShips);
@@ -92,7 +92,7 @@ export class EnemySpaceship extends BaseSpaceship {
 
 
     public drawObjectAlive(): void {
-        const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+        const centroid = this.getCentroid();
         const playerCentroid = this.playerSpaceship.getCentroid();
         const directionX = playerCentroid?.x - centroid.x;
         const directionY = playerCentroid?.y - centroid.y;
@@ -100,12 +100,11 @@ export class EnemySpaceship extends BaseSpaceship {
         const angle = Math.atan2(directionY, directionX);
 
         // Rotate the spaceship to point towards the player
-        const currentRotation = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
+        const currentRotation = this.baseSpaceshipDisplay.getCurrentRotation();
         const rotationDifference = angle - currentRotation;
 
-        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationDifference);
-        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, rotationDifference);
-
+        this.baseSpaceshipDisplay.rotateAroundPoint(rotationDifference);
+        
         // If the enemy is closer than 40 pixels to the player, reduce its speed
         let effectiveThrust = this.thrust;
         if (distanceToPlayer < 80) { // Considering 80 because 40 pixels is the buffer, so we start slowing down when we are 80 pixels away
@@ -118,8 +117,8 @@ export class EnemySpaceship extends BaseSpaceship {
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
 
-        Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
-        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
+        this._points = this.baseSpaceshipDisplay.drawObjectAlive(this.velocity);
+
 
         this.exhaustFlame.update();
         this.exhaustFlame.render();
@@ -127,15 +126,11 @@ export class EnemySpaceship extends BaseSpaceship {
         this.forceField.update();
         this.forceField.render();
 
-        this.weakHitpointsFlashIndicator();
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-        
-
-        this._points = this.spaceShipShape.getPoints(3);
+        this.hitpoints = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
+    
     }
 
-    
+
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
         targetObjects: BaseExplodable[]) {
 
@@ -144,15 +139,15 @@ export class EnemySpaceship extends BaseSpaceship {
             let height = targetObjects[i2].getObjectWidthHeight().height / 2;
 
 
-            if( targetObjects[i2] instanceof PlayerSpaceship) {
+            if (targetObjects[i2] instanceof PlayerSpaceship) {
                 let player = targetObjects[i2] as PlayerSpaceship;
 
                 if (player.forceField?.isVisible === true) {
-                    width =  ForceField.circleRadius * 1.5;
+                    width = ForceField.circleRadius * 1.5;
                     height = ForceField.circleRadius * 1.5;
                 }
             }
-            
+
 
             if (sourceObject.handleBaseCollision(targetObjects[i2], (width > height) ? width : height)) {
                 return i2;

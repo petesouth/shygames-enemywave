@@ -7,12 +7,192 @@ import { Mine } from "./mine";
 import { Missile } from './missile';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 
-export const halfBaseWidth = 10;
-export const halfHeight = 15;
-
-export class BaseSpaceship extends BaseExplodable {
+class BaseSpaceshipDisplayTriangles {
     protected spaceShipShape: Phaser.Geom.Triangle;
     protected innerSpaceShipShape: Phaser.Geom.Triangle;
+    protected initialPositionOffset: number;
+    protected scene: Phaser.Scene;
+    protected graphics: Phaser.GameObjects.Graphics;
+    protected spaceshipColor: number;
+
+
+    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0) {
+        this.initialPositionOffset = initialPositionOffset;
+        this.scene = scene
+        this.graphics = graphics;
+        this.spaceshipColor = spaceshipColor;
+
+        this.spaceShipShape = new Phaser.Geom.Triangle(
+            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight,
+            this.initialPositionOffset - BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight,
+            this.initialPositionOffset + BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight
+        );
+
+        this.innerSpaceShipShape = new Phaser.Geom.Triangle(
+            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight * 0.6,
+            this.initialPositionOffset - BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75,
+            this.initialPositionOffset + BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75
+        );
+    }
+
+    public getCentroid(): Phaser.Geom.Point {
+        return Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+    }
+
+    public rotateAroundPoint(rotationDifference:number ) {
+        let centroid = this.getCentroid();
+        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationDifference);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, rotationDifference);
+    }
+    
+
+    public rotateRight(rotationRate: number) {
+        let centroid = this.getCentroid();
+        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationRate);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, rotationRate);
+
+    }
+
+    public rotateLeft(rotationRate: number) {
+        let centroid = this.getCentroid();
+        Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -rotationRate);
+        Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -rotationRate);
+    }
+
+    public thrustForward(thrust: number, centroid: Phaser.Geom.Point, velocity: Phaser.Math.Vector2): Phaser.Math.Vector2 {
+        const deltaX = this.spaceShipShape.x1 - centroid.x;
+        const deltaY = this.spaceShipShape.y1 - centroid.y;
+        const angle = Math.atan2(deltaY, deltaX);
+        velocity.x += thrust * Math.cos(angle);
+        velocity.y += thrust * Math.sin(angle);
+        return velocity;
+    }
+
+    public spawn(initialPositionOffset: number = 400): void {
+
+        // Reset graphics object style
+        this.graphics.lineStyle(2, this.spaceshipColor);
+        this.graphics.fillStyle(this.spaceshipColor);
+        // Reset spaceship shape to initial position
+        this.spaceShipShape.setTo(
+            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight,
+            this.initialPositionOffset - BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight,
+            this.initialPositionOffset + BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight
+        );
+        // Reset inner spaceship shape to initial position
+        this.innerSpaceShipShape.setTo(
+            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight * 0.6,
+            this.initialPositionOffset - BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75,
+            this.initialPositionOffset + BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75
+        );
+        
+
+        // Reset initial position offset and color
+        this.initialPositionOffset = initialPositionOffset;
+        // Reset graphics object style
+        this.graphics.lineStyle(2, this.spaceshipColor);
+        this.graphics.fillStyle(this.spaceshipColor);
+        // Reset spaceship shape to initial position
+        this.spaceShipShape.setTo(
+            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight,
+            this.initialPositionOffset - BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight,
+            this.initialPositionOffset + BaseSpaceship.halfBaseWidth, this.initialPositionOffset + BaseSpaceship.halfHeight
+        );
+        // Reset inner spaceship shape to initial position
+        this.innerSpaceShipShape.setTo(
+            this.initialPositionOffset, this.initialPositionOffset - BaseSpaceship.halfHeight * 0.6,
+            this.initialPositionOffset - BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75,
+            this.initialPositionOffset + BaseSpaceship.halfBaseWidth * 0.7, this.initialPositionOffset + BaseSpaceship.halfHeight * 0.75
+        );
+    }
+
+    public drawObjectAlive(velocity: Phaser.Math.Vector2): Phaser.Geom.Point[] {
+        Phaser.Geom.Triangle.Offset(this.spaceShipShape, velocity.x, velocity.y);
+        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, velocity.x, velocity.y);
+
+        const maxX = Math.max(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
+        const minX = Math.min(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
+        const maxY = Math.max(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
+        const minY = Math.min(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
+
+        if (maxX < 0) {
+            Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.scene.scale.width, 0);
+            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.scene.scale.width, 0);
+        } else if (minX > this.scene.scale.width) {
+            Phaser.Geom.Triangle.Offset(this.spaceShipShape, -this.scene.scale.width, 0);
+            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, -this.scene.scale.width, 0);
+        }
+
+        if (maxY < 0) {
+            Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, this.scene.scale.height);
+            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, this.scene.scale.height);
+        } else if (minY > this.scene.scale.height) {
+            Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, -this.scene.scale.height);
+            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
+        }
+
+        this.graphics.strokeTriangleShape(this.spaceShipShape);
+        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
+        return this.spaceShipShape.getPoints(3);
+    }
+
+    public weakHitpointsFlashIndicator(hitpoints: number, flashLastTime: number, flashColorIndex: number, flashLightChangeWaitLength: number, explosionColors: number[]): number {
+        if (hitpoints < 5 && explosionColors.length > 0 &&
+            (Date.now() - flashLastTime) > flashLightChangeWaitLength) {
+            flashLastTime = Date.now();
+            if (flashColorIndex > (explosionColors.length - 1)) {
+                flashColorIndex = 0;
+            } else {
+                flashColorIndex++;
+            }
+            const chosenColor = explosionColors[flashColorIndex];
+            this.graphics.fillStyle(chosenColor);
+        }
+        return flashColorIndex;
+    }
+
+    public getForwardAngle(): number {
+        const centroid = this.getCentroid();
+        const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
+        return angle;
+    }
+
+    public getReverseAngle(): number {
+        const centroid = this.getCentroid();
+        const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x) + Math.PI;
+        return angle;
+    }
+
+
+
+    public getCurrentRotation() : number {
+        let centroid = this.getCentroid();
+        return Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
+    }
+
+    public getDistanceFromTopToBottom(): number{
+        const centroid = this.getCentroid();
+        return Phaser.Math.Distance.Between(centroid.x, centroid.y, this.spaceShipShape.x1, this.spaceShipShape.y1);
+    }
+
+    public getCollisionPoints(): Phaser.Geom.Point[] {
+        return [
+            new Phaser.Geom.Point(this.spaceShipShape.x1, this.spaceShipShape.y1),
+            new Phaser.Geom.Point(this.spaceShipShape.x2, this.spaceShipShape.y2),
+            new Phaser.Geom.Point(this.spaceShipShape.x3, this.spaceShipShape.y3)
+        ];
+
+    }
+
+
+
+}
+
+export class BaseSpaceship extends BaseExplodable {
+    public static halfBaseWidth = 10;
+    public static halfHeight = 15;
+
+
     protected rotationRate: number = 0.2;
     protected thrust: number = 0.5;
     protected damping: number = 0.98;
@@ -34,6 +214,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected mines: Mine[] = [];
     protected bullets: Bullet[] = [];
     protected missiles: Missile[] = [];
+    protected baseSpaceshipDisplay: BaseSpaceshipDisplayTriangles;
 
 
     protected leftKey?: Phaser.Input.Keyboard.Key;
@@ -45,7 +226,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected mineKey?: Phaser.Input.Keyboard.Key;
     protected thrustSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     protected shieldSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
-    
+
     public hitpoints: number = 10;
     public forceField: ForceField;
 
@@ -55,7 +236,7 @@ export class BaseSpaceship extends BaseExplodable {
 
         this.thrustSound = this.scene.sound.add('thrust', { loop: true });
         this.shieldSound = this.scene.sound.add('shield', { loop: true });
-    
+
         this.initialPositionOffset = initialPositionOffset;
         this.spaceshipColor = spaceshipColor;
 
@@ -68,20 +249,9 @@ export class BaseSpaceship extends BaseExplodable {
         this.missileKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.G);
         this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
-        this.spaceShipShape = new Phaser.Geom.Triangle(
-            this.initialPositionOffset, this.initialPositionOffset - halfHeight,
-            this.initialPositionOffset - halfBaseWidth, this.initialPositionOffset + halfHeight,
-            this.initialPositionOffset + halfBaseWidth, this.initialPositionOffset + halfHeight
-        );
-
-        this.innerSpaceShipShape = new Phaser.Geom.Triangle(
-            this.initialPositionOffset, this.initialPositionOffset - halfHeight * 0.6,
-            this.initialPositionOffset - halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75,
-            this.initialPositionOffset + halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75
-        );
-
+        this.baseSpaceshipDisplay = new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor );
         this.forceField = new ForceField(this.scene, this);
-        this.exhaustFlame = new ExhaustFlame(this.scene, this.spaceShipShape);
+        this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay);
 
 
     }
@@ -137,21 +307,9 @@ export class BaseSpaceship extends BaseExplodable {
 
         // Reset initial position offset and color
         this.initialPositionOffset = initialPositionOffset;
-        // Reset graphics object style
-        this.graphics.lineStyle(2, this.spaceshipColor);
-        this.graphics.fillStyle(this.spaceshipColor);
-        // Reset spaceship shape to initial position
-        this.spaceShipShape.setTo(
-            this.initialPositionOffset, this.initialPositionOffset - halfHeight,
-            this.initialPositionOffset - halfBaseWidth, this.initialPositionOffset + halfHeight,
-            this.initialPositionOffset + halfBaseWidth, this.initialPositionOffset + halfHeight
-        );
-        // Reset inner spaceship shape to initial position
-        this.innerSpaceShipShape.setTo(
-            this.initialPositionOffset, this.initialPositionOffset - halfHeight * 0.6,
-            this.initialPositionOffset - halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75,
-            this.initialPositionOffset + halfBaseWidth * 0.7, this.initialPositionOffset + halfHeight * 0.75
-        );
+        
+        this.baseSpaceshipDisplay.spawn();
+
         // Reset velocity
         this.velocity.set(0, 0);
         // Reset hitpoints
@@ -168,15 +326,7 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public getCentroid(): Phaser.Geom.Point {
-        const { x, y } = this.spaceShipShape.getPoints(3).reduce((acc, point) => ({
-            x: acc.x + point.x,
-            y: acc.y + point.y
-        }), { x: 0, y: 0 });
-
-        const centroidX = x / this.spaceShipShape.getPoints(3).length;
-        const centroidY = y / this.spaceShipShape.getPoints(3).length;
-
-        return new Phaser.Geom.Point(centroidX, centroidY);
+        return this.baseSpaceshipDisplay.getCentroid();
     }
 
     public playThrustSound(): void {
@@ -218,7 +368,6 @@ export class BaseSpaceship extends BaseExplodable {
         impactSound.play();
     }
 
-    
 
 
 
@@ -226,18 +375,13 @@ export class BaseSpaceship extends BaseExplodable {
         const centroid = this.getCentroid();
 
         if (this.leftKey?.isDown) {
-            Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, -this.rotationRate);
-            Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, -this.rotationRate);
+            this.baseSpaceshipDisplay.rotateLeft(this.rotationRate);
         } else if (this.rightKey?.isDown) {
-            Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, this.rotationRate);
-            Phaser.Geom.Triangle.RotateAroundPoint(this.innerSpaceShipShape, centroid, this.rotationRate);
-        }
+            this.baseSpaceshipDisplay.rotateRight(this.rotationRate);        }
 
         if (this.upKey?.isDown) {
             this.playThrustSound();
-            const deltaX = this.spaceShipShape.x1 - centroid.x;
-            const deltaY = this.spaceShipShape.y1 - centroid.y;
-            const angle = Math.atan2(deltaY, deltaX);
+            const angle = this.baseSpaceshipDisplay.getForwardAngle();
             this.velocity.x += this.thrust * Math.cos(angle);
             this.velocity.y += this.thrust * Math.sin(angle);
         } else {
@@ -247,29 +391,8 @@ export class BaseSpaceship extends BaseExplodable {
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
 
-        Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.velocity.x, this.velocity.y);
-        Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.velocity.x, this.velocity.y);
-
-        const maxX = Math.max(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
-        const minX = Math.min(this.spaceShipShape.x1, this.spaceShipShape.x2, this.spaceShipShape.x3);
-        const maxY = Math.max(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
-        const minY = Math.min(this.spaceShipShape.y1, this.spaceShipShape.y2, this.spaceShipShape.y3);
-
-        if (maxX < 0) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, this.scene.scale.width, 0);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, this.scene.scale.width, 0);
-        } else if (minX > this.scene.scale.width) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, -this.scene.scale.width, 0);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, -this.scene.scale.width, 0);
-        }
-
-        if (maxY < 0) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, this.scene.scale.height);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, this.scene.scale.height);
-        } else if (minY > this.scene.scale.height) {
-            Phaser.Geom.Triangle.Offset(this.spaceShipShape, 0, -this.scene.scale.height);
-            Phaser.Geom.Triangle.Offset(this.innerSpaceShipShape, 0, -this.scene.scale.height);
-        }
+        
+        this._points = this.baseSpaceshipDisplay.drawObjectAlive(this.velocity);
 
         if (this.upKey?.isDown) {
             this.exhaustFlame.show();
@@ -291,27 +414,10 @@ export class BaseSpaceship extends BaseExplodable {
         this.forceField.update();
         this.forceField.render();
 
-        this.weakHitpointsFlashIndicator();
-
-        this.graphics.strokeTriangleShape(this.spaceShipShape);
-        this.graphics.fillTriangleShape(this.innerSpaceShipShape);
-        this._points = this.spaceShipShape.getPoints(3);
+        this.hitpoints = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
     }
 
-    protected weakHitpointsFlashIndicator() {
-        if (this.hitpoints < 5 && this.explosionColors.length > 0 &&
-            (Date.now() - this.flashLastTime) > this.flashLightChangeWaitLength) {
-            this.flashLastTime = Date.now();
-            if (this.flashColorIndex > (this.explosionColors.length - 1)) {
-                this.flashColorIndex = 0;
-            } else {
-                this.flashColorIndex++;
-            }
-            const chosenColor = this.explosionColors[this.flashColorIndex];
-            this.graphics.fillStyle(chosenColor);
-        }
-    }
-
+    
     public renderWeapons() {
         this.bullets.forEach((bullet) => { bullet.render(); });
         this.missiles.forEach((missile) => { missile.render() });
@@ -333,14 +439,14 @@ export class BaseSpaceship extends BaseExplodable {
             (currentTime - this.missileLastFired > this.missileFireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
-            const missile = new Missile(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            const angle = this.baseSpaceshipDisplay.getForwardAngle();
+            const centroid = this.baseSpaceshipDisplay.getCentroid();
+            const missile = new Missile(this.scene, centroid.x, centroid.y, angle);
             missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
             this.missiles.push(missile);
             this.missileLastFired = currentTime;
             this.playMissileSound();
-                
+
         }
 
         this.collisionCollectionTest(this.missiles, spaceShips);
@@ -354,9 +460,9 @@ export class BaseSpaceship extends BaseExplodable {
             (currentTime - this.lastFired > this.fireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            const centroid = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
-            const angle = Math.atan2(this.spaceShipShape.y1 - centroid.y, this.spaceShipShape.x1 - centroid.x);
-            const bullet = new Bullet(this.scene, this.spaceShipShape.x1, this.spaceShipShape.y1, angle);
+            const angle = this.baseSpaceshipDisplay.getForwardAngle();
+            const centroid = this.baseSpaceshipDisplay.getCentroid();
+            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
             this.bullets.push(bullet);
             this.lastFired = currentTime;
             this.playBulletSound();
@@ -373,8 +479,9 @@ export class BaseSpaceship extends BaseExplodable {
             (currentTime - this.lastMinePlaced > this.mineRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            const x = this.getCentroid().x;
-            const y = this.getCentroid().y;
+            const centroid = this.baseSpaceshipDisplay.getCentroid();
+            const x = centroid.x;
+            const y = centroid.y;
             const mine = new Mine(this.scene, x, y);
             this.mines.push(mine);
             this.lastMinePlaced = currentTime;
@@ -390,7 +497,7 @@ export class BaseSpaceship extends BaseExplodable {
         const spaceshipCentroid = spaceship.getCentroid();
         const distance = Phaser.Math.Distance.Between(centroid.x, centroid.y, spaceshipCentroid.x, spaceshipCentroid.y);
 
-        if (distance < (halfBaseWidth * 2)) {
+        if (distance < (BaseSpaceship.halfBaseWidth * 2)) {
 
             // Calculate the new velocities after collision (simple reflection)
             const enemyVelocity = this.velocity.clone();
@@ -422,20 +529,17 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public detectSpaceObjctBounceCollisions(spaceObjects: SpaceObject[]) {
-        const centroidSpaceShip = Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
+        const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
+
         for (const spaceObj of spaceObjects) {
-            const collisionPoints = [
-                new Phaser.Geom.Point(this.spaceShipShape.x1, this.spaceShipShape.y1),
-                new Phaser.Geom.Point(this.spaceShipShape.x2, this.spaceShipShape.y2),
-                new Phaser.Geom.Point(this.spaceShipShape.x3, this.spaceShipShape.y3)
-            ];
+            const collisionPoints = this.baseSpaceshipDisplay.getCollisionPoints();
 
             for (let point of collisionPoints) {
                 if (Phaser.Geom.Polygon.ContainsPoint(spaceObj.getPolygon(), point)) {
                     const centroidSpaceObj = spaceObj.getCentroid();
                     const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
 
-                    if (distance < (halfBaseWidth * 2)) {
+                    if (distance < (BaseSpaceship.halfBaseWidth * 2)) {
                         const angle = Phaser.Math.Angle.BetweenPoints(centroidSpaceShip, centroidSpaceObj);
                         const velocity1 = this.velocity.clone();
                         const velocity2 = spaceObj.getVelocity().clone();
@@ -492,8 +596,8 @@ export class BaseSpaceship extends BaseExplodable {
             const foundIndex = this.testCollisionAgainstGroup(exploadable, spaceShips);
 
             if (foundIndex !== -1) {
-                
-                
+
+
                 if (spaceShips[foundIndex].forceField.isVisible === false &&
                     spaceShips[foundIndex].state === BaseExplodableState.ALIVE &&
                     spaceShips[foundIndex].hitpoints > 0) {
