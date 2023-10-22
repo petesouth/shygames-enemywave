@@ -8,19 +8,21 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     protected spaceshipColor: number;
     protected initialPositionOffset: number;
     protected image: Phaser.GameObjects.Image;
+    protected squaresize: number = 50;
 
-    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, imageNameKey: string, initialPositionOffset: number = 400, spaceshipColor: number = 12632256, polygonWidth: number = 40, squaresize: number = 40) {
+    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, imageNameKey: string, initialPositionOffset: number = 400, spaceshipColor: number = 12632256, polygonWidth: number = 40, squaresize: number = 50) {
         this.initialPositionOffset = initialPositionOffset;
         this.scene = scene;
         this.graphics = graphics;
+        this.squaresize = squaresize;
         this.spaceshipColor = spaceshipColor;
 
         // Create the square polygon with the top side facing upwards
         this.squarePolygon = new Phaser.Geom.Polygon([
-            new Phaser.Geom.Point(initialPositionOffset - squaresize / 2, initialPositionOffset + squaresize / 2),
-            new Phaser.Geom.Point(initialPositionOffset + squaresize / 2, initialPositionOffset + squaresize / 2),
-            new Phaser.Geom.Point(initialPositionOffset + squaresize / 2, initialPositionOffset - squaresize / 2),
-            new Phaser.Geom.Point(initialPositionOffset - squaresize / 2, initialPositionOffset - squaresize / 2)
+            new Phaser.Geom.Point(initialPositionOffset - this.squaresize / 2, initialPositionOffset + this.squaresize / 2),
+            new Phaser.Geom.Point(initialPositionOffset + this.squaresize / 2, initialPositionOffset + this.squaresize / 2),
+            new Phaser.Geom.Point(initialPositionOffset + this.squaresize / 2, initialPositionOffset - this.squaresize / 2),
+            new Phaser.Geom.Point(initialPositionOffset - this.squaresize / 2, initialPositionOffset - this.squaresize / 2)
         ]);
 
         // Create and position the image on the centroid of the square
@@ -28,7 +30,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         this.image.setOrigin(0.5); // Center the image on its position
         const centroid = this.getCentroid();
         this.image.setPosition(centroid.x, centroid.y);
-        this.image.setDisplaySize(squaresize, squaresize); // Set the size to match the square
+        this.image.setDisplaySize(50, 55.5); // Set the size to match the square
         this.image.setVisible(false);
     
     }
@@ -87,14 +89,13 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
 
     public spawn(initialPositionOffset: number = 400): void {
         this.initialPositionOffset = initialPositionOffset;
-        const squaresize = this.squarePolygon.points[1].x - this.squarePolygon.points[0].x;
-
+        
         // Reset the square polygon with the top side facing upwards
         this.squarePolygon.setTo([
-            new Phaser.Geom.Point(this.initialPositionOffset - squaresize / 2, this.initialPositionOffset + squaresize / 2),
-            new Phaser.Geom.Point(this.initialPositionOffset + squaresize / 2, this.initialPositionOffset + squaresize / 2),
-            new Phaser.Geom.Point(this.initialPositionOffset + squaresize / 2, this.initialPositionOffset - squaresize / 2),
-            new Phaser.Geom.Point(this.initialPositionOffset - squaresize / 2, this.initialPositionOffset - squaresize / 2)
+            new Phaser.Geom.Point(this.initialPositionOffset - this.squaresize / 2, this.initialPositionOffset + this.squaresize / 2),
+            new Phaser.Geom.Point(this.initialPositionOffset + this.squaresize / 2, this.initialPositionOffset + this.squaresize / 2),
+            new Phaser.Geom.Point(this.initialPositionOffset + this.squaresize / 2, this.initialPositionOffset - this.squaresize / 2),
+            new Phaser.Geom.Point(this.initialPositionOffset - this.squaresize / 2, this.initialPositionOffset - this.squaresize / 2)
         ]);
 
         // Reset graphics object style
@@ -172,10 +173,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     }
 
     public getDistanceFromTopToBottom(): number {
-        const points = this.squarePolygon.points;
-        const topPoint = points[0];
-        const bottomPoint = points[1]; // Change to index 1 to represent the bottom point
-        return Phaser.Math.Distance.Between(topPoint.x, topPoint.y, bottomPoint.x, bottomPoint.y) - 10;
+        return this.squaresize - 10;
     }
 
     public getCollisionPoints(): Phaser.Geom.Point[] {
