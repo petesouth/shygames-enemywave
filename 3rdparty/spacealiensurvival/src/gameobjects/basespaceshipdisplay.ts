@@ -15,4 +15,5 @@ export interface BaseSpaceshipDisplay {
     getCurrentRotation(): number;
     getDistanceFromTopToBottom(): number;
     getCollisionPoints(): Phaser.Geom.Point[];
+    hide(): void;
 }

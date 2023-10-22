@@ -34,6 +34,11 @@ export class BaseSpaceshipDisplayTriangles implements BaseSpaceshipDisplay {
         return Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
     }
 
+    hide(): void {
+        this.graphics.clear();
+    }
+
+
     public rotateAroundPoint(rotationDifference: number) {
         let centroid = this.getCentroid();
         Phaser.Geom.Triangle.RotateAroundPoint(this.spaceShipShape, centroid, rotationDifference);

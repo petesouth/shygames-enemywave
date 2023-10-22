@@ -8,6 +8,7 @@ import { Missile } from './missile';
 import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
 import { BaseSpaceshipDisplayTriangles } from './basespaceshipdisplaytriangles';
+import { BaseSpaceshipDisplayImage } from './basespaceshipdisplayimage';
 
 
 export enum SpaceShipType {
@@ -76,7 +77,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.missileKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.G);
         this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
-        this.baseSpaceshipDisplay = new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor);
+        this.baseSpaceshipDisplay = (spaceShipType === SpaceShipType.IMAGE) ? new BaseSpaceshipDisplayImage(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor) : new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor);
         
         this.forceField = new ForceField(this.scene, this);
         this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay);
@@ -95,7 +96,11 @@ export class BaseSpaceship extends BaseExplodable {
         this.bullets.forEach(bullet => bullet.destroy());
         this.missiles.forEach(missile => missile.destroy());
         this.mines.forEach(mine => mine.destroy());
+    }
 
+    public explode(): void {
+        this.baseSpaceshipDisplay?.hide();
+        super.explode();
     }
 
     public isEverythingDestroyed() {

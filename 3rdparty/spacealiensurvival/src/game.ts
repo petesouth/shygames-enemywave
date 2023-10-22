@@ -33,12 +33,6 @@ export class SplashScreen extends Phaser.Scene {
 
     }
 
-    spaceshipImageCreate() {
-        const spaceship = this.add.image(300, 200, 'spaceship');
-        //spaceship.setDisplaySize(BaseSpaceship.halfBaseWidth * 2, BaseSpaceship.halfHeight * 2);
-        spaceship.setDisplaySize(33.03, 30);
-    }
-    
     create() {
         this.splashText = this.add.text(
             this.scale.width / 2, 
@@ -60,7 +54,6 @@ export class SplashScreen extends Phaser.Scene {
                 }
         }, 500);
 
-        this.spaceshipImageCreate(); 
     }
 
     

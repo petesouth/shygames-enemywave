@@ -10,7 +10,7 @@ export class PlayerSpaceship extends BaseSpaceship {
     
     
     constructor(scene: Phaser.Scene) {
-        super(scene, SpaceShipType.TRIANGLES, 500);
+        super(scene, SpaceShipType.IMAGE, 500);
 
         this.explosionColors = [0xFFFFFF,  0xffa500];
         this.maxPopSize = 40;
