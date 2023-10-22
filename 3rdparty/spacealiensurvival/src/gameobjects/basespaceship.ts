@@ -21,7 +21,7 @@ export class BaseSpaceship extends BaseExplodable {
     public static halfHeight = 15;
 
 
-    protected rotationRate: number = 0.2;
+    protected rotationRate: number = 10;
     protected thrust: number = 0.5;
     protected damping: number = 0.98;
     protected velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
@@ -78,11 +78,11 @@ export class BaseSpaceship extends BaseExplodable {
         this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
 
         this.baseSpaceshipDisplay = (spaceShipType === SpaceShipType.IMAGE) ? new BaseSpaceshipDisplayImage(this.scene, this.graphics, imageNameKey, this.initialPositionOffset, this.spaceshipColor) : new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor);
-        
+
         this.forceField = new ForceField(this.scene, this);
         this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay);
 
-        
+
     }
 
 
@@ -136,10 +136,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public spawn(initialPositionOffset: number = 400): void {
-        if( !this.baseSpaceshipDisplay ) {
+        if (!this.baseSpaceshipDisplay) {
             return;
         }
-        
+
         this.respawn();
 
         // Reset initial position offset and color
@@ -162,10 +162,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public getCentroid(): Phaser.Geom.Point {
-        if( !this.baseSpaceshipDisplay ) {
-            return new Phaser.Geom.Point(0,0);
+        if (!this.baseSpaceshipDisplay) {
+            return new Phaser.Geom.Point(0, 0);
         }
-        
+
         return this.baseSpaceshipDisplay?.getCentroid();
     }
 
@@ -209,19 +209,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
-
-
-    public drawObjectAlive(): void {
+    public calculateVelocity() : void {
         if( !this.baseSpaceshipDisplay ) {
             return;
         }
-        
-        const centroid = this.getCentroid();
-
-        if (this.leftKey?.isDown) {
-            this.baseSpaceshipDisplay.rotateLeft(this.rotationRate);
-        } else if (this.rightKey?.isDown) {
-            this.baseSpaceshipDisplay.rotateRight(this.rotationRate);        }
 
         if (this.upKey?.isDown) {
             this.playThrustSound();
@@ -234,15 +225,38 @@ export class BaseSpaceship extends BaseExplodable {
 
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
+ 
+    }
 
-        
-        this._points = this.baseSpaceshipDisplay.drawObjectAlive(this.velocity);
+    public calculateRotation() {
+        if (!this.baseSpaceshipDisplay) {
+            return;
+        }
+        if (this.leftKey?.isDown) {
+            this.baseSpaceshipDisplay.rotateLeft(this.rotationRate);
+        } else if (this.rightKey?.isDown) {
+            this.baseSpaceshipDisplay.rotateRight(this.rotationRate);
+        }
 
         if (this.upKey?.isDown) {
             this.exhaustFlame.show();
         } else {
             this.exhaustFlame.hide();
         }
+
+        
+    }
+
+    public drawObjectAlive(): void {
+        if (!this.baseSpaceshipDisplay) {
+            return;
+        }
+
+        this.calculateRotation();
+
+        this.calculateVelocity();
+
+        this._points = this.baseSpaceshipDisplay.drawObjectAlive(this.velocity);
 
         if (this.shieldKey?.isDown) {
             this.forceField.show();
@@ -261,7 +275,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.flashColorIndex = this.baseSpaceshipDisplay.weakHitpointsFlashIndicator(this.hitpoints, this.flashLastTime, this.flashColorIndex, this.flashLightChangeWaitLength, this.explosionColors);
     }
 
-    
+
     public renderWeapons() {
         this.bullets.forEach((bullet) => { bullet.render(); });
         this.missiles.forEach((missile) => { missile.render() });
@@ -275,49 +289,63 @@ export class BaseSpaceship extends BaseExplodable {
         this.collisionCollectionSpaceObjectTest(this.missiles, spaceObjects);
     }
 
-
-    public handleMissiles(spaceShips: BaseSpaceship[]) {
-        if( !this.baseSpaceshipDisplay ) {
+    public shootMissile(target: BaseSpaceship): void {
+        if (!this.baseSpaceshipDisplay) {
             return;
         }
-        
+
+        const angle = this.baseSpaceshipDisplay.getForwardAngle();
+        const centroid = this.baseSpaceshipDisplay.getCentroid();
+        const missile = new Missile(this.scene, centroid.x, centroid.y, angle);
+        missile.setTarget(target);
+        this.missiles.push(missile);
+        this.missileLastFired = this.scene.time.now;
+        this.playMissileSound();
+    }
+
+    public handleMissiles(spaceShips: BaseSpaceship[]) {
+        if (!this.baseSpaceshipDisplay) {
+            return;
+        }
+
         const currentTime = this.scene.time.now;
 
         if (this.missileKey?.isDown &&
             (currentTime - this.missileLastFired > this.missileFireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            const angle = this.baseSpaceshipDisplay.getForwardAngle();
-            const centroid = this.baseSpaceshipDisplay.getCentroid();
-            const missile = new Missile(this.scene, centroid.x, centroid.y, angle);
-            missile.setTarget(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
-            this.missiles.push(missile);
-            this.missileLastFired = currentTime;
-            this.playMissileSound();
-
+            this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
         }
 
         this.collisionCollectionTest(this.missiles, spaceShips);
 
     }
 
-    public handleBullets(spaceShips: BaseSpaceship[]) {
-        if( !this.baseSpaceshipDisplay ) {
+
+    public shootBullets() {
+        if( ! this.baseSpaceshipDisplay ) {
             return;
         }
-        
+        const angle = this.baseSpaceshipDisplay.getForwardAngle();
+        const centroid = this.baseSpaceshipDisplay.getCentroid();
+        const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
+        this.bullets.push(bullet);
+        this.lastFired = this.scene.time.now;
+        this.playBulletSound();
+    }
+
+    public handleBullets(spaceShips: BaseSpaceship[]) {
+        if (!this.baseSpaceshipDisplay) {
+            return;
+        }
+
         const currentTime = this.scene.time.now;
 
         if (this.fireKey?.isDown &&
             (currentTime - this.lastFired > this.fireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            const angle = this.baseSpaceshipDisplay.getForwardAngle();
-            const centroid = this.baseSpaceshipDisplay.getCentroid();
-            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
-            this.bullets.push(bullet);
-            this.lastFired = currentTime;
-            this.playBulletSound();
+           this.shootBullets();
         }
 
         this.collisionCollectionTest(this.bullets, spaceShips);
@@ -325,10 +353,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public handleMines(spaceShips: BaseSpaceship[]) {
-        if( !this.baseSpaceshipDisplay ) {
+        if (!this.baseSpaceshipDisplay) {
             return;
         }
-        
+
         const currentTime = this.scene.time.now;
 
         if (this.mineKey?.isDown &&
@@ -385,10 +413,10 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
     public detectSpaceObjctBounceCollisions(spaceObjects: SpaceObject[]) {
-        if( !this.baseSpaceshipDisplay ) {
+        if (!this.baseSpaceshipDisplay) {
             return;
         }
-        
+
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
 
         for (const spaceObj of spaceObjects) {

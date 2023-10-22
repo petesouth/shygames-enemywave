@@ -32,9 +32,9 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         this.image.setPosition(centroid.x, centroid.y);
         this.image.setDisplaySize(50, 55.5); // Set the size to match the square
         this.image.setVisible(false);
-    
+
     }
-    
+
     hide(): void {
         this.graphics.clear();
         this.image.setVisible(false);
@@ -52,12 +52,13 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         return new Phaser.Geom.Point(centroidX, centroidY);
     }
 
+    
+
     public rotateAroundPoint(rotationDifference: number): void {
-        rotationDifference = rotationDifference * 50;
         const centroid = this.getCentroid();
         const cosAngle = Math.cos(rotationDifference);
         const sinAngle = Math.sin(rotationDifference);
-
+    
         const updatedPoints = this.squarePolygon.points.map(point => {
             const x = point.x - centroid.x;
             const y = point.y - centroid.y;
@@ -65,12 +66,14 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
             const rotatedY = x * sinAngle + y * cosAngle + centroid.y;
             return new Phaser.Geom.Point(rotatedX, rotatedY);
         });
-
+    
         this.squarePolygon.setTo(updatedPoints);
-
-        // Update the rotation of the image to match the square
-        this.image.setRotation(rotationDifference);
+    
+        // Align the image's rotation with the angle difference 
+        // so that it points towards the target point
+        this.image.setRotation(this.image.rotation + rotationDifference);
     }
+
 
     public rotateRight(rotationRate: number): void {
         this.rotateAroundPoint(Phaser.Math.DegToRad(rotationRate)); // Negative rotation for clockwise (right) rotation
@@ -89,7 +92,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
 
     public spawn(initialPositionOffset: number = 400): void {
         this.initialPositionOffset = initialPositionOffset;
-        
+
         // Reset the square polygon with the top side facing upwards
         this.squarePolygon.setTo([
             new Phaser.Geom.Point(this.initialPositionOffset - this.squaresize / 2, this.initialPositionOffset + this.squaresize / 2),
