@@ -116,7 +116,7 @@ export class MainScene extends Phaser.Scene {
             
         this.createStarBackground();
         this.playerspaceship = new PlayerSpaceship(this);
-        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight/2, this.playerspaceship));
+        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship));
         this.createAsteroidsBasedOnScreenSize();
 
 
@@ -467,7 +467,7 @@ export class MainScene extends Phaser.Scene {
         if (this.enemyspaceships.length < num_ships) {
             // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
             const isBoss = (this.enemyspaceships.length == 0);
-            this.enemyspaceships.push(new EnemySpaceship(this, window.innerWidth / 2, this.playerspaceship, isBoss ));
+            this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship, isBoss ));
             
         }
 
