@@ -17,7 +17,7 @@ export class EnemySpaceship extends BaseSpaceship {
     public isBoss: boolean = false;
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
-        super(scene, SpaceShipType.TRIANGLES, distanceFromLeftCorner, (bossmode == true) ? 0x006400 : 0xFF0000);
+        super(scene, SpaceShipType.TRIANGLES, (bossmode !== true) ? "enemyspaceship" : "bossenemyspaceship", distanceFromLeftCorner, (bossmode == true) ? 0x006400 : 0xFF0000);
 
         this.isBoss = bossmode;
         this.playerSpaceship = playerSpaceship;

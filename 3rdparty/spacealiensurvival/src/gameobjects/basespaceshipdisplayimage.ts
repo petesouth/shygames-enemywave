@@ -9,7 +9,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     protected initialPositionOffset: number;
     protected image: Phaser.GameObjects.Image;
 
-    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, initialPositionOffset: number = 400, spaceshipColor: number = 12632256, polygonWidth: number = 40, squaresize: number = 40) {
+    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, imageNameKey: string, initialPositionOffset: number = 400, spaceshipColor: number = 12632256, polygonWidth: number = 40, squaresize: number = 40) {
         this.initialPositionOffset = initialPositionOffset;
         this.scene = scene;
         this.graphics = graphics;
@@ -24,7 +24,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         ]);
 
         // Create and position the image on the centroid of the square
-        this.image = scene.add.image(0, 0, "spaceship");
+        this.image = scene.add.image(0, 0, imageNameKey);
         this.image.setOrigin(0.5); // Center the image on its position
         const centroid = this.getCentroid();
         this.image.setPosition(centroid.x, centroid.y);
