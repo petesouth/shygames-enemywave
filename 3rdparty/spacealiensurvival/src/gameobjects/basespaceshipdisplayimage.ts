@@ -105,7 +105,6 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         const centroid = this.getCentroid();
         this.image.setPosition(centroid.x, centroid.y);
         this.image.setRotation(0); // Reset rotation
-        this.image.setDisplaySize(squaresize, squaresize); // Set the size to match the square
         this.image.setVisible(true);
     }
 
