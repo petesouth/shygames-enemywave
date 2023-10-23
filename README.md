@@ -38,7 +38,7 @@ C# Application that renders a browser Window 100% over it's panel area.  It then
 
 # For a demo of the games see:
 
-- https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html44
+- https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html
 
 
 
