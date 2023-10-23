@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2  # Reverting to v2 due to the lack of a v3 release
 
     - name: Deploy
       uses: JamesIves/github-pages-deploy-action@4.1.5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        repository: petesouth/shyhumangames-gamefeed
         branch: gh-pages  # This is the branch the action will deploy to
         folder: 3rdparty/spacealiensurvival/dist  # This is the source folder
