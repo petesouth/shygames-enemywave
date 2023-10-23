@@ -14,13 +14,13 @@ Downloadable and Web Games for Casual Gaming.
 
 - Note: Each project under tools is self inclusive.  Your meant to take the output and use it in your game distirbutable.  The tools are to aid in shipping a phaser.io or other webapp game as a local downloable game application.
 
--- Checkout tools/gohttp/reademe.md for a quick and dirty filer server for playing a web game locally to a user's computer
+- Checkout tools/gohttp/reademe.md for a quick and dirty filer server for playing a web game locally to a user's computer
 
--- The reason for golang is it requires no infastructure to run.  golang is self inclusive.
+- The reason for golang is it requires no infastructure to run.  golang is self inclusive.
 
-     --- https://codesahara.com/blog/how-to-deploy-golang-to-production-step-by-step/
+     ```https://codesahara.com/blog/how-to-deploy-golang-to-production-step-by-step/
      
-     --- https://reactnative.dev/docs/getting-started
+     https://reactnative.dev/docs/getting-started```
 
 ### gohttp
 This project is a local application that runs a local webserver and then brins
