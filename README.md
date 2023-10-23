@@ -12,7 +12,7 @@ Downloadable and Web Games for Casual Gaming.
           with the phaser .html
 
 
-### *Note: Each project under tools is self inclusive.  Your meant to take the output and use it in your game distirbutable.  The tools are to aid in shipping a phaser.io or other webapp game as a local downloable game application.
+- Note: Each project under tools is self inclusive.  Your meant to take the output and use it in your game distirbutable.  The tools are to aid in shipping a phaser.io or other webapp game as a local downloable game application.
 
 -- Checkout tools/gohttp/reademe.md for a quick and dirty filer server for playing a web game locally to a user's computer
 
