@@ -18,9 +18,9 @@ Downloadable and Web Games for Casual Gaming.
 
 - The reason for golang is it requires no infastructure to run.  golang is self inclusive.
 
-     ```https://codesahara.com/blog/how-to-deploy-golang-to-production-step-by-step/
-     
-     https://reactnative.dev/docs/getting-started```
+     ```https://codesahara.com/blog/how-to-deploy-golang-to-production-step-by-step```
+    
+     ```https://reactnative.dev/docs/getting-started```
 
 ### gohttp
 This project is a local application that runs a local webserver and then brins
