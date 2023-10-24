@@ -178,7 +178,9 @@ export class SpaceObject {
                     if (Phaser.Geom.Polygon.ContainsPoint(this.getPolygon(), point)) {
                         const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
 
-                        if (distance < 40) {
+                        const trigger = (this.getObjectWidthHeight().width > this.getObjectWidthHeight().height ) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height;
+
+                        if (distance < trigger ) {
                             // Calculate the repelling force direction
                             const repelDirection = new Phaser.Math.Vector2(
                                 centroidSpaceObj.x - point.x,

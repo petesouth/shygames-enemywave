@@ -156,7 +156,7 @@ export class MainScene extends Phaser.Scene {
             let text = this.add.text(
                 (window.innerWidth / 2),
                 offset,
-                'R - Spawn/Respawn',
+                'R - Start Game / Re-spawn',
                 { font: '12px Arial', color: '#ffffff' }
             );
             text.setOrigin(0.5);
@@ -439,7 +439,7 @@ export class MainScene extends Phaser.Scene {
                 break;
             }
 
-            tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship]);
+            tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship, ...this.enemyspaceships]);
             tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
             
             if (this.playerspaceship.state === BaseExplodableState.ALIVE && this.playerspaceship.hitpoints > 0 ) {
