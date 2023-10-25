@@ -69,6 +69,12 @@ export class SpaceObject {
     }
 
     public renderSpaceObject(spaceObjects: SpaceObject[]) {
+        
+        // Handle collisions with other SpaceObjects
+        this.detectCollisions(spaceObjects);
+
+        
+
         // Update position and velocity
         this.polygon.setTo(this.polygon.points.map(point => {
             return new Phaser.Geom.Point(point.x + this.velocity.x, point.y + this.velocity.y);
@@ -119,9 +125,6 @@ export class SpaceObject {
         this.graphics.fillPoints(rotatedPoints, true);
         this.graphics.strokePoints(rotatedPoints, true);
 
-        // Handle collisions with other SpaceObjects
-        this.detectCollisions(spaceObjects);
-
         this.updateMiniPolygons();
     }
 
@@ -143,7 +146,7 @@ export class SpaceObject {
     }
 
 
-    
+
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
         const maxDiameter = MAX_SIZE * SCALE * 2; // Diameter = 2 * Radius
         return {
@@ -170,33 +173,41 @@ export class SpaceObject {
 
     private detectCollisions(spaceObjects: SpaceObject[]) {
         const centroidSpaceObj = this.getCentroid();
+        const trigger1 = (this.getObjectWidthHeight().width > this.getObjectWidthHeight().height) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height / 1.7;
+    
         for (const spaceObj of spaceObjects) {
             if (spaceObj !== this) {
-                const collisionPoints = spaceObj.getPolygon().points;
-
-                for (let point of collisionPoints) {
-                    if (Phaser.Geom.Polygon.ContainsPoint(this.getPolygon(), point)) {
-                        const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
-
-                        const trigger = (this.getObjectWidthHeight().width > this.getObjectWidthHeight().height ) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height;
-
-                        if (distance < trigger ) {
-                            // Calculate the repelling force direction
-                            const repelDirection = new Phaser.Math.Vector2(
-                                centroidSpaceObj.x - point.x,
-                                centroidSpaceObj.y - point.y
-                            ).normalize();
-
-                            // Apply the repelling force
-                            const repelForce = 0.1; // Adjust as needed
-                            this.velocity.add(repelDirection.scale(repelForce));
-                        }
-                    }
+                const trigger2 = (spaceObj.getObjectWidthHeight().width > spaceObj.getObjectWidthHeight().height) ? spaceObj.getObjectWidthHeight().width : spaceObj.getObjectWidthHeight().height / 1.7;
+                const centroidSpaceobjectOther = spaceObj.getCentroid();
+                const distance = Phaser.Math.Distance.BetweenPoints(centroidSpaceObj, centroidSpaceobjectOther);
+    
+                if (distance <= (trigger1 + trigger2)) {
+                    // Assume both objects have equal mass for simplicity
+                    const m1 = 1;
+                    const m2 = 1;
+    
+                    // Get the velocities of the two objects
+                    const velocity1 = this.velocity.clone();
+                    const velocity2 = spaceObj.getVelocity().clone();
+    
+                    // Calculate new velocities based on the formula for a one-dimensional elastic collision
+                    const newVelocity1 = new Phaser.Math.Vector2(
+                        ((velocity1.x * (m1 - m2)) + (2 * m2 * velocity2.x)) / (m1 + m2),
+                        ((velocity1.y * (m1 - m2)) + (2 * m2 * velocity2.y)) / (m1 + m2)
+                    );
+                    const newVelocity2 = new Phaser.Math.Vector2(
+                        ((velocity2.x * (m2 - m1)) + (2 * m1 * velocity1.x)) / (m1 + m2),
+                        ((velocity2.y * (m2 - m1)) + (2 * m1 * velocity1.y)) / (m1 + m2)
+                    );
+    
+                    // Set the new velocities
+                    this.velocity.set(newVelocity1.x, newVelocity1.y);
+                    spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
                 }
             }
         }
     }
-
+    
 
     private updateMiniPolygons() {
         this.miniPolygons.forEach((miniPolygon, index) => {

@@ -22,16 +22,19 @@ export class SplashScreen extends Phaser.Scene {
     }
 
     preload() {
-        this.load.audio('thrust', 'thrust.mp3');
-        this.load.audio('bullet', 'bullet.mp3');
-        this.load.audio('missile', 'missile.mp3');
-        this.load.audio('impact', 'impact.mp3');
-        this.load.audio('shield', 'shield.mp3');
-        this.load.audio('explosion', 'explosion.mp3');
-        this.load.audio('gamesong','gamesong.mp3');
-        this.load.image('spaceship', 'spaceship.png');
-        this.load.image('enemyspaceship', 'enemyspaceship.png');
-        this.load.image('bossenemyspaceship', 'bossenemyspaceship.png');
+        this.load.audio('thrust', 'sound/thrust.mp3');
+        this.load.audio('bullet', 'sound/bullet.mp3');
+        this.load.audio('missile', 'sound/missile.mp3');
+        this.load.audio('impact', 'sound/impact.mp3');
+        this.load.audio('shield', 'sound/shield.mp3');
+        this.load.audio('explosion', 'sound/explosion.mp3');
+        this.load.audio('gamesong','sound/gamesong.mp3');
+
+        this.load.image('spaceship', 'images/spaceship.png');
+        this.load.image('enemyspaceship', 'images/enemyspaceship.png');
+        this.load.image('bossenemyspaceship', 'images/bossenemyspaceship.png');
+
+        this.load.image('bricks', 'textures/bricks.png');
 
     }
 
@@ -416,8 +419,6 @@ export class MainScene extends Phaser.Scene {
 
 
         if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
-            this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
-            this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
             this.playerspaceship.handleBullets(this.enemyspaceships);
             this.playerspaceship.handleMines(this.enemyspaceships);
             this.playerspaceship.handleMissiles(this.enemyspaceships);
@@ -428,7 +429,9 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship.render();
         this.playerspaceship.renderWeapons();
         this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
-        
+        this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
+        this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+            
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
@@ -439,8 +442,6 @@ export class MainScene extends Phaser.Scene {
                 break;
             }
 
-            tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship, ...this.enemyspaceships]);
-            tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
             
             if (this.playerspaceship.state === BaseExplodableState.ALIVE && this.playerspaceship.hitpoints > 0 ) {
                 tenemyspaceship.handleBullets([this.playerspaceship]);
@@ -451,7 +452,9 @@ export class MainScene extends Phaser.Scene {
             tenemyspaceship.render();
             tenemyspaceship.renderWeapons();
             tenemyspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
-        
+            tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship, ...this.enemyspaceships]);
+            tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+            
         };
 
         const difference = Date.now() - this.timerCount;

@@ -24,7 +24,6 @@ export class BaseSpaceship extends BaseExplodable {
     protected rotationRate: number = 10;
     protected thrust: number = 0.5;
     protected damping: number = 0.98;
-    protected velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
     protected lastFired: number = 0;
     protected fireRate: number = 200;  // 1000 ms = 1 second
     protected missileLastFired: number = 0;
@@ -55,6 +54,7 @@ export class BaseSpaceship extends BaseExplodable {
     protected thrustSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     protected shieldSound: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
 
+    public velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
     public hitpoints: number = 10;
     public forceField: ForceField;
 
@@ -380,36 +380,42 @@ export class BaseSpaceship extends BaseExplodable {
         const centroid = this.getCentroid();
         const spaceshipCentroid = spaceship.getCentroid();
         const distance = Phaser.Math.Distance.BetweenPoints(centroid, spaceshipCentroid);
-        const trigger = ((this.getObjectWidthHeight().width > this.getObjectWidthHeight().height) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height) / 2
+        const trigger = ((this.getObjectWidthHeight().width > this.getObjectWidthHeight().height) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height) / 1.7;
         
         if (distance <= trigger) {
-
-            // Calculate the new velocities after collision (simple reflection)
+            // Calculate the angle of collision
+            const angle = Math.atan2(spaceshipCentroid.y - centroid.y, spaceshipCentroid.x - centroid.x);
+    
             const enemyVelocity = this.velocity.clone();
             const playerVelocity = spaceship.getVelocity().clone();
-
+    
             // Mass of enemy spaceship and player spaceship (you may need to adjust these)
             const enemyMass = 1;
             const playerMass = 1;
-
-            const newEnemyVelocity = enemyVelocity.clone()
-                .scale((enemyMass - playerMass) / (enemyMass + playerMass))
-                .add(playerVelocity.clone().scale((2 * playerMass) / (enemyMass + playerMass)));
-
-            const newPlayerVelocity = playerVelocity.clone()
-                .scale((playerMass - enemyMass) / (enemyMass + playerMass))
-                .add(enemyVelocity.clone().scale((2 * enemyMass) / (enemyMass + playerMass)));
-
+    
+            // Calculate new velocities based on the angle of collision and masses of the objects
+            const newEnemyVelocity = new Phaser.Math.Vector2(
+                ((enemyVelocity.x * Math.cos(angle) * (enemyMass - playerMass)) + (playerVelocity.x * Math.cos(angle) * (2 * playerMass))) / (enemyMass + playerMass),
+                ((enemyVelocity.y * Math.sin(angle) * (enemyMass - playerMass)) + (playerVelocity.y * Math.sin(angle) * (2 * playerMass))) / (enemyMass + playerMass)
+            );
+            const newPlayerVelocity = new Phaser.Math.Vector2(
+                ((playerVelocity.x * Math.cos(angle) * (playerMass - enemyMass)) + (enemyVelocity.x * Math.cos(angle) * (2 * enemyMass))) / (enemyMass + playerMass),
+                ((playerVelocity.y * Math.sin(angle) * (playerMass - enemyMass)) + (enemyVelocity.y * Math.sin(angle) * (2 * enemyMass))) / (enemyMass + playerMass)
+            );
+    
             // Apply the new velocities
             this.velocity.set(newEnemyVelocity.x, newEnemyVelocity.y);
             spaceship.setVelocity(newPlayerVelocity.x, newPlayerVelocity.y);
         }
     }
+    
 
 
     public detectSpaceshipBounceCollisions(spaceShips: BaseSpaceship[]) {
         spaceShips.forEach((ship) => {
-            this.handleSpaceshipCollision(ship);
+            if( this !== ship ) {
+                this.handleSpaceshipCollision(ship);
+            }
         });
     }
 
@@ -417,33 +423,42 @@ export class BaseSpaceship extends BaseExplodable {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-
+    
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
-        const trigger = ((this.getObjectWidthHeight().width > this.getObjectWidthHeight().height) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height) / 2
-                
+    
         for (const spaceObj of spaceObjects) {
-            
-                const distance = Phaser.Math.Distance.BetweenPoints(spaceObj.getCentroid(), centroidSpaceShip);
-                const trigger2 = ((spaceObj.getObjectWidthHeight().width > spaceObj.getObjectWidthHeight().height) ? spaceObj.getObjectWidthHeight().width : spaceObj.getObjectWidthHeight().height) / 2
-        
-                if (distance <= (trigger + trigger2) ) {
-                    const velocity1 = this.velocity.clone();
-                    const velocity2 = spaceObj.getVelocity().clone();
-
-                    const m1 = 1; // Mass for PlayerSpaceship. Adjust if needed
-                    const m2 = 1; // Mass for SpaceObject. Adjust if needed
-
-                    const newVelocity1 = velocity1.clone().scale((m1 - m2) / (m1 + m2)).add(velocity2.clone().scale((2 * m2) / (m1 + m2)));
-                    const newVelocity2 = velocity2.clone().scale((m2 - m1) / (m1 + m2)).add(velocity1.clone().scale((2 * m1) / (m1 + m2)));
-
-                    this.velocity.set(newVelocity1.x, newVelocity1.y);
-                    spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
-                    break;
-                }
+            const distance = Phaser.Math.Distance.BetweenPoints(spaceObj.getCentroid(), centroidSpaceShip);
+            const combinedRadii = (this.getObjectWidthHeight().width + spaceObj.getObjectWidthHeight().width) / 4;  // assuming objects are circles
+    
+            if (distance <= combinedRadii) {
+                const angle = Math.atan2(spaceObj.getCentroid().y - centroidSpaceShip.y, spaceObj.getCentroid().x - centroidSpaceShip.x);
+    
+                const velocity1 = this.velocity.clone();
+                const velocity2 = spaceObj.getVelocity().clone();
+    
+                // Assume both objects have equal mass for simplicity
+                const m1 = 1;
+                const m2 = 1;
+    
+                // Calculate new velocities based on the angle of collision
+                const newVelocity1 = new Phaser.Math.Vector2(
+                    ((velocity1.x * (m1 - m2)) + (2 * m2 * velocity2.x)) / (m1 + m2),
+                    ((velocity1.y * (m1 - m2)) + (2 * m2 * velocity2.y)) / (m1 + m2)
+                );
+                const newVelocity2 = new Phaser.Math.Vector2(
+                    ((velocity2.x * (m2 - m1)) + (2 * m1 * velocity1.x)) / (m1 + m2),
+                    ((velocity2.y * (m2 - m1)) + (2 * m1 * velocity1.y)) / (m1 + m2)
+                );
+    
+                // Set the new velocities
+                this.velocity.set(newVelocity1.x, newVelocity1.y);
+                spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
+    
+                break;
+            }
         }
-
     }
-
+    
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
         targetObjects: {
