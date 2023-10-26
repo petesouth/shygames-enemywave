@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { SplashScreen } from '../game';
 
 // Constants derived from the polygon creation logic
 const MAX_SIZE = 28;
@@ -9,26 +10,21 @@ const MAX_SIDES = 12;
 
 export class SpaceObject {
     private graphics: Phaser.GameObjects.Graphics;
-    private polygon: Phaser.Geom.Polygon;
     private velocity: Phaser.Math.Vector2;
     private scene: Phaser.Scene;
-    private rotationSpeed: number; // Add this property
     private angle: number;
-    private angularVelocity: number;
-    private miniPolygons: Phaser.Geom.Polygon[] = [];
-    private miniPolygonColors: number[] = [];
+    private spaceObjectSprite: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
 
+    private polygon: Phaser.Geom.Polygon;
 
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
+        this.graphics = scene.add.graphics();
 
         // Initialize the angle and angular velocity properties
-        this.angle = Phaser.Math.Between(0, 360); // Initial random angle
-        this.angularVelocity = Phaser.Math.Between(-1, 2); // Adjust the range as needed for rotation speed
+        this.angle = Phaser.Utils.Array.GetRandom([1, -1]);
 
-        // Initialize the rotation direction flag and speed
-        this.rotationSpeed = Math.random() < 0.5 ? 1 : -1; // Random initial direction (-1 or 1)
 
         const x = Phaser.Math.Between(0, scene.scale.width);
         const y = Phaser.Math.Between(0, scene.scale.height);
@@ -57,15 +53,25 @@ export class SpaceObject {
         );
 
         // Create a graphics object with the desired line color
-        this.graphics = scene.add.graphics({ lineStyle: { width: 1, color: 0x777777 } });
+        const centroid = this.getCentroid();
+        this.spaceObjectSprite = this.scene.physics.add.sprite(centroid.x, centroid.y, Phaser.Utils.Array.GetRandom(SplashScreen.textureNames));
+        this.renderPolyMask(this.polygon.points, this.spaceObjectSprite);
+    }
 
-        // Set the fill style to match the line color
-        this.graphics.fillStyle(0x777777);
+    protected renderPolyMask(points: Phaser.Geom.Point[], image: Phaser.GameObjects.Image) {
+        const maskGraphics = this.scene.make.graphics();
+        maskGraphics.fillStyle(0xffffff); // Set the fill color to white
+        maskGraphics.beginPath();
+        maskGraphics.moveTo(points[0].x, points[0].y);
+        for (let i = 1; i < points.length; i++) {
+            maskGraphics.lineTo(points[i].x, points[i].y);
+        }
+        maskGraphics.closePath();
+        maskGraphics.fillPath();
 
-        // Draw the polygon with both fill and stroke
-        this.graphics.fillPoints(this.polygon.points, true);
-        this.graphics.strokePoints(this.polygon.points, true);
-        this.createMiniPolygons();
+        // Create a mask from the graphics object and apply it to the image
+        const mask = maskGraphics.createGeometryMask();
+        image.setMask(mask);
     }
 
     public renderSpaceObject(spaceObjects: SpaceObject[]) {
@@ -102,32 +108,34 @@ export class SpaceObject {
 
         // Clear graphics and set fill style
         this.graphics.clear();
-        this.graphics.fillStyle(0x777777); // Color Gray
-
-        // Apply gradual rotation with the direction
-        this.angle += this.rotationSpeed * this.angularVelocity;
-
 
         // Calculate rotated polygon points
+        const rotationAngleIncrment = this.angle;
         const rotatedPoints = this.polygon.points.map(point => {
-            const rotatedX = Math.cos(Phaser.Math.DegToRad(this.angle)) * (point.x - this.getCentroid().x) - Math.sin(Phaser.Math.DegToRad(this.angle)) * (point.y - this.getCentroid().y) + this.getCentroid().x;
-            const rotatedY = Math.sin(Phaser.Math.DegToRad(this.angle)) * (point.x - this.getCentroid().x) + Math.cos(Phaser.Math.DegToRad(this.angle)) * (point.y - this.getCentroid().y) + this.getCentroid().y;
+            const rotatedX = Math.cos(Phaser.Math.DegToRad(rotationAngleIncrment)) * (point.x - this.getCentroid().x) - Math.sin(Phaser.Math.DegToRad(rotationAngleIncrment)) * (point.y - this.getCentroid().y) + this.getCentroid().x;
+            const rotatedY = Math.sin(Phaser.Math.DegToRad(rotationAngleIncrment)) * (point.x - this.getCentroid().x) + Math.cos(Phaser.Math.DegToRad(rotationAngleIncrment)) * (point.y - this.getCentroid().y) + this.getCentroid().y;
             return new Phaser.Geom.Point(rotatedX, rotatedY);
         });
 
+        this.polygon.points = rotatedPoints;
+        this.spaceObjectSprite.rotation += Phaser.Math.DegToRad(rotationAngleIncrment);
+        this.spaceObjectSprite.setPosition(this.getCentroid().x, this.getCentroid().y);
+
         // Draw the rotated polygon with both fill and stroke
-        this.graphics.fillPoints(rotatedPoints, true);
-        this.graphics.strokePoints(rotatedPoints, true);
+        //this.graphics.fillPoints(rotatedPoints, true);
+        //this.graphics.strokePoints(rotatedPoints, true);
 
         // Handle collisions with other SpaceObjects
         this.detectCollisions(spaceObjects);
 
-        this.updateMiniPolygons();
+        this.renderPolyMask(this.polygon.points, this.spaceObjectSprite);
+
     }
 
     public destroy() {
         this.graphics.clear();
         this.graphics.destroy();
+        this.spaceObjectSprite.destroy();
     }
 
     public getObjectWidthHeight(): { width: number, height: number } {
@@ -143,7 +151,7 @@ export class SpaceObject {
     }
 
 
-    
+
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
         const maxDiameter = MAX_SIZE * SCALE * 2; // Diameter = 2 * Radius
         return {
@@ -193,87 +201,6 @@ export class SpaceObject {
                 }
             }
         }
-    }
-
-
-    private updateMiniPolygons() {
-        this.miniPolygons.forEach((miniPolygon, index) => {
-            // Set the fill style to the pre-generated color
-            this.graphics.fillStyle(this.miniPolygonColors[index]);
-
-            const rotatedPoints = miniPolygon.points.map(point => {
-                const rotatedX = Math.cos(Phaser.Math.DegToRad(this.angle)) * (point.x) - Math.sin(Phaser.Math.DegToRad(this.angle)) * (point.y) + this.getCentroid().x;
-                const rotatedY = Math.sin(Phaser.Math.DegToRad(this.angle)) * (point.x) + Math.cos(Phaser.Math.DegToRad(this.angle)) * (point.y) + this.getCentroid().y;
-                return new Phaser.Geom.Point(rotatedX, rotatedY);
-            });
-
-            this.graphics.fillPoints(rotatedPoints, true);
-        });
-    }
-
-    private createMiniPolygons() {
-        const rockWidth = this.getObjectWidthHeight().width;
-        const rockHeight = this.getObjectWidthHeight().height;
-
-        // Calculate an approximate area of the rock's boundary
-        const rockArea = rockWidth * rockHeight;
-
-        // Calculate the number of mini polygons based on the boundary area
-        const numMiniPolygons = Phaser.Math.Between(20, 100) * (rockArea / 10000); // Adjust the factor (10000) as needed
-
-
-        // Calculate the radius for distributing mini polygons evenly
-        const maxRadius = Math.min(this.getObjectWidthHeight().width, this.getObjectWidthHeight().height) / 2;
-
-        // Rest of your code to create mini polygons...
-        let attempts = 0;
-        const maxAttempts = 10;
-
-        while (this.miniPolygons.length < numMiniPolygons && attempts < maxAttempts) {
-            const points = [];
-            const sides = Phaser.Math.Between(3, 6);
-            // Adjust size as per your requirement
-            const size = Phaser.Math.Between(5, 20);
-
-            // Calculate polar coordinates for distributing mini polygons evenly
-            const radius = Phaser.Math.Between(0, maxRadius - size); // Ensure mini polygons stay within the bounding circle
-            const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
-
-            // Convert polar coordinates to Cartesian coordinates
-            const x = Math.cos(angle) * radius;
-            const y = Math.sin(angle) * radius;
-
-            for (let j = 0; j < sides; j++) {
-                const px = Math.cos((j / sides) * 2 * Math.PI) * size + x;
-                const py = Math.sin((j / sides) * 2 * Math.PI) * size + y;
-                points.push(new Phaser.Geom.Point(px, py));
-            }
-
-            const miniPolygon = new Phaser.Geom.Polygon(points);
-
-            if (this.isPolygonContained(miniPolygon, this.getPolygon())) {
-                // Generate a random grayscale color
-                const grayShade = Phaser.Math.Between(0x88, 0xCC); // Grayscale shade between light gray and dark gray
-
-                // Set the fill style to the generated gray shade
-                const fillStyle = grayShade * 0x10000 + grayShade * 0x100 + grayShade;
-
-                this.miniPolygons.push(miniPolygon);
-                this.miniPolygonColors.push(fillStyle);
-            }
-
-            attempts++;
-        }
-    }
-
-    private isPolygonContained(smallPolygon: Phaser.Geom.Polygon, largePolygon: Phaser.Geom.Polygon): boolean {
-        // Check if all points of the small polygon are within the large polygon
-        const centroid = this.getCentroid();
-
-        return smallPolygon.points.every(point => {
-            const absolutePoint = new Phaser.Geom.Point(point.x + centroid.x, point.y + centroid.y);
-            return Phaser.Geom.Polygon.ContainsPoint(largePolygon, absolutePoint);
-        });
     }
 
 

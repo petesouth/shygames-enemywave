@@ -16,7 +16,15 @@ const SPAWN_TIME = 20000; // 30 seconds in milliseconds
   
 export class SplashScreen extends Phaser.Scene {
     public splashText?: Phaser.GameObjects.Text;
-    
+    public static textureNames = ["bricks", 
+                                  "bricks2", 
+                                  "metal", 
+                                  "ground", 
+                                  "rustywall", 
+                                  "rustywall2", 
+                                  "treewood"];
+
+
     constructor() {
         super('SplashScreen');
     }
@@ -34,8 +42,11 @@ export class SplashScreen extends Phaser.Scene {
         this.load.image('enemyspaceship', 'images/enemyspaceship.png');
         this.load.image('bossenemyspaceship', 'images/bossenemyspaceship.png');
 
-        this.load.image('bricks', 'textures/bricks.png');
+        SplashScreen.textureNames.forEach((texture)=>{
+            this.load.image(texture, 'textures/' + texture + '.png');
+        });
 
+        
     }
 
     create() {
@@ -114,65 +125,6 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-
-    createMe() {
-        // Create an image and position it
-        const image = this.add.image(
-            400, // Adjust the X coordinate as needed
-            300, // Adjust the Y coordinate as needed
-            'bricks'
-        );
-    
-        // Define the number of sides and size based on random values
-        const sides = Phaser.Math.Between(5, 12);
-        const size = Phaser.Math.Between(10, 200);
-    
-        // Define the center point for the polygon
-        const x = 400; // Adjust the X coordinate as needed
-        const y = 300; // Adjust the Y coordinate as needed
-    
-        // Generate points for the polygon with random variations
-        const points = [];
-        for (let i = 0; i < sides; i++) {
-            // Add randomness to the point generation
-            const varianceX = Phaser.Math.Between(-size * 0.5, size * 0.5);
-            const varianceY = Phaser.Math.Between(-size * 0.5, size * 0.5);
-    
-            const px = Math.cos((i / sides) * 2 * Math.PI) * (size + varianceX) + x;
-            const py = Math.sin((i / sides) * 2 * Math.PI) * (size + varianceY) + y;
-    
-            points.push(new Phaser.Geom.Point(px, py));
-        }
-    
-        // Create a polygon crop mask for the image using the generated points
-        const maskGraphics = this.make.graphics();
-        maskGraphics.fillStyle(0xffffff); // Set the fill color to white
-        maskGraphics.beginPath();
-        maskGraphics.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            maskGraphics.lineTo(points[i].x, points[i].y);
-        }
-        maskGraphics.closePath();
-        maskGraphics.fillPath();
-    
-        // Create a mask from the graphics object and apply it to the image
-        const mask = maskGraphics.createGeometryMask();
-        image.setMask(mask);
-    
-        // Optionally, you can leave the graphics object without destroying it
-        // maskGraphics.destroy();
-    
-        // Add some text to indicate that the image is displayed
-        const text = this.add.text(
-            400,
-            450, // Adjust the Y coordinate as needed
-            'Image with Random Polygon Crop Mask',
-            { font: '18px Arial', color: '#ffffff' } // Set the text color to white
-        );
-        text.setOrigin(0.5);
-        text.setDepth(1);
-    }
-    
 
     create() {
         this.gamesongSound = this.sound.add('gamesong', { loop: true, volume: 1 });
@@ -359,7 +311,6 @@ export class MainScene extends Phaser.Scene {
         }, 500);
 
        this.playGameSongSound();
-       this.createMe();
     }
 
     handleWindowResize() {
@@ -586,9 +537,6 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-
-
-
 }
 
 
@@ -606,7 +554,20 @@ const config: Phaser.Types.Core.GameConfig = {
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
-    }
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 0 },
+            debug: false,  // Set true if you want to see the physics debug info
+            checkCollision: {
+                up: true,
+                down: true,
+                left: true,
+                right: true
+            }
+        }
+    },
 };
 
 const game = new Phaser.Game(config);
