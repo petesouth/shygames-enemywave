@@ -381,18 +381,18 @@ export class BaseSpaceship extends BaseExplodable {
         const spaceshipCentroid = spaceship.getCentroid();
         const distance = Phaser.Math.Distance.BetweenPoints(centroid, spaceshipCentroid);
         const trigger = ((this.getObjectWidthHeight().width > this.getObjectWidthHeight().height) ? this.getObjectWidthHeight().width : this.getObjectWidthHeight().height) / 1.7;
-        
+
         if (distance <= trigger) {
             // Calculate the angle of collision
             const angle = Math.atan2(spaceshipCentroid.y - centroid.y, spaceshipCentroid.x - centroid.x);
-    
+
             const enemyVelocity = this.velocity.clone();
             const playerVelocity = spaceship.getVelocity().clone();
-    
+
             // Mass of enemy spaceship and player spaceship (you may need to adjust these)
             const enemyMass = 1;
             const playerMass = 1;
-    
+
             // Calculate new velocities based on the angle of collision and masses of the objects
             const newEnemyVelocity = new Phaser.Math.Vector2(
                 ((enemyVelocity.x * Math.cos(angle) * (enemyMass - playerMass)) + (playerVelocity.x * Math.cos(angle) * (2 * playerMass))) / (enemyMass + playerMass),
@@ -402,18 +402,20 @@ export class BaseSpaceship extends BaseExplodable {
                 ((playerVelocity.x * Math.cos(angle) * (playerMass - enemyMass)) + (enemyVelocity.x * Math.cos(angle) * (2 * enemyMass))) / (enemyMass + playerMass),
                 ((playerVelocity.y * Math.sin(angle) * (playerMass - enemyMass)) + (enemyVelocity.y * Math.sin(angle) * (2 * enemyMass))) / (enemyMass + playerMass)
             );
-    
+
             // Apply the new velocities
-            this.velocity.set(newEnemyVelocity.x, newEnemyVelocity.y);
-            spaceship.setVelocity(newPlayerVelocity.x, newPlayerVelocity.y);
+
+            const bounceFactor = 1.2;
+            this.velocity.set(newEnemyVelocity.x * bounceFactor, newEnemyVelocity.y * bounceFactor);
+            spaceship.setVelocity(newPlayerVelocity.x * bounceFactor, newPlayerVelocity.y * bounceFactor);
         }
     }
-    
+
 
 
     public detectSpaceshipBounceCollisions(spaceShips: BaseSpaceship[]) {
         spaceShips.forEach((ship) => {
-            if( this !== ship ) {
+            if (this !== ship) {
                 this.handleSpaceshipCollision(ship);
             }
         });
@@ -423,23 +425,23 @@ export class BaseSpaceship extends BaseExplodable {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-    
+
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
-    
+
         for (const spaceObj of spaceObjects) {
             const distance = Phaser.Math.Distance.BetweenPoints(spaceObj.getCentroid(), centroidSpaceShip);
             const combinedRadii = (this.getObjectWidthHeight().width + spaceObj.getObjectWidthHeight().width) / 4;  // assuming objects are circles
-    
+
             if (distance <= combinedRadii) {
                 const angle = Math.atan2(spaceObj.getCentroid().y - centroidSpaceShip.y, spaceObj.getCentroid().x - centroidSpaceShip.x);
-    
+
                 const velocity1 = this.velocity.clone();
                 const velocity2 = spaceObj.getVelocity().clone();
-    
+
                 // Assume both objects have equal mass for simplicity
                 const m1 = 1;
                 const m2 = 1;
-    
+
                 // Calculate new velocities based on the angle of collision
                 const newVelocity1 = new Phaser.Math.Vector2(
                     ((velocity1.x * (m1 - m2)) + (2 * m2 * velocity2.x)) / (m1 + m2),
@@ -449,16 +451,18 @@ export class BaseSpaceship extends BaseExplodable {
                     ((velocity2.x * (m2 - m1)) + (2 * m1 * velocity1.x)) / (m1 + m2),
                     ((velocity2.y * (m2 - m1)) + (2 * m1 * velocity1.y)) / (m1 + m2)
                 );
-    
-                // Set the new velocities
-                this.velocity.set(newVelocity1.x, newVelocity1.y);
-                spaceObj.setVelocity(newVelocity2.x, newVelocity2.y);
-    
+
+                const bounceFactor = 1.2;  // Adjust this value as needed
+
+                this.velocity.set(newVelocity1.x * bounceFactor, newVelocity1.y * bounceFactor);
+                spaceObj.setVelocity(newVelocity2.x * bounceFactor, newVelocity2.y * bounceFactor);
+
+
                 break;
             }
         }
     }
-    
+
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable,
         targetObjects: {

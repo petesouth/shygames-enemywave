@@ -185,8 +185,9 @@ export class SpaceObject {
                 for (let point of collisionPoints) {
                     if (Phaser.Geom.Polygon.ContainsPoint(this.getPolygon(), point)) {
                         const distance = Phaser.Math.Distance.BetweenPoints(point, centroidSpaceObj);
+                        const trigger = this.getObjectWidthHeight().height < this.getObjectWidthHeight().width ? this.getObjectWidthHeight().height : this.getObjectWidthHeight().width;
 
-                        if (distance < 40) {
+                        if (distance < trigger) {
                             // Calculate the repelling force direction
                             const repelDirection = new Phaser.Math.Vector2(
                                 centroidSpaceObj.x - point.x,
@@ -194,7 +195,7 @@ export class SpaceObject {
                             ).normalize();
 
                             // Apply the repelling force
-                            const repelForce = 0.1; // Adjust as needed
+                            const repelForce = 0.5; // Adjust as needed
                             this.velocity.add(repelDirection.scale(repelForce));
                         }
                     }
