@@ -59,53 +59,41 @@ export class EnemySpaceship extends BaseSpaceship {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-    
+
         const centroid = this.getCentroid();
         const playerCentroid = this.playerSpaceship.getCentroid();
         const angleToPlayer = Math.atan2(playerCentroid.y - centroid.y, playerCentroid.x - centroid.x);
-    
+
         // Randomized Angle Adjustment
         const randomAngleOffset = Phaser.Math.Between(-5, 5) * (Math.PI / 180);  // +/- 5 degrees in radians
         const adjustedAngleToPlayer = angleToPlayer + randomAngleOffset;
-    
+
         // Calculate the target point 100 pixels away from the player, along the line from the enemy to the player
         const targetX = playerCentroid.x - this.getObjectWidthHeight().width * Math.cos(adjustedAngleToPlayer);
         const targetY = playerCentroid.y - this.getObjectWidthHeight().width * Math.sin(adjustedAngleToPlayer);
-    
+
         const directionX = targetX - centroid.x;
         const directionY = targetY - centroid.y;
         const angle = Math.atan2(directionY, directionX);
-    
-        // Randomized Thrust
-        const randomThrustOffset = Phaser.Math.FloatBetween(-0.1, 0.1) * this.thrust;
-        const effectiveThrust = (this.thrust + randomThrustOffset) * this.speedMultiplier;
-    
-        this.velocity.x += effectiveThrust * Math.cos(angle);
-        this.velocity.y += effectiveThrust * Math.sin(angle);
-    
-        // Randomized Damping
-        const randomDampingOffset = Phaser.Math.FloatBetween(-0.01, 0.01);
-        const effectiveDamping = this.damping + randomDampingOffset;
-    
-        this.velocity.x *= effectiveDamping;
-        this.velocity.y *= effectiveDamping;
-    
+
+        this.velocity.x += this.thrust * Math.cos(angle);
+        this.velocity.y += this.thrust * Math.sin(angle);
+
+        this.velocity.x *= this.damping;
+        this.velocity.y *= this.damping;
+
         // Check the magnitude of the velocity vector
         const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
-    
+
         // If the speed exceeds the maximum, scale back the velocity vector
         if (speed > this.maxSpeed) {
             const scale = this.maxSpeed / speed;
             this.velocity.x *= scale;
             this.velocity.y *= scale;
         }
-    
         this.exhaustFlame.show();
-    
-        this.velocity.x *= effectiveDamping;
-        this.velocity.y *= effectiveDamping;
     }
-    
+
 
 
     public calculateRotation(): void {

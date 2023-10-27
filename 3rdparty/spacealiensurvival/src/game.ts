@@ -440,7 +440,7 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship.render();
         this.playerspaceship.renderWeapons();
         this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
-        this.playerspaceship.detectBounceCollisions(this.enemyspaceships);
+        //this.playerspaceship.detectBounceCollisions(this.enemyspaceships);
         this.playerspaceship.detectBounceCollisions(this.spaceObjects);
             
 

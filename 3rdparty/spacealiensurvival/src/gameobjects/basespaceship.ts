@@ -392,61 +392,52 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     }
-
     public detectBounceCollisions(targetObjects: TargetObject[]) {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-
+    
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
-
+    
         for (const targetObj of targetObjects) {
             const distance = Phaser.Math.Distance.BetweenPoints(targetObj.getCentroid(), centroidSpaceShip);
             const combinedRadii = (this.getObjectWidthHeight().width + targetObj.getObjectWidthHeight().width) / 4;  // Assuming objects are circles
-
+    
             if (distance <= combinedRadii) {
                 const collisionNormal = new Phaser.Math.Vector2(
                     centroidSpaceShip.x - targetObj.getCentroid().x,
                     centroidSpaceShip.y - targetObj.getCentroid().y
                 ).normalize();
-
+    
                 const relativeVelocity = new Phaser.Math.Vector2(
                     this.velocity.x - targetObj.getVelocity().x,
                     this.velocity.y - targetObj.getVelocity().y
                 );
-
+    
                 const velocityAlongNormal = relativeVelocity.dot(collisionNormal);
-
-                // Check if the objects are moving apart
+    
+                // Check if the objects are already moving apart
                 if (velocityAlongNormal > 0) {
                     return;
                 }
-
-                // Different mass assumptions for the two objects
-                const massThis = 0.5;
-                const massTarget = 1.5;
-
-                // Using the formula for two-dimensional elastic collision
-                const newVelocityThis = (
-                    (massThis - massTarget) / (massThis + massTarget) * this.velocity.length()
-                    + (2 * massTarget / (massThis + massTarget)) * targetObj.getVelocity().length()
-                );
-
-                const newVelocityTarget = (
-                    (2 * massThis / (massThis + massTarget)) * this.velocity.length()
-                    + (massTarget - massThis) / (massThis + massTarget) * targetObj.getVelocity().length()
-                );
-
-                // Create a new vector for the target's new velocity
-                const newVelocityTargetVector = collisionNormal.clone().scale(-newVelocityTarget);
-
-                // Update the velocities of both objects
-                this.velocity = collisionNormal.scale(newVelocityThis);
-                targetObj.getVelocity().set(newVelocityTargetVector.x, newVelocityTargetVector.y);  // Set with separate x and y values
+    
+                // Determine the mass based on the velocity magnitude - faster object is considered heavier
+                const massThis = this.velocity.length();
+                const massTarget = targetObj.getVelocity().length();
+    
+                // Compute the impulse magnitude
+                const impulseMagnitude = (2 * velocityAlongNormal) / (massThis + massTarget);
+    
+                // Amplify the impulse for a more pronounced bumping effect
+                const amplifiedImpulse = impulseMagnitude * 1.5;  // Adjust the multiplier as needed to get the desired effect
+    
+                // Apply amplified impulse to the target object
+                targetObj.getVelocity().x += amplifiedImpulse * massThis * collisionNormal.x;
+                targetObj.getVelocity().y += amplifiedImpulse * massThis * collisionNormal.y;
             }
         }
     }
-
+    
 
 
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable, targetObjects: TargetObject[]) {
