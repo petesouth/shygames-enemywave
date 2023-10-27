@@ -14,7 +14,13 @@ const SPAWN_TIME = 20000; // 30 seconds in milliseconds
  
   
 export class SplashScreen extends Phaser.Scene {
+
+    public static TEXT_TOP_PADDING = 10;
+    public static IMAGE_BORDER_PADDING = 40;
+
     public splashText?: Phaser.GameObjects.Text;
+    public image?: Phaser.GameObjects.Image;
+
     public static textureNames = ["bricks", 
                                   "bricks2", 
                                   "metal", 
@@ -37,6 +43,8 @@ export class SplashScreen extends Phaser.Scene {
         this.load.audio('explosion', 'sound/explosion.mp3');
         this.load.audio('gamesong','sound/gamesong.mp3');
 
+        
+        this.load.image('gamescreen', 'images/gamescreen.png');
         this.load.image('spaceship', 'images/spaceship.png');
         this.load.image('enemyspaceship', 'images/enemyspaceship.png');
         this.load.image('bossenemyspaceship', 'images/bossenemyspaceship.png');
@@ -49,11 +57,17 @@ export class SplashScreen extends Phaser.Scene {
     }
 
     create() {
+        this.image = this.add.image(this.scale.width / 2, 
+        this.scale.height / 2, 
+        "gamescreen");
+        this.image?.setDisplaySize( (this.scale.width) - SplashScreen.IMAGE_BORDER_PADDING, (this.scale.height) - SplashScreen.IMAGE_BORDER_PADDING );
+        
+
         this.splashText = this.add.text(
             this.scale.width / 2, 
-            this.scale.height / 2, 
+            SplashScreen.TEXT_TOP_PADDING, 
             'ShyHumanGames LLC - Click to Start', 
-            { font: '18px Arial', color: '#ffffff' }
+            { font: 'bold 18px Arial', color: '#ffffff' }
         );
         this.splashText.setOrigin(0.5);
         this.splashText.setDepth(1);
@@ -78,10 +92,17 @@ export class SplashScreen extends Phaser.Scene {
 
         
         this.scale.setGameSize(w, h);
-        this.splashText?.setPosition(w / 2, h / 2);
+        this.splashText?.setPosition(w / 2, SplashScreen.TEXT_TOP_PADDING);
         this.splashText?.setDepth(1);
         
+        
+        this.image?.setPosition(w / 2, h / 2);
+        this.image?.setDisplaySize( (w) - SplashScreen.IMAGE_BORDER_PADDING, (h) - SplashScreen.IMAGE_BORDER_PADDING );
+
+        
     }
+
+  
 
 }
 

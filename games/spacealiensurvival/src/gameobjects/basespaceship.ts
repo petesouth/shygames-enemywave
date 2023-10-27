@@ -103,6 +103,9 @@ export class BaseSpaceship extends BaseExplodable {
         this.bullets.forEach(bullet => bullet.destroy());
         this.missiles.forEach(missile => missile.destroy());
         this.mines.forEach(mine => mine.destroy());
+
+        this.stopSheildSound();
+        this.stopThrustSound();
     }
 
     public explode(): void {
@@ -430,7 +433,11 @@ export class BaseSpaceship extends BaseExplodable {
     
                 // Amplify the impulse for a more pronounced bumping effect
                 const amplifiedImpulse = impulseMagnitude * 1.5;  // Adjust the multiplier as needed to get the desired effect
-    
+                
+                // Apply amplified impulse to the target object
+                this.getVelocity().x += amplifiedImpulse * massTarget * collisionNormal.x;
+                this.getVelocity().y += amplifiedImpulse * massTarget * collisionNormal.y;
+
                 // Apply amplified impulse to the target object
                 targetObj.getVelocity().x += amplifiedImpulse * massThis * collisionNormal.x;
                 targetObj.getVelocity().y += amplifiedImpulse * massThis * collisionNormal.y;
