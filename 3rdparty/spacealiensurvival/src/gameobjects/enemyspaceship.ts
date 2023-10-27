@@ -7,6 +7,11 @@ import { BaseExplodableState } from './baseExplodable';
 export class EnemySpaceship extends BaseSpaceship {
     private playerSpaceship: BaseSpaceship;
     public isBoss: boolean = false;
+    private jetTime: number = Date.now();
+    private jetOn: boolean = false;
+    private jetOffTimeWait: number = 5000;
+    private jetOnTimeWait: number = 700;
+
     public speedMultiplier: number = 12;  // Add this property to your class
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
@@ -35,6 +40,7 @@ export class EnemySpaceship extends BaseSpaceship {
         }
         this.maxPopSize = 60;
         this.baseSpaceshipDisplay?.spawn(this.initialPositionOffset);
+        this.exhaustFlame.hide();
     }
 
     public explode(): void {
@@ -60,38 +66,64 @@ export class EnemySpaceship extends BaseSpaceship {
             return;
         }
 
+
+        let difference = Date.now() - this.jetTime;
+        if (this.jetOn === false && difference > this.jetOnTimeWait) {
+            console.log("difference", difference);
+            this.playThrustSound();
+            this.exhaustFlame.show();
+            this.jetTime = Date.now();
+            this.jetOn = true;
+        } else if (this.jetOn === true && difference > this.jetOffTimeWait) {
+            this.exhaustFlame.hide();
+            this.stopThrustSound();
+            this.jetTime = Date.now();
+            this.jetOn = false;
+        }
+
         const centroid = this.getCentroid();
         const playerCentroid = this.playerSpaceship.getCentroid();
         const angleToPlayer = Math.atan2(playerCentroid.y - centroid.y, playerCentroid.x - centroid.x);
 
         // Randomized Angle Adjustment
-        const randomAngleOffset = Phaser.Math.Between(-5, 5) * (Math.PI / 180);  // +/- 5 degrees in radians
+        const randomAngleOffset = Phaser.Math.Between(-15, 15) * (Math.PI / 180);  // +/- 15 degrees in radians
         const adjustedAngleToPlayer = angleToPlayer + randomAngleOffset;
 
-        // Calculate the target point 100 pixels away from the player, along the line from the enemy to the player
-        const targetX = playerCentroid.x - this.getObjectWidthHeight().width * Math.cos(adjustedAngleToPlayer);
-        const targetY = playerCentroid.y - this.getObjectWidthHeight().width * Math.sin(adjustedAngleToPlayer);
+        // Calculate the target point with some random offset for slop
+        const randomOffset = Phaser.Math.Between(-50, 50);  // +/- 50 pixels
+        const targetX = playerCentroid.x - (this.getObjectWidthHeight().width + randomOffset) * Math.cos(adjustedAngleToPlayer);
+        const targetY = playerCentroid.y - (this.getObjectWidthHeight().width + randomOffset) * Math.sin(adjustedAngleToPlayer);
 
         const directionX = targetX - centroid.x;
         const directionY = targetY - centroid.y;
         const angle = Math.atan2(directionY, directionX);
 
-        this.velocity.x += this.thrust * Math.cos(angle);
-        this.velocity.y += this.thrust * Math.sin(angle);
+        // Randomized Thrust
+        const randomThrustOffset = Phaser.Math.FloatBetween(-0.1, 0.1) * this.thrust;
+        const effectiveThrust = (this.jetOn === true) ? (this.thrust + randomThrustOffset) : 1;
 
-        this.velocity.x *= this.damping;
-        this.velocity.y *= this.damping;
+        this.velocity.x += effectiveThrust * Math.cos(angle);
+        this.velocity.y += effectiveThrust * Math.sin(angle);
+        // Randomized Damping
+        const randomDampingOffset = Phaser.Math.FloatBetween(-0.01, 0.01);
+        const effectiveDamping = this.damping + randomDampingOffset;
+
+        this.velocity.x *= effectiveDamping;
+        this.velocity.y *= effectiveDamping;
+
+
 
         // Check the magnitude of the velocity vector
         const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
 
-        // If the speed exceeds the maximum, scale back the velocity vector
         if (speed > this.maxSpeed) {
             const scale = this.maxSpeed / speed;
             this.velocity.x *= scale;
             this.velocity.y *= scale;
         }
-        this.exhaustFlame.show();
+
+
+
     }
 
 

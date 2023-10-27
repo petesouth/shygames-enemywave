@@ -9,7 +9,7 @@ class FlamePoint extends Phaser.Geom.Point {
 export class ExhaustFlame {
     private points: FlamePoint[];
     private graphics: Phaser.GameObjects.Graphics;
-    private visible: boolean = false;
+    public visible: boolean = false;
     private base: BaseSpaceshipDisplay;
     private scene: Phaser.Scene;
 
