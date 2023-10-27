@@ -23,18 +23,28 @@ export class SplashScreen extends Phaser.Scene {
 
     public static textureNames = ["bricks", 
                                   "bricks2", 
-                                  "metal", 
                                   "ground", 
-                                  "rustywall", 
-                                  "rustywall2", 
-                                  "treewood"];
+                                  "rustywall"];
 
 
     constructor() {
         super('SplashScreen');
+
     }
 
     preload() {
+        
+        this.splashText = this.add.text(
+            this.scale.width / 2, 
+            SplashScreen.TEXT_TOP_PADDING, 
+            'Loading...', 
+            { font: 'bold 18px Arial', color: '#ffffff' }
+        );
+        
+        this.splashText.setOrigin(0.5);
+        this.splashText.setDepth(1);
+
+
         this.load.audio('thrust', 'sound/thrust.mp3');
         this.load.audio('bullet', 'sound/bullet.mp3');
         this.load.audio('missile', 'sound/missile.mp3');
@@ -62,17 +72,12 @@ export class SplashScreen extends Phaser.Scene {
         "gamescreen");
         this.image?.setDisplaySize( (this.scale.width) - SplashScreen.IMAGE_BORDER_PADDING, (this.scale.height) - SplashScreen.IMAGE_BORDER_PADDING );
         
+        this.splashText?.setText('ShyHumanGames LLC - Click to Start');
+        this.splashText?.setOrigin(0.5);
+        this.splashText?.setDepth(1);
 
-        this.splashText = this.add.text(
-            this.scale.width / 2, 
-            SplashScreen.TEXT_TOP_PADDING, 
-            'ShyHumanGames LLC - Click to Start', 
-            { font: 'bold 18px Arial', color: '#ffffff' }
-        );
-        this.splashText.setOrigin(0.5);
-        this.splashText.setDepth(1);
 
-        this.input.on('pointerdown', () => {
+       this.input.on('pointerdown', () => {
             this.scene.start('MainScene');
         });
 

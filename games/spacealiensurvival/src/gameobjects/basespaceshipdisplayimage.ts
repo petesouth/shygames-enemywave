@@ -10,11 +10,11 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     protected image: Phaser.GameObjects.Image;
     protected squaresize: number = 50;
 
-    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, imageNameKey: string, initialPositionOffset: number = 400, spaceshipColor: number = 12632256, sqauresize: number = 50) {
+    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, imageNameKey: string, initialPositionOffset: number = 400, spaceshipColor: number = 12632256, squaresize: number = 50) {
         this.initialPositionOffset = initialPositionOffset;
         this.scene = scene;
         this.graphics = graphics;
-        this.squaresize = sqauresize;
+        this.squaresize = squaresize;
         this.spaceshipColor = spaceshipColor;
 
         // Create the square polygon with the top side facing upwards
@@ -30,8 +30,21 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         this.image.setOrigin(0.5); // Center the image on its position
         const centroid = this.getCentroid();
         this.image.setPosition(centroid.x, centroid.y);
-        let width = (this.image.displayHeight / this.image.displayWidth) * sqauresize;
-        this.image.setDisplaySize(width, sqauresize); // Set the size to match the square
+        
+        let width, height;
+
+        if (this.image.displayWidth >= this.image.displayHeight) {
+            // Width is the longest side or they're equal
+            width = squaresize;
+            height = (this.image.displayHeight / this.image.displayWidth) * squaresize;
+        } else {
+            // Height is the longest side
+            height = squaresize;
+            width = (this.image.displayWidth / this.image.displayHeight) * squaresize;
+        }
+        
+        this.image.setDisplaySize(width, height);
+        
 
         this.image.setVisible(false);
 

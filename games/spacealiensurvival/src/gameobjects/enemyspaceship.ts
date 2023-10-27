@@ -17,7 +17,7 @@ export class EnemySpaceship extends BaseSpaceship {
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
         super(scene, SpaceShipType.IMAGE, (bossmode !== true) ? "enemyspaceship" : "bossenemyspaceship",
             distanceFromLeftCorner,
-            (bossmode == true) ? 0x006400 : 0xFF0000, (bossmode !== true) ? 40 : 40);
+            (bossmode == true) ? 0x006400 : 0xFF0000, (bossmode !== true) ? 50 : 40);
 
         this.isBoss = bossmode;
         this.thrust = .5;
