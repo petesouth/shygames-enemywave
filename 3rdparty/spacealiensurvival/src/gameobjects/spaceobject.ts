@@ -209,7 +209,7 @@ export class SpaceObject {
         return this.polygon;
     }
 
-    getVelocity() {
+    getVelocity() : Phaser.Math.Vector2 {
         return this.velocity;
     }
 

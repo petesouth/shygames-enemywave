@@ -54,7 +54,6 @@ export abstract class BaseExplodable {
     public abstract drawObjectAlive() : void;
 
     public drawObjectIsDead() : void {
-        // NO OP
     }
 
     public drawExplosion() : boolean {

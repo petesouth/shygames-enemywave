@@ -1,29 +1,21 @@
 import Phaser from 'phaser';
 import { BaseSpaceship, SpaceShipType } from './basespaceship';
-import { Bullet } from './bullet';
-import { Missile } from './missile';
-import { BaseExplodable, BaseExplodableState } from './baseExplodable';
-import { PlayerSpaceship } from './playerspaceship';
-import { ForceField } from './forcefield';
 import gGameStore from '../store/store';
 import { gameActions } from '../store/gamestore';
-
-
+import { BaseExplodableState } from './baseExplodable';
 
 export class EnemySpaceship extends BaseSpaceship {
-
-
     private playerSpaceship: BaseSpaceship;
     public isBoss: boolean = false;
-
+    public speedMultiplier: number = 12;  // Add this property to your class
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
         super(scene, SpaceShipType.IMAGE, (bossmode !== true) ? "enemyspaceship" : "bossenemyspaceship",
             distanceFromLeftCorner,
             (bossmode == true) ? 0x006400 : 0xFF0000);
 
-
         this.isBoss = bossmode;
+        this.thrust = .5;
         this.playerSpaceship = playerSpaceship;
         this.shieldKey = undefined;
         this.fireKey = undefined;
@@ -43,7 +35,6 @@ export class EnemySpaceship extends BaseSpaceship {
         }
         this.maxPopSize = 60;
         this.baseSpaceshipDisplay?.spawn(this.initialPositionOffset);
-
     }
 
     public explode(): void {
@@ -63,60 +54,82 @@ export class EnemySpaceship extends BaseSpaceship {
         }
     }
 
+
     public calculateVelocity(): void {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-
+    
         const centroid = this.getCentroid();
         const playerCentroid = this.playerSpaceship.getCentroid();
-
-        // If the enemy is closer than 40 pixels to the player, reduce its speed
-        const distanceToPlayer = Phaser.Math.Distance.Between(centroid.x, centroid.y, playerCentroid.x, playerCentroid.y);
-        let effectiveThrust = this.thrust;
-        const baseSpaceshipDisplayWidth: number = this.baseSpaceshipDisplay.getDistanceFromTopToBottom();
-
-        if (distanceToPlayer < 80) { // Considering 80 because 40 pixels is the buffer, so we start slowing down when we are 80 pixels away
-            effectiveThrust *= (baseSpaceshipDisplayWidth - 80) / 80;
-        }
-
-        const directionX = playerCentroid?.x - centroid.x;
-        const directionY = playerCentroid?.y - centroid.y;
+        const angleToPlayer = Math.atan2(playerCentroid.y - centroid.y, playerCentroid.x - centroid.x);
+    
+        // Randomized Angle Adjustment
+        const randomAngleOffset = Phaser.Math.Between(-5, 5) * (Math.PI / 180);  // +/- 5 degrees in radians
+        const adjustedAngleToPlayer = angleToPlayer + randomAngleOffset;
+    
+        // Calculate the target point 100 pixels away from the player, along the line from the enemy to the player
+        const targetX = playerCentroid.x - this.getObjectWidthHeight().width * Math.cos(adjustedAngleToPlayer);
+        const targetY = playerCentroid.y - this.getObjectWidthHeight().width * Math.sin(adjustedAngleToPlayer);
+    
+        const directionX = targetX - centroid.x;
+        const directionY = targetY - centroid.y;
         const angle = Math.atan2(directionY, directionX);
-
+    
+        // Randomized Thrust
+        const randomThrustOffset = Phaser.Math.FloatBetween(-0.1, 0.1) * this.thrust;
+        const effectiveThrust = (this.thrust + randomThrustOffset) * this.speedMultiplier;
+    
         this.velocity.x += effectiveThrust * Math.cos(angle);
         this.velocity.y += effectiveThrust * Math.sin(angle);
-
-        this.velocity.x *= this.damping;
-        this.velocity.y *= this.damping;
-
+    
+        // Randomized Damping
+        const randomDampingOffset = Phaser.Math.FloatBetween(-0.01, 0.01);
+        const effectiveDamping = this.damping + randomDampingOffset;
+    
+        this.velocity.x *= effectiveDamping;
+        this.velocity.y *= effectiveDamping;
+    
+        // Check the magnitude of the velocity vector
+        const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
+    
+        // If the speed exceeds the maximum, scale back the velocity vector
+        if (speed > this.maxSpeed) {
+            const scale = this.maxSpeed / speed;
+            this.velocity.x *= scale;
+            this.velocity.y *= scale;
+        }
+    
         this.exhaustFlame.show();
-
-
+    
+        this.velocity.x *= effectiveDamping;
+        this.velocity.y *= effectiveDamping;
     }
+    
+
 
     public calculateRotation(): void {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-    
+
         const playerCentroid = this.playerSpaceship.getCentroid();
         const centroid = this.getCentroid();
-    
+
         // Calculate the angle from the enemy spaceship to the player
         const angleToPlayer = Math.atan2(playerCentroid.y - centroid.y, playerCentroid.x - centroid.x);
-    
+
         // Get the current forward angle of the enemy spaceship
         const forwardAngle = this.baseSpaceshipDisplay.getForwardAngle();
-    
+
         // Calculate the angle difference, ensuring it remains within the range [-π, π]
         let angleDifference = angleToPlayer - forwardAngle;
         while (angleDifference > Math.PI) angleDifference -= 2 * Math.PI;
         while (angleDifference < -Math.PI) angleDifference += 2 * Math.PI;
-    
+
         // If the angle difference is significant (e.g., greater than a small threshold),
         // rotate the enemy spaceship to point more directly towards the player
-        const rotationThreshold = 0.01;  // Adjust this value as needed
+        const rotationThreshold = .1;  // Adjust this value as needed
         if (Math.abs(angleDifference) > rotationThreshold) {
             this.baseSpaceshipDisplay.rotateAroundPoint(angleDifference);
         }
@@ -134,9 +147,7 @@ export class EnemySpaceship extends BaseSpaceship {
         }
 
         super.handleBullets(spaceShips);
-
     }
-
 
     public handleMissiles(spaceShips: BaseSpaceship[]) {
         if (!this.baseSpaceshipDisplay) {
@@ -153,10 +164,4 @@ export class EnemySpaceship extends BaseSpaceship {
 
         super.handleMissiles(spaceShips);
     }
-
-
-
-
-
-
 }

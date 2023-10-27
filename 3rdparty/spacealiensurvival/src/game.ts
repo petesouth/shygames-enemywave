@@ -4,7 +4,6 @@ import { EnemySpaceship } from './gameobjects/enemyspaceship';
 import { SpaceObject } from './gameobjects/spaceobject';
 import { BaseExplodableState } from './gameobjects/baseExplodable';
 import gGameStore from './store/store';
-import { BaseSpaceship } from './gameobjects/basespaceship';
 
 
 const num_ships = 2;
@@ -441,8 +440,8 @@ export class MainScene extends Phaser.Scene {
         this.playerspaceship.render();
         this.playerspaceship.renderWeapons();
         this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
-        this.playerspaceship.detectSpaceshipBounceCollisions(this.enemyspaceships);
-        this.playerspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+        this.playerspaceship.detectBounceCollisions(this.enemyspaceships);
+        this.playerspaceship.detectBounceCollisions(this.spaceObjects);
             
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
@@ -464,8 +463,8 @@ export class MainScene extends Phaser.Scene {
             tenemyspaceship.render();
             tenemyspaceship.renderWeapons();
             tenemyspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
-            tenemyspaceship.detectSpaceshipBounceCollisions([this.playerspaceship, ...this.enemyspaceships]);
-            tenemyspaceship.detectSpaceObjctBounceCollisions(this.spaceObjects);
+            tenemyspaceship.detectBounceCollisions([this.playerspaceship, ...this.enemyspaceships]);
+            tenemyspaceship.detectBounceCollisions(this.spaceObjects);
             
         };
 

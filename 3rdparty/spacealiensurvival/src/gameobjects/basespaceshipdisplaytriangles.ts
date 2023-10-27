@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
-import { BaseSpaceship } from './basespaceship';
+
 import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
+import { BaseSpaceship } from './basespaceship';
 
 export class BaseSpaceshipDisplayTriangles implements BaseSpaceshipDisplay {
     protected spaceShipShape: Phaser.Geom.Triangle;

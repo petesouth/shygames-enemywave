@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BaseSpaceship, SpaceShipType } from './basespaceship';
+import { SpaceShipType, BaseSpaceship } from './basespaceship';
 import { BaseExplodableState } from './baseExplodable';
 import { gameActions } from '../store/gamestore';
 import gGameStore from '../store/store';
