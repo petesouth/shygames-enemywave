@@ -1,1 +1,1 @@
-rm -rf ../../docs/spacealiensurvival/ && rm -rf build && rm -rf node_modules/ && npm install --save && npm run build && npm mv build ../../docs/spacealiensurvival
+rm -rf build && npm run build && mv build ../../docs/spacealiensurvival
