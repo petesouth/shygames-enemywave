@@ -55,9 +55,9 @@ export class SplashScreen extends Phaser.Scene {
 
         
         this.load.image('gamescreen', 'images/gamescreen.png');
-        this.load.image('spaceship', 'images/spaceship.png');
-        this.load.image('enemyspaceship', 'images/enemyspaceship.png');
-        this.load.image('bossenemyspaceship', 'images/bossenemyspaceship.png');
+        this.load.image('spaceship', 'images/spaceship2.png');
+        this.load.image('enemyspaceship', 'images/enemyspaceship2.png');
+        this.load.image('bossenemyspaceship', 'images/bossenemyspaceship2.png');
 
         SplashScreen.textureNames.forEach((texture)=>{
             this.load.image(texture, 'textures/' + texture + '.png');
