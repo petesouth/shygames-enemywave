@@ -15,12 +15,12 @@ export const GameFeedGamePanel = ({ imageSrc, title, description, onPlay }: Game
     return (
         <Row>
             <Col>
-                <div className="d-flex justify-content-center align-items-center">
-                    <Card className={classes.gameCard + " " + classes.content}>
+                <div className="d-flex justify-content-center" style={{ marginTop: 20, paddingBottom: 20, width: "100%" }}>
+                    <Card className={classes.gameCard + " " + classes.content} style={{ width: "90%" }}>
                         <Card.Body>
                             <Row>
                                 <Col xs={12} md={10} lg={8} xl={6} className="mx-auto">
-                                <h6 style={{ color: colors.grey[600] }}>{title}</h6>
+                                    <h6 style={{ color: colors.grey[600] }}>{title}</h6>
                                 </Col>
                             </Row>
                         </Card.Body>
