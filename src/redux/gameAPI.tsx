@@ -27,8 +27,8 @@ export const initialGameFeedState: GameFeedState = {
 
 const hardcodedGameList = [
   { id: 1,
-    title: "Space Alient Survivor",
-    description: "Come play this amazing space alient battle!!!  Watch your ship grow more and more powerful as each wave of enemies gain in number and abilities",
+    title: "Space Alien Survivor",
+    description: "Come play this amazing space alien battle!!!  Watch your ship grow more and more powerful as each wave of enemies gain in number and abilities",
     gameImage: "https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/images/gamescreen.png",
     url: "https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html",
     width: 800,
