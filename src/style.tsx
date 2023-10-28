@@ -25,14 +25,13 @@ export const getGlobalStyles = makeStyles({
   },
   content: {
     flex: "d-flex",
-    marginTop: "80px",
+    marginTop: "40px",
     maxWidth: "100%",
-    padding: "20px",
+    width: "100%",
     textAlign: "center",
     
   },
   gameCard: {
-    minWidth: 300,
-    padding: 20
+   // width: "90%"
   }
 });

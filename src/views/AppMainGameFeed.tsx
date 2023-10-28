@@ -1,3 +1,5 @@
+import React, { useRef } from "react";
+
 import { useDispatch, useSelector } from "react-redux";
 import { Game as FeedGame, fetchGames } from "../redux/gameAPI";
 import { getGlobalStyles } from "../style";
@@ -6,7 +8,6 @@ import { GameFeedGamePanel } from "../components/gamefeed/GameFeedGamePanel";
 import { useEffect, useState } from "react";
 import { AnyAction } from "redux";
 
-import shyhumanGamesRobotImage from "../assets/ShyHumanGamesRobot.png";
 import { useNavigate } from "react-router-dom";
 
 const appName: string = (process.env.REACT_APP_APP_NAME) ? process.env.REACT_APP_APP_NAME : "REACT_APP_APP_NAME NOT FOUND PLEASE DEFINE"
@@ -19,6 +20,8 @@ export interface AppMainGameFeedProps {
 export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
   const classes = getGlobalStyles();
   const navigate = useNavigate();
+
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const [gamePanel, setGamePanel] = useState<JSX.Element | null>(null);
   const gameList = useSelector<any, FeedGame[]>((state) => state.games.gameList);
@@ -33,7 +36,7 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
 
       <div className={classes.header}>
         <h4 style={{ color: "grey" }}>{appName}</h4>
-        <Image width={30} height={30} src={shyhumanGamesRobotImage} />
+        <Image width={30} height={30} src={"/images/ShyHumanGamesRobot.png"} />
       </div>
 
       <div className={classes.content}>
@@ -52,12 +55,33 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
                         <Card>
                           <Card.Header>{game.title}</Card.Header>
                           <Card.Body>
-                           <iframe src={game.url} width={game.width} height={game.height} />
+                            <iframe ref={iframeRef}
+                              src={game.url}
+                              width={"80%"}
+                              height={game.height}
+                              allowFullScreen
+                              allow="fullscreen" />
                           </Card.Body>
                           <Card.Body>
-                            <Button onClick={()=>{
-                              setGamePanel(null);
-                            }}>STOP</Button>
+                            <div className="d-flex justify-content-center">
+                              <Row>
+                                <Col>
+                                  <Button className="d-flex align-items-center" style={{ width: 120 }} onClick={() => {
+                                    setGamePanel(null);
+                                  }}>
+                                    <span className="material-icons mr-2">arrow_back</span>
+                                    Games
+                                  </Button>
+                                </Col>
+                                <Col>
+                                  <Button  style={{ width: 120 }} onClick={() => {
+                                    if (iframeRef.current) {
+                                      iframeRef.current.src += '';
+                                    }
+                                  }}>Reload</Button>
+                                </Col>
+                              </Row>
+                            </div>
                           </Card.Body>
                         </Card>
                       </Col>
