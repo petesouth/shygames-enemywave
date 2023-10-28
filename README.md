@@ -26,7 +26,8 @@ A C# Application that seamlessly renders a browser window over its panel area, i
 
 # For a demo of the games, visit:
 
-- [Demo Game](https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html)
+- [Shy Human Games - Game Feed Live](https://petesouth.github.io/shyhumangames-gamefeed/)
+- [games/spacealiensurvival](https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html)
 
 ### Copyright 2023 ShyHumanGames LLC
 
