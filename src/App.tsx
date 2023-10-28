@@ -10,7 +10,7 @@ const AppRouter = () => {
 
   return (<Router >
     <Routes>
-      <Route path="/docs/" element={<AppMainGameFeed />} />
+      <Route path="/shyhumangames-gamefeed/" element={<AppMainGameFeed />} />
       <Route path="/" element={<AppMainGameFeed />} />
     </Routes>
   </Router>)
