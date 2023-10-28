@@ -74,11 +74,26 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
                                   </Button>
                                 </Col>
                                 <Col>
-                                  <Button  style={{ width: 120 }} onClick={() => {
+                                  <Button style={{ width: 120 }} onClick={() => {
                                     if (iframeRef.current) {
                                       iframeRef.current.src += '';
                                     }
                                   }}>Reload</Button>
+                                </Col>
+                                <Col>
+                                  <Button style={{ width: 120 }} onClick={() => {
+                                    if (iframeRef.current) {
+                                      if ((iframeRef.current as any).requestFullscreen) {
+                                        (iframeRef.current as any).requestFullscreen();
+                                      } else if ((iframeRef.current as any).mozRequestFullScreen) { // Firefox
+                                        (iframeRef.current as any).mozRequestFullScreen();
+                                      } else if ((iframeRef.current as any).webkitRequestFullscreen) { // Chrome, Safari, and Opera
+                                        (iframeRef.current as any).webkitRequestFullscreen();
+                                      } else if ((iframeRef.current as any).msRequestFullscreen) { // IE/Edge
+                                        (iframeRef.current as any).msRequestFullscreen();
+                                      }
+                                    }
+                                  }}>Fullscreen</Button>
                                 </Col>
                               </Row>
                             </div>

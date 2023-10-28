@@ -45,7 +45,7 @@ export const GameFeedGamePanel = ({ imageSrc, title, description, onPlay }: Game
                             <Container>
                                 <Row>
                                     <Col>
-                                        <Button onClick={() => onPlay()}>Play</Button>
+                                        <Button onClick={() => onPlay()}>View Details</Button>
                                     </Col>
                                 </Row>
                             </Container>
