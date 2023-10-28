@@ -10,7 +10,7 @@ import { AnyAction } from "redux";
 
 import { useNavigate } from "react-router-dom";
 
-const appName: string = (process.env.REACT_APP_APP_NAME) ? process.env.REACT_APP_APP_NAME : "REACT_APP_APP_NAME NOT FOUND PLEASE DEFINE"
+const appName: string = "Shy Human Games"
 
 
 export interface AppMainGameFeedProps {
