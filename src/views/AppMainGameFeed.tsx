@@ -36,7 +36,7 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
 
       <div className={classes.header}>
         <h4 style={{ color: "grey" }}>{appName}</h4>
-        <Image width={30} height={30} src={"/images/ShyHumanGamesRobot.png"} />
+        <Image width={30} height={30} src={"./images/ShyHumanGamesRobot.png"} />
       </div>
 
       <div className={classes.content}>
