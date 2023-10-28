@@ -64,8 +64,14 @@ export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
                         }
                       }}>Reload</Button>
                     </Col>
+                  </Row>
+                </div>
+              </Card.Body>
+              <Card.Body>
+                <div className="d-flex justify-content-center">
+                  <Row>
                     <Col>
-                      <Button style={{ width: 120 }} onClick={() => {
+                    <Button className="d-flex justify-content-center align-items-center" style={{ width: 120, textAlign: "center" }} onClick={() => {
                         if (iframeRef.current) {
                           if ((iframeRef.current as any).requestFullscreen) {
                             (iframeRef.current as any).requestFullscreen();
