@@ -6,11 +6,9 @@ import { BaseExplodableState } from './gameobjects/baseExplodable';
 import gGameStore from './store/store';
 
 
-const num_ships = 2;
-const SPAWN_TIME = 20000; // 30 seconds in milliseconds
+const num_ships = 4;
+const SPAWN_TIME = 15000; // 30 seconds in milliseconds
 
-
-  
  
   
 export class SplashScreen extends Phaser.Scene {
@@ -25,6 +23,8 @@ export class SplashScreen extends Phaser.Scene {
                                   "bricks2", 
                                   "ground", 
                                   "rustywall"];
+
+    public static enemySpaceships = ["enemyspaceship3", "enemyspaceship3B", "enemyspaceship3C", "bossenemyspaceship3"]
 
 
     constructor() {
@@ -55,9 +55,12 @@ export class SplashScreen extends Phaser.Scene {
 
         
         this.load.image('gamescreen', 'images/gamescreen.png');
-        this.load.image('spaceship', 'images/spaceship2.png');
-        this.load.image('enemyspaceship', 'images/enemyspaceship2.png');
-        this.load.image('bossenemyspaceship', 'images/bossenemyspaceship2.png');
+        this.load.image('playerspaceship', 'images/playerspaceship3.png');
+        
+        SplashScreen.enemySpaceships.forEach((spaceship)=>{
+            this.load.image(spaceship, 'images/' + spaceship + '.png');
+        });
+
 
         SplashScreen.textureNames.forEach((texture)=>{
             this.load.image(texture, 'textures/' + texture + '.png');
@@ -506,9 +509,8 @@ export class MainScene extends Phaser.Scene {
 
         if (this.enemyspaceships.length < num_ships) {
             // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
-            const isBoss = (this.enemyspaceships.length == 0);
+            const isBoss = Phaser.Math.Between(0,100) > 80;
             this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship, isBoss ));
-            
         }
 
     }

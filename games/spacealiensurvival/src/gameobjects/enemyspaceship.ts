@@ -3,6 +3,7 @@ import { BaseSpaceship, SpaceShipType } from './basespaceship';
 import gGameStore from '../store/store';
 import { gameActions } from '../store/gamestore';
 import { BaseExplodableState } from './baseExplodable';
+import { SplashScreen } from '../game';
 
 export class EnemySpaceship extends BaseSpaceship {
     private playerSpaceship: BaseSpaceship;
@@ -15,7 +16,7 @@ export class EnemySpaceship extends BaseSpaceship {
     public speedMultiplier: number = 12;  // Add this property to your class
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
-        super(scene, SpaceShipType.IMAGE, (bossmode !== true) ? "enemyspaceship" : "bossenemyspaceship",
+        super(scene, SpaceShipType.IMAGE, Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships),
             distanceFromLeftCorner,
             (bossmode == true) ? 0x006400 : 0xFF0000, (bossmode !== true) ? 50 : 40);
 
