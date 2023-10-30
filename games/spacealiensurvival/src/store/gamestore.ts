@@ -10,7 +10,8 @@ const gameSliceInitialState = {
   message: "Welcome to Space Survive. Press Start to play.",
   playerSpaceShipKilled: 0,
   enemiesKilled: 0,
-  currentLevel: 0
+  currentLevel: 0,
+  highestLevel: 0,
 };
 
 const gameSlice = createSlice({
@@ -19,6 +20,9 @@ const gameSlice = createSlice({
   reducers: {
     incrementCurrentLevel: (state, action : PayloadAction<{ }>) => {
       state.currentLevel += 1;
+      if( state.currentLevel > state.highestLevel ) {
+        state.highestLevel = state.currentLevel;
+      }
     },
     startCurrentLevel: (state, action : PayloadAction<{ }>) => {
       state.currentLevel = 0;

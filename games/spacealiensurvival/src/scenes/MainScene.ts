@@ -15,7 +15,7 @@ export class MainScene extends Phaser.Scene {
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
 
-    private timerBetweenLevels: number = Date.now();
+    private timerBetweenLevels: number = -1;
     private timerBetweenLevelsWaitCount: number = 12000;
     private betweenGames: boolean = false;
     private spaceObjects: SpaceObject[] = [];
@@ -55,7 +55,7 @@ export class MainScene extends Phaser.Scene {
                 ship.destroy();
             });
             this.enemyspaceships = [];
-            this.timerBetweenLevels = Date.now();
+            this.timerBetweenLevels = -1;
         }
     }
 
@@ -70,7 +70,6 @@ export class MainScene extends Phaser.Scene {
 
         this.mainSceneStartGameText.createStartGameText();
 
-        this.timerBetweenLevels = Date.now();
 
         setInterval(() => {
             if (this.scale.width < window.innerWidth ||
@@ -141,25 +140,42 @@ export class MainScene extends Phaser.Scene {
         };
 
 
+        this.calculateLevelAndEnemySpawning();
+
+
+    }
+
+    private calculateLevelAndEnemySpawning() {
+        // Player must be alive or this no-opts
         if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
 
             if (this.enemyspaceships.length < 1 && this.betweenGames === true) {
-                this.betweenGames = false;
+                // if 0 enemy and betweenGames is true spawn enemis Time to Assault the player
+                // With a wave of enemies.
 
-                const game: {
-                    message: string;
-                    playerSpaceShipKilled: number;
-                    enemiesKilled: number;
-                    currentLevel: number;
-                } = gGameStore.getState().game;
+                this.betweenGames = false;
+                this.timerBetweenLevels = -1;
+
+                const game = gGameStore.getState().game;
 
                 for (let i = 0; i < game.currentLevel; ++i) {
                     this.spawnEnemy();
                 }
 
+            
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
+                this.timerBetweenLevels === -1) {
+                // In shit scenario all enemies have been destroyed or not yet created.
+                // So Ill start the timer.
+                this.timerBetweenLevels = Date.now();
+                this.playerspaceship.hitpoints = 10;
+
+            } else if (this.betweenGames === false &&
+                this.enemyspaceships.length < 1 &&
+                this.timerBetweenLevels !== -1 &&
                 (Date.now() - this.timerBetweenLevels) > this.timerBetweenLevelsWaitCount) {
+                // All good to go.  So set all the flags that lets start this level happen
 
                 this.playSuccessSound();
                 gGameStore.dispatch(gameActions.incrementCurrentLevel({}));
@@ -167,8 +183,6 @@ export class MainScene extends Phaser.Scene {
                 this.timerBetweenLevels = Date.now();
             }
         }
-
-
     }
 
     spawnEnemy() {
@@ -176,14 +190,14 @@ export class MainScene extends Phaser.Scene {
 
         const enemySpaceshipConfig: EnemySpaceshipConfig = {
             // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
-            thrust: 0.5,
-            hitpoints: 10,
-            fireRate: 1200,
-            missileFireRate: 5000,
-            imageKey: SplashScreen.enemySpaceships[0]
+            thrust: Phaser.Math.Between(.5,.8),
+            hitpoints: Phaser.Math.Between(5,20),
+            fireRate: Phaser.Math.Between(800,2000),
+            missileFireRate: Phaser.Math.Between(1000,7000),
+            imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
         };
 
-        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight, this.playerspaceship, enemySpaceshipConfig));
+        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + (this.enemyspaceships.length * 40), this.playerspaceship, enemySpaceshipConfig));
     }
 
     public createAsteroidsBasedOnScreenSize() {

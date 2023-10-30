@@ -94,18 +94,13 @@ export class MainSceneStartGameText {
             this.instructions.forEach(instruction => instruction.setVisible(false));
         }
 
-        const game: {
-            message: string;
-            playerSpaceShipKilled: number;
-            enemiesKilled: number;
-            currentLevel: number;
-        } = gGameStore.getState().game;
+        const game = gGameStore.getState().game;
 
 
         if (playerSpaceship?.state === BaseExplodableState.ALIVE) {
             this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - HitPoints: ${playerSpaceship.hitpoints}`);
         } else {
-            this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled}`);
+            this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - Highest Level: ${game.highestLevel}`);
         }
         this.scoreText?.setDepth(1);
     }
