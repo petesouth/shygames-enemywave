@@ -6,8 +6,8 @@ import { BaseExplodableState } from './gameobjects/baseExplodable';
 import gGameStore from './store/store';
 
 
-const num_ships = 4;
-const SPAWN_TIME = 15000; // 30 seconds in milliseconds
+const num_ships = 3;
+const SPAWN_TIME = 20000; // 30 seconds in milliseconds
 
  
   
@@ -19,12 +19,9 @@ export class SplashScreen extends Phaser.Scene {
     public splashText?: Phaser.GameObjects.Text;
     public image?: Phaser.GameObjects.Image;
 
-    public static textureNames = ["bricks", 
-                                  "bricks2", 
-                                  "ground", 
-                                  "rustywall"];
+    public static textureNames = ["bricks"];
 
-    public static enemySpaceships = ["enemyspaceship3", "enemyspaceship3B", "enemyspaceship3C", "bossenemyspaceship3"]
+    public static enemySpaceships = ["enemyspaceship4", "enemyspaceship4B", "bossenemyspaceship4"]
 
 
     constructor() {
@@ -55,7 +52,7 @@ export class SplashScreen extends Phaser.Scene {
 
         
         this.load.image('gamescreen', 'images/gamescreen.png');
-        this.load.image('playerspaceship', 'images/playerspaceship3.png');
+        this.load.image('playerspaceship', 'images/playerspaceship4.png');
         
         SplashScreen.enemySpaceships.forEach((spaceship)=>{
             this.load.image(spaceship, 'images/' + spaceship + '.png');
@@ -570,12 +567,12 @@ export class MainScene extends Phaser.Scene {
 
 
 const config: Phaser.Types.Core.GameConfig = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     width: window.innerWidth,
     height: window.innerHeight,
     parent: 'game',
     fps: {
-        limit: 40,  // This will limit the game to 60 frames per second
+        limit: 60,  // This will limit the game to 60 frames per second
     },
     scene: [SplashScreen, MainScene],
     scale: {
