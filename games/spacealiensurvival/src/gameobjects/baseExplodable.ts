@@ -41,6 +41,7 @@ export abstract class BaseExplodable {
     }
 
     public destroy() {
+        this.graphics.clear();
         this.state = BaseExplodableState.DESTROYED;
     }
 

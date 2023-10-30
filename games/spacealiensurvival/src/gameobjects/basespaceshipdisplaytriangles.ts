@@ -39,6 +39,10 @@ export class BaseSpaceshipDisplayTriangles implements BaseSpaceshipDisplay {
         this.graphics.clear();
     }
 
+    destroy(): void {
+        this.hide();
+    }
+
 
     public rotateAroundPoint(rotationDifference: number) {
         let centroid = this.getCentroid();

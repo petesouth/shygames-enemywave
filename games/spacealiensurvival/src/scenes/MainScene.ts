@@ -6,94 +6,7 @@ import { BaseExplodableState } from '../gameobjects/baseExplodable';
 import gGameStore from '../store/store';
 import { gameActions } from '../store/gamestore';
 import { SplashScreen } from './SplashScreen';
-
-
-class MainSceneStartGameText {
-    private gameNameText: Phaser.GameObjects.Text | undefined;
-    private instructions: Phaser.GameObjects.Text[] = [];
-    private scoreText: Phaser.GameObjects.Text | undefined;
-   
-
-    constructor(private scene: Phaser.Scene) { }
-
-    createStartGameText() {
-        this.scoreText = this.scene.add.text(
-            20,
-            20,
-            'Player Kills: 0 - Level: 0',
-            { font: '16px Arial', color: '#ffffff' }
-        );
-
-        let offset = 60;
-
-        this.gameNameText = this.scene.add.text(
-            (window.innerWidth / 2),
-            offset,
-            'ShyHumanGames LLC - Space Alien Survival',
-            { font: '16px Arial', color: '#ffffff' }
-        );
-        this.gameNameText.setOrigin(0.5);
-        offset += 30;
-
-        const instructionTexts = [
-            'Game', 'R - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
-            'Movement', '\u2191 - Thrust Forward', '\u2190 - Rotate Left', '\u2192 - Rotate Right',
-            'Weapons', 'Space - Fire Cannon', 'G - Guided Missiles', 'M - Floating Mines', 'S - Shields'
-        ];
-
-        instructionTexts.forEach(instruction => {
-            let text = this.scene.add.text(
-                (window.innerWidth / 2),
-                offset,
-                instruction,
-                { font: '12px Arial', color: '#ffffff' }
-            );
-            text.setOrigin(0.5);
-            this.instructions.push(text);
-            offset += 15;
-        });
-    }
-
-    repositionStartGameText(w: number) {
-        let offset = 60;
-        this.gameNameText?.setPosition(w / 2, offset);
-        this.gameNameText?.setDepth(1);
-        offset += 30;
-
-        this.instructions.forEach(instruction => {
-            instruction.setPosition(w / 2, offset);
-            instruction.setDepth(1);
-            offset += 15;
-        });
-    }
-
-    displayGameText(playerSpaceship: any) {
-        if (playerSpaceship.state === BaseExplodableState.DESTROYED) {
-            this.gameNameText?.setVisible(true);
-            this.instructions.forEach(instruction => instruction.setVisible(true));
-        } else {
-            this.gameNameText?.setVisible(false);
-            this.instructions.forEach(instruction => instruction.setVisible(false));
-        }
-
-        const game: {
-            message: string,
-            playerSpaceShipKilled: number,
-            enemiesKilled: number,
-            currentLevel: number
-        } = gGameStore.getState().game;
-    
-
-        if (playerSpaceship?.state === BaseExplodableState.ALIVE) {
-            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled} - Level: ${game.currentLevel} - HitPoints: ${playerSpaceship.hitpoints}`);
-        } else {
-            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled} - Level: ${game.currentLevel}`);
-        }
-        this.scoreText?.setDepth(1);
-    }
-}
-
-
+import { MainSceneStartGameText } from './MainSceneStartGameText';
 
 
 export class MainScene extends Phaser.Scene {
@@ -102,7 +15,9 @@ export class MainScene extends Phaser.Scene {
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackground!: Phaser.GameObjects.Graphics;
 
-    private timerCount: number = 0;
+    private timerBetweenLevels: number = Date.now();
+    private timerBetweenLevelsWaitCount: number = 12000;
+    private betweenGames: boolean = false;
     private spaceObjects: SpaceObject[] = [];
     private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
@@ -124,10 +39,23 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    recreate() {
+    public playSuccessSound(): void {
+        let sound = this.sound.add('success', { loop: false });
+        sound.play();
+    }
+
+
+    startPlayerGame() {
         if (this.playerspaceship && this.playerspaceship.state === BaseExplodableState.DESTROYED) {
-            this.playerspaceship.spawn();
             gGameStore.dispatch(gameActions.startCurrentLevel({}));
+            this.playerspaceship.spawn();
+            this.stopGameSongSound();
+            this.betweenGames = true;
+            this.enemyspaceships.forEach((ship) => {
+                ship.destroy();
+            });
+            this.enemyspaceships = [];
+            this.timerBetweenLevels = Date.now();
         }
     }
 
@@ -142,7 +70,7 @@ export class MainScene extends Phaser.Scene {
 
         this.mainSceneStartGameText.createStartGameText();
 
-        this.timerCount = Date.now();
+        this.timerBetweenLevels = Date.now();
 
         setInterval(() => {
             if (this.scale.width < window.innerWidth ||
@@ -211,6 +139,35 @@ export class MainScene extends Phaser.Scene {
             tenemyspaceship.detectBounceCollisions([this.playerspaceship, ...this.enemyspaceships, ...this.spaceObjects]);
 
         };
+
+
+        if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
+
+            if (this.enemyspaceships.length < 1 && this.betweenGames === true) {
+                this.betweenGames = false;
+
+                const game: {
+                    message: string;
+                    playerSpaceShipKilled: number;
+                    enemiesKilled: number;
+                    currentLevel: number;
+                } = gGameStore.getState().game;
+
+                for (let i = 0; i < game.currentLevel; ++i) {
+                    this.spawnEnemy();
+                }
+
+            } else if (this.betweenGames === false &&
+                this.enemyspaceships.length < 1 &&
+                (Date.now() - this.timerBetweenLevels) > this.timerBetweenLevelsWaitCount) {
+
+                this.playSuccessSound();
+                gGameStore.dispatch(gameActions.incrementCurrentLevel({}));
+                this.betweenGames = true;
+                this.timerBetweenLevels = Date.now();
+            }
+        }
+
 
     }
 

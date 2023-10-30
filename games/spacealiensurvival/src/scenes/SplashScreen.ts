@@ -41,7 +41,9 @@ export class SplashScreen extends Phaser.Scene {
         this.load.audio('shield', 'sound/shield.mp3');
         this.load.audio('explosion', 'sound/explosion.mp3');
         this.load.audio('gamesong', 'sound/gamesong.mp3');
-
+        this.load.audio('fail', 'sound/fail.mp3');
+        this.load.audio('success', 'sound/success.mp3');
+        
 
         this.load.image('gamescreen', 'images/gamescreen.png');
         this.load.image('playerspaceship', 'images/playerspaceship4.png');

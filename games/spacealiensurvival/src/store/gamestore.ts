@@ -21,7 +21,7 @@ const gameSlice = createSlice({
       state.currentLevel += 1;
     },
     startCurrentLevel: (state, action : PayloadAction<{ }>) => {
-      state.currentLevel = 1;
+      state.currentLevel = 0;
     },
     incrementPlayersScore: (state, action : PayloadAction<{ }>) => {
       state.playerSpaceShipKilled += 1;

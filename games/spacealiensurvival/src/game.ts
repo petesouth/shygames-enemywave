@@ -59,7 +59,7 @@ export default class Game extends Phaser.Game {
             this.toggleFullscreen();
         } else if (event.keyCode === 82) {
             const mainScene = this.scene.getScene("MainScene") as MainScene;
-            mainScene.recreate();
+            mainScene.startPlayerGame();
         } else if (event.key === "Escape") {
             this.exitFullscreen();
         }

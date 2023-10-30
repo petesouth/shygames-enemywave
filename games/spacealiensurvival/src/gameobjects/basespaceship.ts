@@ -106,11 +106,13 @@ export class BaseSpaceship extends BaseExplodable {
 
         this.stopSheildSound();
         this.stopThrustSound();
+        this.baseSpaceshipDisplay?.destroy();
     }
 
     public explode(): void {
         this.baseSpaceshipDisplay?.hide();
-        super.explode();
+         super.explode();
+        
     }
 
     public isEverythingDestroyed() {
@@ -218,7 +220,13 @@ export class BaseSpaceship extends BaseExplodable {
         impactSound.play();
     }
 
+    public playFailSound(): void {
+        let sound = this.scene.sound.add('fail', { loop: false });
+        sound.play();
+    }
 
+
+    
     public calculateVelocity(): void {
         if (!this.baseSpaceshipDisplay) {
             return;
@@ -411,7 +419,7 @@ export class BaseSpaceship extends BaseExplodable {
           const targetRadius = Math.min(targetSize.width, targetSize.height) / 2;
       
           const distance = Phaser.Math.Distance.BetweenPoints(targetCentroid, centroidSpaceShip);
-          const combinedRadii = thisRadius + targetRadius;
+          const combinedRadii = (thisRadius + targetRadius) * .8;
       
           if (distance <= combinedRadii) {
             const collisionNormal = new Phaser.Math.Vector2(
@@ -428,7 +436,7 @@ export class BaseSpaceship extends BaseExplodable {
       
             const massThis = this.getVelocity().length();
             const massTarget = targetObj.getVelocity().length();
-            const e = 1; // Coefficient of restitution for an elastic collision
+            const e = .5; // Coefficient of restitution for an elastic collision
             const impulseScalar = (-(1 + e) * velocityAlongNormal) / (massThis + massTarget);
             const impulse = collisionNormal.clone().multiply(new Phaser.Math.Vector2(impulseScalar * massTarget, impulseScalar * massTarget));
       

@@ -16,4 +16,5 @@ export interface BaseSpaceshipDisplay {
     getDistanceFromTopToBottom(): number;
     getCollisionPoints(): Phaser.Geom.Point[];
     hide(): void;
+    destroy(): void
 }

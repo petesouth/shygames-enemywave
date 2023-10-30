@@ -20,6 +20,7 @@ export class PlayerSpaceship extends BaseSpaceship {
     public explode(): void {
         super.explode();
         gGameStore.dispatch( gameActions.incrementEnemiesScore({}) );
+        this.playFailSound();
     }
 
 

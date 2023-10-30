@@ -55,6 +55,11 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         this.image.setVisible(false);
     }
 
+    destroy(): void {
+        this.hide();
+        this.graphics.destroy();
+    }
+
     public getCentroid(): Phaser.Geom.Point {
         const { x, y } = this.squarePolygon.points.reduce((acc, point) => ({
             x: acc.x + point.x,
