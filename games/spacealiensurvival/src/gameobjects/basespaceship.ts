@@ -395,58 +395,50 @@ export class BaseSpaceship extends BaseExplodable {
 
 
     }
+
     public detectBounceCollisions(targetObjects: TargetObject[]) {
         if (!this.baseSpaceshipDisplay) {
-            return;
+          return;
         }
-    
+      
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
-    
+        const thisSize = this.getObjectWidthHeight();
+        const thisRadius = Math.min(thisSize.width, thisSize.height) / 2;
+      
         for (const targetObj of targetObjects) {
-            const distance = Phaser.Math.Distance.BetweenPoints(targetObj.getCentroid(), centroidSpaceShip);
-            const combinedRadii = (this.getObjectWidthHeight().width + targetObj.getObjectWidthHeight().width) / 4;  // Assuming objects are circles
-    
-            if (distance <= combinedRadii) {
-                const collisionNormal = new Phaser.Math.Vector2(
-                    centroidSpaceShip.x - targetObj.getCentroid().x,
-                    centroidSpaceShip.y - targetObj.getCentroid().y
-                ).normalize();
-    
-                const relativeVelocity = new Phaser.Math.Vector2(
-                    this.velocity.x - targetObj.getVelocity().x,
-                    this.velocity.y - targetObj.getVelocity().y
-                );
-    
-                const velocityAlongNormal = relativeVelocity.dot(collisionNormal);
-    
-                // Check if the objects are already moving apart
-                if (velocityAlongNormal > 0) {
-                    return;
-                }
-    
-                // Determine the mass based on the velocity magnitude - faster object is considered heavier
-                const massThis = this.velocity.length();
-                const massTarget = targetObj.getVelocity().length();
-    
-                // Compute the impulse magnitude
-                const impulseMagnitude = (2 * velocityAlongNormal) / (massThis + massTarget);
-    
-                // Amplify the impulse for a more pronounced bumping effect
-                const amplifiedImpulse = impulseMagnitude * 2;  // Adjust the multiplier as needed to get the desired effect
-                
-                // Apply amplified impulse to the target object
-                this.getVelocity().x += amplifiedImpulse * massTarget * collisionNormal.x;
-                this.getVelocity().y += amplifiedImpulse * massTarget * collisionNormal.y;
-
-                // Apply amplified impulse to the target object
-                targetObj.getVelocity().x += amplifiedImpulse * massThis * collisionNormal.x;
-                targetObj.getVelocity().y += amplifiedImpulse * massThis * collisionNormal.y;
+          const targetCentroid = targetObj.getCentroid();
+          const targetSize = targetObj.getObjectWidthHeight();
+          const targetRadius = Math.min(targetSize.width, targetSize.height) / 2;
+      
+          const distance = Phaser.Math.Distance.BetweenPoints(targetCentroid, centroidSpaceShip);
+          const combinedRadii = thisRadius + targetRadius;
+      
+          if (distance <= combinedRadii) {
+            const collisionNormal = new Phaser.Math.Vector2(
+              centroidSpaceShip.x - targetCentroid.x,
+              centroidSpaceShip.y - targetCentroid.y
+            ).normalize();
+      
+            const relativeVelocity = this.getVelocity().clone().subtract(targetObj.getVelocity());
+            const velocityAlongNormal = relativeVelocity.dot(collisionNormal);
+      
+            if (velocityAlongNormal > 0) {
+              continue;
             }
+      
+            const massThis = this.getVelocity().length();
+            const massTarget = targetObj.getVelocity().length();
+            const e = 1; // Coefficient of restitution for an elastic collision
+            const impulseScalar = (-(1 + e) * velocityAlongNormal) / (massThis + massTarget);
+            const impulse = collisionNormal.clone().multiply(new Phaser.Math.Vector2(impulseScalar * massTarget, impulseScalar * massTarget));
+      
+            this.getVelocity().add(impulse);
+            targetObj.getVelocity().subtract(impulse.clone().multiply(new Phaser.Math.Vector2(massThis, massThis)));
+          }
         }
-    }
+      }
+      
     
-
-
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable, targetObjects: TargetObject[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {
