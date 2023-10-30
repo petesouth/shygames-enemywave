@@ -10,7 +10,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: window.innerHeight,
     parent: 'game',
     fps: {
-        limit: 60,  // This will limit the game to 60 frames per second
+        limit: 40,  // This will limit the game to 60 frames per second
     },
     scene: [SplashScreen, MainScene],
     scale: {
