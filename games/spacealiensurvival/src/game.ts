@@ -19,7 +19,7 @@ export class SplashScreen extends Phaser.Scene {
     public splashText?: Phaser.GameObjects.Text;
     public image?: Phaser.GameObjects.Image;
 
-    public static textureNames = ["bricks"];
+    public static textureNames = ["bricks", "bricks2", "rockwall", "metal"];
 
     public static enemySpaceships = ["enemyspaceship4", "enemyspaceship4B", "bossenemyspaceship4"]
 

@@ -5,8 +5,8 @@ import { SplashScreen } from '../game';
 const MAX_SIZE = 28;
 const MIN_SIZE = 15;
 const SCALE = 1.6;
-const MIN_SIDES = 5;
-const MAX_SIDES = 12;
+const MIN_SIDES = 8;
+const MAX_SIDES = 15;
 
 export class SpaceObject {
     private graphics: Phaser.GameObjects.Graphics;
