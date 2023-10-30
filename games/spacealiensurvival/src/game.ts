@@ -1,9 +1,6 @@
 import Phaser from 'phaser';
-import { BaseExplodableState } from './gameobjects/baseExplodable';
-import gGameStore from './store/store';
 import { SplashScreen } from './scenes/SplashScreen';
 import { MainScene } from './scenes/MainScene';
-
 
 
 
@@ -35,7 +32,7 @@ const config: Phaser.Types.Core.GameConfig = {
     },
 };
 
-const game = new Phaser.Game(config);
+
 
 export default class Game extends Phaser.Game {
     constructor() {

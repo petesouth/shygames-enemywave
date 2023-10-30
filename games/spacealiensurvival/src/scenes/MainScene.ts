@@ -12,6 +12,7 @@ class MainSceneStartGameText {
     private gameNameText: Phaser.GameObjects.Text | undefined;
     private instructions: Phaser.GameObjects.Text[] = [];
     private scoreText: Phaser.GameObjects.Text | undefined;
+   
 
     constructor(private scene: Phaser.Scene) { }
 
@@ -19,7 +20,7 @@ class MainSceneStartGameText {
         this.scoreText = this.scene.add.text(
             20,
             20,
-            'Player Kills: 0  Level: 0',
+            'Player Kills: 0 - Level: 0',
             { font: '16px Arial', color: '#ffffff' }
         );
 
@@ -75,12 +76,18 @@ class MainSceneStartGameText {
             this.instructions.forEach(instruction => instruction.setVisible(false));
         }
 
-        let { game } = gGameStore.getState();
+        const game: {
+            message: string,
+            playerSpaceShipKilled: number,
+            enemiesKilled: number,
+            currentLevel: number
+        } = gGameStore.getState().game;
+    
 
         if (playerSpaceship?.state === BaseExplodableState.ALIVE) {
-            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled} Player HitPoints: ${playerSpaceship.hitpoints} Level: ${game.currentLevel}`);
+            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled} - Level: ${game.currentLevel} - HitPoints: ${playerSpaceship.hitpoints}`);
         } else {
-            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled} Level: ${game.currentLevel}`);
+            this.scoreText?.setText(`Player Kills: ${game.playerSpaceShipKilled} - Level: ${game.currentLevel}`);
         }
         this.scoreText?.setDepth(1);
     }
