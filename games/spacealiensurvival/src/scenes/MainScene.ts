@@ -44,6 +44,11 @@ export class MainScene extends Phaser.Scene {
         sound.play();
     }
 
+    public playLevelComplete(): void {
+        let sound = this.sound.add('levelcomplete', { loop: false });
+        sound.play();
+    }
+
 
     startPlayerGame() {
         if (this.playerspaceship && this.playerspaceship.state === BaseExplodableState.DESTROYED) {
@@ -146,6 +151,8 @@ export class MainScene extends Phaser.Scene {
     }
 
     private calculateLevelAndEnemySpawning() {
+        const game = gGameStore.getState().game;
+
         // Player must be alive or this no-opts
         if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
 
@@ -156,8 +163,7 @@ export class MainScene extends Phaser.Scene {
                 this.betweenGames = false;
                 this.timerBetweenLevels = -1;
 
-                const game = gGameStore.getState().game;
-
+                
                 for (let i = 0; i < game.currentLevel; ++i) {
                     this.spawnEnemy();
                 }
@@ -170,13 +176,19 @@ export class MainScene extends Phaser.Scene {
                 // So Ill start the timer.
                 this.timerBetweenLevels = Date.now();
                 this.playerspaceship.hitpoints = 10;
-
+                if( game.currentLevel > 0 ) {
+                    this.playLevelComplete();
+                    this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed !!!`)
+                    this.mainSceneStartGameText.showLevelAnnounceText();    
+                }
+                
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
                 this.timerBetweenLevels !== -1 &&
                 (Date.now() - this.timerBetweenLevels) > this.timerBetweenLevelsWaitCount) {
                 // All good to go.  So set all the flags that lets start this level happen
 
+                this.mainSceneStartGameText.hideLevelAnnounceText();    
                 this.playSuccessSound();
                 gGameStore.dispatch(gameActions.incrementCurrentLevel({}));
                 this.betweenGames = true;
