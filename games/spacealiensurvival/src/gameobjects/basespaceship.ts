@@ -67,7 +67,7 @@ export class BaseSpaceship extends BaseExplodable {
     public forceField: ForceField;
 
 
-    constructor(scene: Phaser.Scene, spaceShipType: SpaceShipType, imageNameKey: string, initialPositionOffset: number = 400, spaceshipColor: number = 0xC0C0C0, squaresize: number = 50) {
+    constructor(scene: Phaser.Scene, spaceShipType: SpaceShipType, imageNameKey: string, initialPositionOffset: number = 400, squaresize: number = 50, spaceshipColor: number = 0xC0C0C0) {
         super(scene, scene.add.graphics({ lineStyle: { width: 2, color: spaceshipColor }, fillStyle: { color: spaceshipColor } }));
 
         this.thrustSound = this.scene.sound.add('thrust', { loop: true });
@@ -432,7 +432,7 @@ export class BaseSpaceship extends BaseExplodable {
                 const impulseMagnitude = (2 * velocityAlongNormal) / (massThis + massTarget);
     
                 // Amplify the impulse for a more pronounced bumping effect
-                const amplifiedImpulse = impulseMagnitude * 1.5;  // Adjust the multiplier as needed to get the desired effect
+                const amplifiedImpulse = impulseMagnitude * 2;  // Adjust the multiplier as needed to get the desired effect
                 
                 // Apply amplified impulse to the target object
                 this.getVelocity().x += amplifiedImpulse * massTarget * collisionNormal.x;

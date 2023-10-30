@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { SplashScreen } from '../game';
+import { SplashScreen } from '../scenes/SplashScreen';
 
 // Constants derived from the polygon creation logic
 const MAX_SIZE = 28;

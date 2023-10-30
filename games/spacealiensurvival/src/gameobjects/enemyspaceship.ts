@@ -3,25 +3,40 @@ import { BaseSpaceship, SpaceShipType } from './basespaceship';
 import gGameStore from '../store/store';
 import { gameActions } from '../store/gamestore';
 import { BaseExplodableState } from './baseExplodable';
-import { SplashScreen } from '../game';
+import { SplashScreen } from '../scenes/SplashScreen';
+
+
+export interface EnemySpaceshipConfig {
+    thrust: number,
+    fireRate: number,
+    missileFireRate: number,
+    hitpoints: number,
+    imageKey: string
+}
+
 
 export class EnemySpaceship extends BaseSpaceship {
     private playerSpaceship: BaseSpaceship;
-    public isBoss: boolean = false;
     private jetTime: number = Date.now();
     private jetOn: boolean = false;
     private jetOffTimeWait: number = 5000;
     private jetOnTimeWait: number = 700;
+    private enemySpacshipConfig: EnemySpaceshipConfig = {
+        thrust: .5,
+        hitpoints: 10,
+        fireRate: 1200,
+        missileFireRate: 5000,
+        imageKey: SplashScreen.enemySpaceships[0]
+    }
+
 
     public speedMultiplier: number = 12;  // Add this property to your class
 
-    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, bossmode = false) {
-        super(scene, SpaceShipType.IMAGE, Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships),
-            distanceFromLeftCorner,
-            (bossmode == true) ? 0x006400 : 0xFF0000, 40);
+    constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, enemySpacshipConfig: EnemySpaceshipConfig) {
+        super(scene, SpaceShipType.IMAGE, enemySpacshipConfig.imageKey,
+            distanceFromLeftCorner, 40);
 
-        this.isBoss = bossmode;
-        this.thrust = .5;
+        this.enemySpacshipConfig = enemySpacshipConfig;
         this.playerSpaceship = playerSpaceship;
         this.shieldKey = undefined;
         this.fireKey = undefined;
@@ -32,33 +47,23 @@ export class EnemySpaceship extends BaseSpaceship {
         this.fireRate = 1200;
         this.missileFireRate = 5000;
         this.maxPopSize = 60;
-
-        if (bossmode === true) {
-            this.explosionColors = [0x006400, 0xffa500];
-            this.fireRate = 500;
-            this.missileFireRate = 1000;
-            this.hitpoints += 5; // 10 is default.  
-        }
+        this.explosionColors = [0x006400, 0xffa500];
         this.maxPopSize = 60;
         this.baseSpaceshipDisplay?.spawn(this.initialPositionOffset);
         this.exhaustFlame.hide();
+
+        this.enemySpacshipConfig = enemySpacshipConfig;
+        this.thrust = this.enemySpacshipConfig.thrust;
+        this.hitpoints = this.enemySpacshipConfig.hitpoints;
+        this.fireRate = this.enemySpacshipConfig.fireRate;
+        this.missileFireRate = this.enemySpacshipConfig.missileFireRate;
+        
+
     }
 
     public explode(): void {
         super.explode();
-
-        if (this.isBoss) {
-            // Boss counts as two ships.
-            new Promise((resolve, reject) => {
-                gGameStore.dispatch(gameActions.incrementPlayersScore({}));
-                resolve(true);
-            }).then((value) => {
-                gGameStore.dispatch(gameActions.incrementPlayersScore({}));
-            });
-
-        } else {
-            gGameStore.dispatch(gameActions.incrementPlayersScore({}));
-        }
+        gGameStore.dispatch(gameActions.incrementPlayersScore({}));
     }
 
 
