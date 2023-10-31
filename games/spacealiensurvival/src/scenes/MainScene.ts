@@ -40,12 +40,12 @@ export class MainScene extends Phaser.Scene {
     }
 
     public playSuccessSound(): void {
-        let sound = this.sound.add('success', { loop: false });
+        let sound = this.sound.add('levelcomplete', { loop: false });
         sound.play();
     }
 
     public playLevelComplete(): void {
-        let sound = this.sound.add('levelcomplete', { loop: false });
+        let sound = this.sound.add('success', { loop: false });
         sound.play();
     }
 
