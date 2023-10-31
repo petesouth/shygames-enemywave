@@ -67,7 +67,7 @@ export class BaseSpaceship extends BaseExplodable {
     public forceField: ForceField;
 
 
-    constructor(scene: Phaser.Scene, spaceShipType: SpaceShipType, imageNameKey: string, initialPositionOffset: number = 400, squaresize: number = 50, spaceshipColor: number = 0xC0C0C0) {
+    constructor(scene: Phaser.Scene, spaceShipType: SpaceShipType, imageNameKey: string, flameColors: number[], initialPositionOffset: number = 400, squaresize: number = 50, spaceshipColor: number = 0xC0C0C0) {
         super(scene, scene.add.graphics({ lineStyle: { width: 2, color: spaceshipColor }, fillStyle: { color: spaceshipColor } }));
 
         this.thrustSound = this.scene.sound.add('thrust', { loop: true });
@@ -88,7 +88,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.baseSpaceshipDisplay = (spaceShipType === SpaceShipType.IMAGE) ? new BaseSpaceshipDisplayImage(this.scene, this.graphics, imageNameKey, this.initialPositionOffset, this.spaceshipColor, squaresize) : new BaseSpaceshipDisplayTriangles(this.scene, this.graphics, this.initialPositionOffset, this.spaceshipColor);
 
         this.forceField = new ForceField(this.scene, this);
-        this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay);
+        this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay, flameColors);
    
     }
 

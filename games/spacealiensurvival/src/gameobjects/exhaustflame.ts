@@ -2,82 +2,83 @@
 import Phaser from 'phaser';
 import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
 
-class FlamePoint extends Phaser.Geom.Point {
-    visible: boolean = true;
-}
-
 export class ExhaustFlame {
-    private points: FlamePoint[];
-    private graphics: Phaser.GameObjects.Graphics;
-    public visible: boolean = false;
+    private flameParticles: Phaser.GameObjects.Particles.ParticleEmitter;
     private base: BaseSpaceshipDisplay;
+    public visible: boolean = false;
     private scene: Phaser.Scene;
 
-    constructor(scene: Phaser.Scene, base: BaseSpaceshipDisplay) {
+    constructor(scene: Phaser.Scene, base: BaseSpaceshipDisplay, colors: number[]) {
         this.base = base;
         this.scene = scene;
-        this.graphics = scene.add.graphics({ lineStyle: { width: 2, color: 0xffcc00 } });
-        this.points = [];
-        for (let i = 0; i < 5; i++) {
-            this.points.push(new FlamePoint());
-        }
+        this.flameParticles = this.createFlameEmitter(colors);
+        this.visible = false;
+        this.flameParticles.stop();  // Stop emitting particles
+    
     }
+
+    private createFlameEmitter(colors: number[]): Phaser.GameObjects.Particles.ParticleEmitter {
+        // Calculate position
+        const centroid = this.base.getCentroid();
+        const angle = this.base.getReverseAngle();
+        const distance = this.base.getDistanceFromTopToBottom() + 5;
+        const x = centroid.x + distance * Math.cos(angle);
+        const y = centroid.y + distance * Math.sin(angle);
+
+        // Create the particle emitter
+        return this.scene.add.particles(x, y, 'flares',
+        {
+            frame: 'white',
+            color:  colors,
+            colorEase: 'quad.out',
+            lifespan: 600,
+            angle: { min: angle - 10, max: angle + 10 },
+            scale: { start: 0.35, end: 0, ease: 'sine.out' },  // halved the start value
+            speed: 100,
+            advance: 2000,
+            blendMode: 'ADD',
+            visible: false
+        });
+        
+    }
+
+
+    
 
     show() {
         this.visible = true;
-
+        this.flameParticles.setVisible(true);
+        this.flameParticles.start();  // Start emitting particles
     }
 
     hide() {
-        this.graphics.clear();
         this.visible = false;
+        this.flameParticles.stop();  // Stop emitting particles
     }
 
     destroy() {
-        this.graphics.clear();
-        this.graphics.destroy();
+        this.flameParticles.stop();
+        this.flameParticles.setVisible(false);
+        this.flameParticles.destroy();
         this.visible = false;
     }
 
     update() {
-        const centroid = this.base.getCentroid();
-
-        const angle = this.base.getReverseAngle();
-        const distance = this.base.getDistanceFromTopToBottom();
-
-        const activeDots = Phaser.Math.Between(1, 3); // Randomly choose between 1 and 4 dots for sputtering effect
-
-        for (let i = 0; i < this.points.length; i++) {
-            const point = this.points[i];
-
-            if (i < activeDots) {
-                const offset = (i - (this.points.length / 2)) * 10 + 30;
-                point.x = centroid.x + (distance + offset) * Math.cos(angle);
-                point.y = centroid.y + (distance + offset * 2.5) * Math.sin(angle);
-            } else {
-                point.x = -10; // Move the inactive dots off screen
-                point.y = -10;
-            }
-        }
-    }
-
-
-    render() {
-        this.graphics.clear();
-
         if (!this.visible) {
             return;
         }
 
-        this.points.forEach((point) => {
-            const colors = [0xffa500, 0xff4500, 0xffd700, 0xff8c00]; // Colors representing fire: orange, red-orange, gold, dark orange
-            const chosenColor = Phaser.Utils.Array.GetRandom(colors); // Pick a random color from the list
+        // Update emitter position and angle
+        const centroid = this.base.getCentroid();
+        const angle = this.base.getReverseAngle();
+        const distance = this.base.getDistanceFromTopToBottom() + 5;
+        const x = centroid.x + distance * Math.cos(angle);
+        const y = centroid.y + distance * Math.sin(angle);
+        this.flameParticles.setPosition(x, y);
+        this.flameParticles.setRotation(angle);  // Update the emitter rotation in radians
+    }
 
-            this.graphics.fillStyle(chosenColor);
-
-            if (point.visible) {
-                this.graphics.fillPointShape(point, 8);
-            }
-        });
+    render() {
+        // NO OP its just for compatibility
     }
 }

@@ -33,7 +33,7 @@ export class EnemySpaceship extends BaseSpaceship {
     public speedMultiplier: number = 12;  // Add this property to your class
 
     constructor(scene: Phaser.Scene, distanceFromLeftCorner: number, playerSpaceship: BaseSpaceship, enemySpacshipConfig: EnemySpaceshipConfig) {
-        super(scene, SpaceShipType.IMAGE, enemySpacshipConfig.imageKey,
+        super(scene, SpaceShipType.IMAGE, enemySpacshipConfig.imageKey, [ 0x040d61, 0xfacc22, 0xf89800, 0xf83600, 0x9f0404, 0x4b4a4f, 0x353438, 0x040404 ],
             distanceFromLeftCorner, 40);
 
         this.enemySpacshipConfig = enemySpacshipConfig;

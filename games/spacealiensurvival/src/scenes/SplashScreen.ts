@@ -33,7 +33,6 @@ export class SplashScreen extends Phaser.Scene {
         this.splashText.setOrigin(0.5);
         this.splashText.setDepth(1);
 
-
         this.load.audio('thrust', 'sound/thrust.mp3');
         this.load.audio('bullet', 'sound/bullet.mp3');
         this.load.audio('missile', 'sound/missile.mp3');
@@ -46,6 +45,7 @@ export class SplashScreen extends Phaser.Scene {
         this.load.audio('levelcomplete', 'sound/levelcomplete.mp3');
         
 
+        this.load.atlas('flares', 'images/flares.png', 'images/flares.json');
         this.load.image('gamescreen', 'images/gamescreen.png');
         this.load.image('playerspaceship', 'images/playerspaceship4.png');
 
@@ -82,7 +82,7 @@ export class SplashScreen extends Phaser.Scene {
                 this.handleWindowResize();
             }
         }, 500);
-
+    
     }
 
 
