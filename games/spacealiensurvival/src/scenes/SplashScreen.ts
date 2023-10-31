@@ -11,9 +11,16 @@ export class SplashScreen extends Phaser.Scene {
     public splashText?: Phaser.GameObjects.Text;
     public image?: Phaser.GameObjects.Image;
 
-    public static textureNames = ["bricks", "bricks2", "rockwall", "metal"];
+    public static textureNames = ["bricks", 
+                                  "bricks2", 
+                                  "rockwall", 
+                                  "metal"];
 
     public static enemySpaceships = ["enemyspaceship4", "enemyspaceship4B", "bossenemyspaceship4"];
+
+    public static backgrounds = ["background1", "background2", "background3", "background4", "background5", 
+                                 "background6", "background7", "background8", "background9", "background10",
+                                 "background11", "background12", "background13", "background14", "background15"];
 
 
     constructor() {
@@ -52,6 +59,11 @@ export class SplashScreen extends Phaser.Scene {
         SplashScreen.enemySpaceships.forEach((spaceship) => {
             this.load.image(spaceship, 'images/' + spaceship + '.png');
         });
+
+        SplashScreen.backgrounds.forEach((background) => {
+            this.load.image(background, 'backgrounds/' + background + '.png');
+        });
+
 
 
         SplashScreen.textureNames.forEach((texture) => {

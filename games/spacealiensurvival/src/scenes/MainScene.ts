@@ -13,8 +13,8 @@ export class MainScene extends Phaser.Scene {
 
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
-    private starsBackground!: Phaser.GameObjects.Graphics;
-
+    private starsBackgroundImage!: Phaser.GameObjects.Image;
+    private currentBackgroundName: string = "";
     private timerBetweenLevels: number = -1;
     private timerBetweenLevelsWaitCount: number = 12000;
     private betweenGames: boolean = false;
@@ -68,7 +68,9 @@ export class MainScene extends Phaser.Scene {
     create() {
         this.gamesongSound = this.sound.add('gamesong', { loop: true, volume: 1 });
 
-        this.createStarBackground();
+
+        this.createBackgroundImage();
+        this.resizeStarBackground();
         this.playerspaceship = new PlayerSpaceship(this);
         this.createAsteroidsBasedOnScreenSize();
 
@@ -91,7 +93,7 @@ export class MainScene extends Phaser.Scene {
         const w = window.innerWidth;
         const h = window.innerHeight;
         this.scale.setGameSize(w, h);
-        this.createStarBackground();
+        this.resizeStarBackground();
         this.createAsteroidsBasedOnScreenSize();
         this.mainSceneStartGameText.repositionStartGameText(w);
 
@@ -163,12 +165,12 @@ export class MainScene extends Phaser.Scene {
                 this.betweenGames = false;
                 this.timerBetweenLevels = -1;
 
-                
+
                 for (let i = 0; i < game.currentLevel; ++i) {
                     this.spawnEnemy();
                 }
 
-            
+
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
                 this.timerBetweenLevels === -1) {
@@ -176,11 +178,18 @@ export class MainScene extends Phaser.Scene {
                 // So Ill start the timer.
                 this.timerBetweenLevels = Date.now();
                 this.playerspaceship.hitpoints = 10;
-                if( game.currentLevel > 0 ) {
+                if (game.currentLevel > 0) {
                     this.playLevelComplete();
                     this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed !!!`)
-                    this.mainSceneStartGameText.showLevelAnnounceText();    
+                    this.mainSceneStartGameText.showLevelAnnounceText();
                 }
+
+                if (game.currentLevel > 1) {
+                    this.createBackgroundImage();
+                    this.createAsteroidsBasedOnScreenSize();
+                    this.resizeStarBackground();    
+                }
+
                 
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
@@ -188,7 +197,7 @@ export class MainScene extends Phaser.Scene {
                 (Date.now() - this.timerBetweenLevels) > this.timerBetweenLevelsWaitCount) {
                 // All good to go.  So set all the flags that lets start this level happen
 
-                this.mainSceneStartGameText.hideLevelAnnounceText();    
+                this.mainSceneStartGameText.hideLevelAnnounceText();
                 this.playSuccessSound();
                 gGameStore.dispatch(gameActions.incrementCurrentLevel({}));
                 this.betweenGames = true;
@@ -202,10 +211,10 @@ export class MainScene extends Phaser.Scene {
 
         const enemySpaceshipConfig: EnemySpaceshipConfig = {
             // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
-            thrust: Phaser.Math.Between(.5,.8),
-            hitpoints: Phaser.Math.Between(5,20),
-            fireRate: Phaser.Math.Between(800,2000),
-            missileFireRate: Phaser.Math.Between(1000,7000),
+            thrust: Phaser.Math.Between(.5, .8),
+            hitpoints: Phaser.Math.Between(5, 20),
+            fireRate: Phaser.Math.Between(800, 2000),
+            missileFireRate: Phaser.Math.Between(1000, 7000),
             imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
         };
 
@@ -240,22 +249,32 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    public createStarBackground() {
-        // Clear the existing stars
-        if (this.starsBackground) {
-            this.starsBackground.clear();
-        } else {
-            this.starsBackground = this.add.graphics({ fillStyle: { color: 16777215 } });
-            this.starsBackground.setDepth(0); // Make sure the stars are rendered behind other game objects
+
+    createBackgroundImage() {
+        let newRandomName = Phaser.Utils.Array.GetRandom(SplashScreen.backgrounds);
+        if (this.currentBackgroundName == "" || newRandomName !== this.currentBackgroundName) {
+            if (this.starsBackgroundImage) {
+                this.starsBackgroundImage.destroy();
+            }
+    
+            
+            this.starsBackgroundImage = this.add.image(this.scale.width / 2,
+                this.scale.height / 2, newRandomName
+            );
+
+            this.currentBackgroundName = newRandomName;
+
         }
 
-        const numStars = Math.floor((this.scale.width * this.scale.height) / 200); // One star for every 200 pixels
+    }
 
-        for (let i = 0; i < numStars; i++) {
-            const x = Phaser.Math.Between(0, this.scale.width);
-            const y = Phaser.Math.Between(0, this.scale.height);
-            this.starsBackground.fillRect(x, y, 1, 1);
-        }
+    public resizeStarBackground() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        this.starsBackgroundImage?.setDepth(-1);
+        this.starsBackgroundImage?.setPosition(w / 2, h / 2);
+        this.starsBackgroundImage?.setDisplaySize((w), (h));
     }
 
 }
