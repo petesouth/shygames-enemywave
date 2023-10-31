@@ -43,11 +43,9 @@ export class EnemySpaceship extends BaseSpaceship {
         this.missileKey = undefined;
         this.mineKey = undefined;
         this.upKey = undefined;
-        this.explosionColors = [0xFF0000, 0xffa500];
         this.fireRate = 1200;
         this.missileFireRate = 5000;
-        this.maxPopSize = 60;
-        this.explosionColors = [0x006400, 0xffa500];
+        this.explosionColors = [ 'red', 'yellow' ];
         this.maxPopSize = 60;
         this.baseSpaceshipDisplay?.spawn(this.initialPositionOffset);
         this.exhaustFlame.hide();

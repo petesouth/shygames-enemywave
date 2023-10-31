@@ -9,7 +9,7 @@ export interface BaseSpaceshipDisplay {
     thrustForward(thrust: number, centroid: Phaser.Geom.Point, velocity: Phaser.Math.Vector2): Phaser.Math.Vector2;
     spawn(initialPositionOffset: number): void;
     drawObjectAlive(velocity: Phaser.Math.Vector2): Phaser.Geom.Point[];
-    weakHitpointsFlashIndicator(hitpoints: number, flashLastTime: number, flashColorIndex: number, flashLightChangeWaitLength: number, explosionColors: number[]): number;
+    weakHitpointsFlashIndicator(hitpoints: number, flashLastTime: number, flashColorIndex: number, flashLightChangeWaitLength: number, explosionColors: number[]|string[]): number;
     getForwardAngle(): number;
     getReverseAngle(): number;
     getCurrentRotation(): number;

@@ -10,7 +10,8 @@ export class Missile extends Bullet {
     constructor(scene: Phaser.Scene, startX: number, startY: number, angle: number) {
         super(scene, startX, startY, angle);
         this.startTime = scene.time.now;
-        this.explosionColors = [0xffffff, 0xff4500];
+        this.colors = [0xffffff, 0xff4500];
+        this.explosionColors = ["red", "white"]
         this.speed = 4;
     }
 

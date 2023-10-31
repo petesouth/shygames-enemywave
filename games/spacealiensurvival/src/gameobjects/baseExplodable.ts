@@ -11,11 +11,27 @@ export abstract class BaseExplodable {
     protected scene: Phaser.Scene;
     protected graphics: Phaser.GameObjects.Graphics;
     protected popSize: number = 0;
-    protected maxPopSize: number = 30;
-    protected explosionColors: number[] = [0xffa500, 0xff4500];
+    protected maxPopSize: number = 10;
     protected _points: Phaser.Geom.Point[] = [];
     public state: BaseExplodableState = BaseExplodableState.ALIVE;
-    
+    protected explosionEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
+    protected explosionColors: string[] = [ 'red', 'yellow', 'green' ];
+
+    createExplosionEmitter() {
+        const centroid = this.getCentroid();
+
+        this.explosionEmitter = this.scene.add.particles(centroid.x, centroid.y, 'flares', {
+            frame: this.explosionColors,
+            lifespan: this.maxPopSize * 10,
+            speed: { min: 150, max: 250 },
+            scale: { start: 0.8, end: 0 },
+            gravityY: 150,
+            blendMode: 'ADD',
+            emitting: false
+        });
+        this.explosionEmitter?.setPosition(this.getCentroid().x, this.getCentroid().y);
+        this.explosionEmitter?.explode(16);
+    }
 
     public getPoints(): Phaser.Geom.Point[] {
         return this._points;
@@ -25,7 +41,7 @@ export abstract class BaseExplodable {
         this._points = value;
     }
 
-    constructor( scene: Phaser.Scene,  graphics: Phaser.GameObjects.Graphics, points: Phaser.Geom.Point[] = []) {
+    constructor(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, points: Phaser.Geom.Point[] = []) {
         this.graphics = graphics
         this.scene = scene;
         this._points = points;
@@ -51,32 +67,24 @@ export abstract class BaseExplodable {
     }
 
 
-  
-    public abstract drawObjectAlive() : void;
 
-    public drawObjectIsDead() : void {
+    public abstract drawObjectAlive(): void;
+
+    public drawObjectIsDead(): void {
     }
 
-    public drawExplosion() : boolean {
+    public drawExplosion(): boolean {
 
-        this.popSize += 2;
-        if (this.popSize > this.maxPopSize) {
-            this.destroy();
-            return true;
-        }
-
-        const chosenColor = Phaser.Utils.Array.GetRandom(this.explosionColors);
-        this.graphics.fillStyle(chosenColor);
-
-        const theCenter = this.getCentroid();
-        this.graphics.fillCircle(theCenter.x, theCenter.y, this.popSize);
+        this.destroy();
+        this.createExplosionEmitter();
+        this.explosionEmitter?.explode(16);
         return false;
     }
 
     public render() {
         this.graphics.clear();
 
-        switch(this.state) {
+        switch (this.state) {
             case BaseExplodableState.ALIVE:
                 this.drawObjectAlive();
                 break;
@@ -86,14 +94,14 @@ export abstract class BaseExplodable {
             case BaseExplodableState.DESTROYED:
                 this.drawObjectIsDead();
                 break;
-            
+
         }
 
-        
+
 
     }
 
-    
+
     public getCentroid(): Phaser.Geom.Point {
 
         const { x, y } = this._points.reduce((acc, point) => ({
@@ -119,7 +127,7 @@ export abstract class BaseExplodable {
         };
     }
 
-    public handleBaseCollision(target: {  getCentroid(): Phaser.Geom.Point }, distanceTrigger: number): boolean {
+    public handleBaseCollision(target: { getCentroid(): Phaser.Geom.Point }, distanceTrigger: number): boolean {
 
         const sourcePoint = this.getCentroid();
         const targetPoint = target.getCentroid();
@@ -132,7 +140,7 @@ export abstract class BaseExplodable {
             }
         }
 
-        
+
         return this.state !== BaseExplodableState.ALIVE;
     }
 
