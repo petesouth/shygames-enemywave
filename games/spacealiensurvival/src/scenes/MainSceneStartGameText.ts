@@ -32,6 +32,7 @@ export class MainSceneStartGameText {
             'Player Kills: 0 - Level: 0',
             { font: '16px Arial', color: '#ffffff' }
         );
+        this.scoreText.setDepth(1);
 
         this.levelAnnounceText = this.scene.add.text(
             (window.innerWidth / 2),
@@ -41,7 +42,8 @@ export class MainSceneStartGameText {
         );
         this.levelAnnounceText.setOrigin(0.5);
         this.levelAnnounceText.setVisible(false);
-
+        this.levelAnnounceText.setDepth(1);
+        
         let offset = 60;
 
         this.gameNameText = this.scene.add.text(
@@ -51,6 +53,7 @@ export class MainSceneStartGameText {
             { font: '16px Arial', color: '#ffffff' }
         );
         this.gameNameText.setOrigin(0.5);
+        this.gameNameText.setDepth(1);
         offset += 30;
 
         const instructionTexts = [
@@ -67,6 +70,7 @@ export class MainSceneStartGameText {
                 { font: '12px Arial', color: '#ffffff' }
             );
             text.setOrigin(0.5);
+            text.setDepth(1);
             this.instructions.push(text);
             offset += 15;
         });
