@@ -5,7 +5,7 @@ import Phaser from 'phaser';
 
 export class SplashScreen extends Phaser.Scene {
 
-    public static TEXT_TOP_PADDING = 10;
+    public static TEXT_TOP_PADDING = 60;
     public static IMAGE_BORDER_PADDING = 40;
 
     public splashText?: Phaser.GameObjects.Text;
@@ -16,11 +16,18 @@ export class SplashScreen extends Phaser.Scene {
                                   "rockwall", 
                                   "metal"];
 
-    public static enemySpaceships = ["enemyspaceship4", "enemyspaceship4B", "bossenemyspaceship4"];
+    public static enemySpaceships = ["enemyspaceship4", 
+                                     "enemyspaceship4B", 
+                                     "bossenemyspaceship4", 
+                                     "enemysaucer1", 
+                                     "enemysaucer2", 
+                                     "darthvader", 
+                                     "enemyspacejet" ];
 
     public static backgrounds = ["background1", "background2", "background3", "background4", "background5", 
                                  "background6", "background7", "background8", "background9", "background10",
-                                 "background11", "background12", "background13", "background14", "background15"];
+                                 "background11", "background12", "background13", "background14", "background15",
+                                 "background16", "background17", "background18", "background19", "background20"];
 
 
     constructor() {
@@ -40,6 +47,7 @@ export class SplashScreen extends Phaser.Scene {
         this.splashText.setOrigin(0.5);
         this.splashText.setDepth(1);
 
+        this.splashText.setText("Loading sound...")
         this.load.audio('thrust', 'sound/thrust.mp3');
         this.load.audio('bullet', 'sound/bullet.mp3');
         this.load.audio('missile', 'sound/missile.mp3');
@@ -52,21 +60,28 @@ export class SplashScreen extends Phaser.Scene {
         this.load.audio('levelcomplete', 'sound/levelcomplete.mp3');
         
 
+        this.splashText.setText("Loading Player...")
         this.load.atlas('flares', 'images/flares.png', 'images/flares.json');
-        this.load.image('gamescreen', 'images/gamescreen.png');
         this.load.image('playerspaceship', 'images/playerspaceship4.png');
 
+        this.splashText.setText("SplashScreen...")
+        this.load.image('gamescreen', 'images/gamescreen.png');
+        
         SplashScreen.enemySpaceships.forEach((spaceship) => {
+            this.splashText?.setText("Loading enemies: " + spaceship + "...");
             this.load.image(spaceship, 'images/' + spaceship + '.png');
+        
         });
 
         SplashScreen.backgrounds.forEach((background) => {
+            this.splashText?.setText("Loading backgrounds " + background + "...");
             this.load.image(background, 'backgrounds/' + background + '.png');
         });
 
 
 
         SplashScreen.textureNames.forEach((texture) => {
+            this.splashText?.setText("Loading textures " + texture + "...");
             this.load.image(texture, 'textures/' + texture + '.png');
         });
 

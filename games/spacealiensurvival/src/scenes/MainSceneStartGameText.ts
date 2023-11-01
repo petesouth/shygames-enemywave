@@ -27,8 +27,8 @@ export class MainSceneStartGameText {
 
     createStartGameText() {
         this.scoreText = this.scene.add.text(
-            20,
-            20,
+            40,
+            40,
             'Player Kills: 0 - Level: 0',
             { font: '16px Arial', color: '#ffffff' }
         );
@@ -36,7 +36,7 @@ export class MainSceneStartGameText {
 
         this.levelAnnounceText = this.scene.add.text(
             (window.innerWidth / 2),
-            20,
+            60,
             'Starting level 1',
             { font: '16px Arial', color: '#ffffff' }
         );
@@ -44,7 +44,7 @@ export class MainSceneStartGameText {
         this.levelAnnounceText.setVisible(false);
         this.levelAnnounceText.setDepth(1);
         
-        let offset = 60;
+        let offset = 80;
 
         this.gameNameText = this.scene.add.text(
             (window.innerWidth / 2),
@@ -57,9 +57,9 @@ export class MainSceneStartGameText {
         offset += 30;
 
         const instructionTexts = [
-            'Game', 'R - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
-            'Movement', '\u2191 - Thrust Forward', '\u2190 - Rotate Left', '\u2192 - Rotate Right',
-            'Weapons', 'Space - Fire Cannon', 'G - Guided Missiles', 'M - Floating Mines', 'S - Shields'
+            'R - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
+            '\u2191 - Thrust Forward', '\u2190 - Rotate Left', '\u2192 - Rotate Right',
+            'Space - Fire Cannon', 'G - Guided Missiles', 'M - Floating Mines', 'S - Shields'
         ];
 
         instructionTexts.forEach(instruction => {
@@ -77,7 +77,7 @@ export class MainSceneStartGameText {
     }
 
     repositionStartGameText(w: number) {
-        let offset = 60;
+        let offset = 80;
         this.gameNameText?.setPosition(w / 2, offset);
         this.gameNameText?.setDepth(1);
         offset += 30;
