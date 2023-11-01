@@ -5,8 +5,8 @@ import Phaser from 'phaser';
 
 export class SplashScreen extends Phaser.Scene {
 
-    public static TEXT_TOP_PADDING = 60;
-    public static IMAGE_BORDER_PADDING = 40;
+    public static TEXT_TOP_PADDING = 10;
+    public static IMAGE_BORDER_PADDING = 60;
 
     public splashText?: Phaser.GameObjects.Text;
     public image?: Phaser.GameObjects.Image;
