@@ -23,7 +23,7 @@ export abstract class BaseExplodable {
 
         this.explosionEmitter = this.scene.add.particles(centroid.x, centroid.y, 'flares', {
             frame: this.explosionColors,
-            lifespan: Utils.compuateSingleNumberRatio(this.maxPopSize * 10),
+            lifespan: Utils.compuateSingleNumberRatioMax(this.maxPopSize * 10),
             speed: { min: 150, max: 250 },
             scale: { start: 0.8, end: 0 },
             gravityY: 150,
@@ -78,7 +78,7 @@ export abstract class BaseExplodable {
 
         this.destroy();
         this.createExplosionEmitter();
-        this.explosionEmitter?.explode(Utils.compuateSingleNumberRatio(this.maxPopSize));
+        this.explosionEmitter?.explode(Utils.compuateSingleNumberRatioMax(this.maxPopSize));
         return false;
     }
 

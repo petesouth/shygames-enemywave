@@ -109,8 +109,7 @@ export class MainScene extends Phaser.Scene {
 
         const w = window.innerWidth;
         const h = window.innerHeight;
-        console.log("--width, height--", w, h);
-
+        
         this.mainSceneStartGameText.displayGameText(this.playerspaceship);
 
         this.spaceObjects.forEach(spaceObj => {

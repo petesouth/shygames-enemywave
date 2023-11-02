@@ -36,7 +36,7 @@ export class SpaceObject {
         const scale = SpaceObject.SCALE; // Scaling factor
 
 
-        let size = Utils.compuateSingleNumberRatio(Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE));
+        let size = Utils.compuateSingleNumberRatioMax(Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE));
         
         const points = [];
         for (let i = 0; i < sides; i++) {
@@ -160,7 +160,7 @@ export class SpaceObject {
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
         const maxDiameter = SpaceObject.MAX_SIZE * SpaceObject.SCALE * 2; // Diameter = 2 * Radius
 
-        let ratioValues = Utils.compuateWidthHeightRatio(maxDiameter, maxDiameter);
+        let ratioValues = Utils.compuateWidthHeightRatioMax(maxDiameter, maxDiameter);
 
 
         return {

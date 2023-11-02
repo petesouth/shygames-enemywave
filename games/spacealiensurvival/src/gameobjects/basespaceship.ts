@@ -9,6 +9,7 @@ import { BaseExplodable, BaseExplodableState } from './baseExplodable';
 import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
 import { BaseSpaceshipDisplayTriangles } from './basespaceshipdisplaytriangles';
 import { BaseSpaceshipDisplayImage } from './basespaceshipdisplayimage';
+import { Utils } from '../utils/utils';
 
 
 export enum SpaceShipType {
@@ -232,28 +233,32 @@ export class BaseSpaceship extends BaseExplodable {
 
     
     public calculateVelocity(): void {
+        const ratioDamping = Utils.computeRatioSpeed(this.damping);
+        const ratioThrust = Utils.computeRatioSpeed(this.thrust);
+        const ratioMaxSpeed = Utils.computeRatioSpeed(this.maxSpeed);
         if (!this.baseSpaceshipDisplay) {
             return;
         }
 
+        console.log("-------------", ratioDamping, ratioThrust, ratioMaxSpeed)
         if (this.upKey?.isDown) {
             this.playThrustSound();
             const angle = this.baseSpaceshipDisplay.getForwardAngle();
-            this.velocity.x += this.thrust * Math.cos(angle);
-            this.velocity.y += this.thrust * Math.sin(angle);
+            this.velocity.x += ratioThrust * Math.cos(angle);
+            this.velocity.y += ratioThrust * Math.sin(angle);
         } else {
             this.stopThrustSound();
         }
 
-        this.velocity.x *= this.damping;
-        this.velocity.y *= this.damping;
+        this.velocity.x *= ratioDamping;
+        this.velocity.y *= ratioDamping;
 
         // Check the magnitude of the velocity vector
         const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
 
         // If the speed exceeds the maximum, scale back the velocity vector
-        if (speed > this.maxSpeed) {
-            const scale = this.maxSpeed / speed;
+        if (speed > ratioMaxSpeed) {
+            const scale = ratioMaxSpeed / speed;
             this.velocity.x *= scale;
             this.velocity.y *= scale;
         }
@@ -423,7 +428,7 @@ export class BaseSpaceship extends BaseExplodable {
           const targetRadius = Math.min(targetSize.width, targetSize.height) / 2;
       
           const distance = Phaser.Math.Distance.BetweenPoints(targetCentroid, centroidSpaceShip);
-          const combinedRadii = (thisRadius + targetRadius) * .8;
+          const combinedRadii = (thisRadius + targetRadius) * Utils.compuateSingleNumberRatioMax(.8);
       
           if (distance <= combinedRadii) {
             const collisionNormal = new Phaser.Math.Vector2(

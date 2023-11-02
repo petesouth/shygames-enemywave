@@ -96,7 +96,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
             width = (this.image.displayWidth / this.image.displayHeight) * this.squaresize;
         }
 
-        let ratioValues = Utils.compuateWidthHeightRatio(width, height);
+        let ratioValues = Utils.compuateWidthHeightRatioMax(width, height);
         this.image.setDisplaySize(ratioValues.ratioWidth, ratioValues.ratioHeight);
 
     }
@@ -203,8 +203,8 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     }
 
     public getDistanceFromTopToBottom(): number {
-        let ratioValuesDistance = Utils.compuateSingleNumberRatio(this.squaresize);
-        let ratioValuesExtraDistance = Utils.compuateSingleNumberRatio(10);
+        let ratioValuesDistance = Utils.compuateSingleNumberRatioMax(this.squaresize);
+        let ratioValuesExtraDistance = Utils.compuateSingleNumberRatioMax(10);
 
         return ratioValuesDistance - ratioValuesExtraDistance;
     }

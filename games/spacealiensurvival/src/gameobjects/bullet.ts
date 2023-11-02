@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { BaseExplodable } from './baseExplodable';
+import { Utils } from '../utils/utils';
 
 export class Bullet extends BaseExplodable {
    
@@ -32,8 +33,11 @@ export class Bullet extends BaseExplodable {
     
 
     public drawObjectAlive() {
-            const dx = this.direction.x * this.speed;
-            const dy = this.direction.y * this.speed;
+            const ratioSpeed = Utils.computeRatioSpeed(this.speed);
+      
+
+            const dx = this.direction.x * ratioSpeed;
+            const dy = this.direction.y * ratioSpeed;
             this._points[0].x += dx;
             this._points[0].y += dy;
             this.distanceTraveled += Math.sqrt(dx * dx + dy * dy);
@@ -46,7 +50,7 @@ export class Bullet extends BaseExplodable {
             const chosenColor = Phaser.Utils.Array.GetRandom(this.colors);
             this.graphics.fillStyle(chosenColor);
             const theCenter = this.getCentroid();
-            this.graphics.fillCircle(theCenter.x, theCenter.y, 4);  // 4 pixel radius
+            this.graphics.fillCircle(theCenter.x, theCenter.y, Utils.compuateSingleNumberRatioMax(4));  // 4 pixel radius
             this.handleScreenWrap();
     }
 

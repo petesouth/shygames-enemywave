@@ -73,7 +73,6 @@ export class EnemySpaceship extends BaseSpaceship {
 
         let difference = Date.now() - this.jetTime;
         if (this.jetOn === false && difference > this.jetOnTimeWait) {
-            console.log("difference", difference);
             this.playThrustSound();
             this.exhaustFlame.show();
             this.jetTime = Date.now();
