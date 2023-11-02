@@ -1,14 +1,17 @@
 import Phaser from 'phaser';
 import { SplashScreen } from '../scenes/SplashScreen';
+import { Utils } from '../utils/utils';
+import { MainScene } from '../scenes/MainScene';
 
 // Constants derived from the polygon creation logic
-const MAX_SIZE = 28;
-const MIN_SIZE = 15;
-const SCALE = 1.6;
-const MIN_SIDES = 8;
-const MAX_SIDES = 15;
 
 export class SpaceObject {
+    static MAX_SIZE = 28;
+    static MIN_SIZE = 15;
+    static SCALE = 1.6;
+    static MIN_SIDES = 15;
+    static MAX_SIDES = 40;
+
     private graphics: Phaser.GameObjects.Graphics;
     private velocity: Phaser.Math.Vector2;
     private scene: Phaser.Scene;
@@ -29,9 +32,23 @@ export class SpaceObject {
         const x = Phaser.Math.Between(0, scene.scale.width);
         const y = Phaser.Math.Between(0, scene.scale.height);
 
-        const sides = Phaser.Math.Between(MIN_SIDES, MAX_SIDES);
-        const size = Phaser.Math.Between(MIN_SIZE, MAX_SIZE);
-        const scale = SCALE; // Scaling factor
+
+        const sides = Phaser.Math.Between(SpaceObject.MIN_SIDES, SpaceObject.MAX_SIDES);
+        const scale = SpaceObject.SCALE; // Scaling factor
+
+
+        let size = Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE);
+        let maxDiameter = SpaceObject.MAX_SIZE * SpaceObject.SCALE * 2; // Diameter = 2 * Radius
+        let ratioValueSize = Utils.computeRatioSizeDimension(window.innerWidth,
+            window.innerHeight,
+            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, size, size);
+        let ratioValueMaxDiameter = Utils.computeRatioSizeDimension(window.innerWidth,
+            window.innerHeight,
+            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, size, size);
+
+
+        size = ratioValueSize.ratioHeight;
+        maxDiameter = ratioValueMaxDiameter.ratioHeight;
 
         const points = [];
         for (let i = 0; i < sides; i++) {
@@ -153,10 +170,16 @@ export class SpaceObject {
 
 
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
-        const maxDiameter = MAX_SIZE * SCALE * 2; // Diameter = 2 * Radius
+        const maxDiameter = SpaceObject.MAX_SIZE * SpaceObject.SCALE * 2; // Diameter = 2 * Radius
+
+        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth,
+            window.innerHeight,
+            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, maxDiameter, maxDiameter);
+
+
         return {
-            width: maxDiameter,
-            height: maxDiameter
+            width: ratioValues.ratioWidth,
+            height: ratioValues.ratioWidth
         };
     }
 
@@ -195,7 +218,7 @@ export class SpaceObject {
                             ).normalize();
 
                             // Apply the repelling force
-                            const repelForce = 0.5; // Adjust as needed
+                            const repelForce = 0.3; // Adjust as needed
                             this.velocity.add(repelDirection.scale(repelForce));
                         }
                     }
@@ -209,7 +232,7 @@ export class SpaceObject {
         return this.polygon;
     }
 
-    getVelocity() : Phaser.Math.Vector2 {
+    getVelocity(): Phaser.Math.Vector2 {
         return this.velocity;
     }
 

@@ -7,10 +7,12 @@ import gGameStore from '../store/store';
 import { gameActions } from '../store/gamestore';
 import { SplashScreen } from './SplashScreen';
 import { MainSceneStartGameText } from './MainSceneStartGameText';
+import { BaseSpaceship } from '../gameobjects/basespaceship';
 
 
 export class MainScene extends Phaser.Scene {
 
+    public static GOLDEN_RATIO = { width: 2065, height: 1047};
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
@@ -97,11 +99,18 @@ export class MainScene extends Phaser.Scene {
         this.createAsteroidsBasedOnScreenSize();
         this.mainSceneStartGameText.repositionStartGameText(w);
 
+        [this.playerspaceship, ...this.enemyspaceships].forEach((basSpaceShip: BaseSpaceship)=>{
+           basSpaceShip?.resizeFromScreenRatio(); 
+        });
 
     }
 
     update() {
 
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        console.log("--width, height--", w, h);
+        
         this.mainSceneStartGameText.displayGameText(this.playerspaceship);
 
         this.spaceObjects.forEach(spaceObj => {
@@ -183,7 +192,7 @@ export class MainScene extends Phaser.Scene {
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
 
-                if (game.currentLevel > 1) {
+                if (game.currentLevel >= 1) {
                     this.createBackgroundImage();
                     this.createAsteroidsBasedOnScreenSize();
                     this.resizeStarBackground();    

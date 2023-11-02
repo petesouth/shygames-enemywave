@@ -92,6 +92,10 @@ export class BaseSpaceship extends BaseExplodable {
    
     }
 
+    public resizeFromScreenRatio() {
+        this.baseSpaceshipDisplay?.resizeFromScreenRatio();
+    }
+
 
     public destroy(): void {
         super.destroy();

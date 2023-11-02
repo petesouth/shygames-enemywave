@@ -31,6 +31,10 @@ export class BaseSpaceshipDisplayTriangles implements BaseSpaceshipDisplay {
         );
     }
 
+    public resizeFromScreenRatio(): void {
+
+    }
+    
     public getCentroid(): Phaser.Geom.Point {
         return Phaser.Geom.Triangle.Centroid(this.spaceShipShape);
     }

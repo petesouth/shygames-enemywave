@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
+import { Utils } from '../utils/utils';
+import { MainScene } from '../scenes/MainScene';
 
 export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     protected squarePolygon: Phaser.Geom.Polygon;
@@ -31,24 +33,12 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         const centroid = this.getCentroid();
         this.image.setPosition(centroid.x, centroid.y);
         
-        let width, height;
-
-        if (this.image.displayWidth >= this.image.displayHeight) {
-            // Width is the longest side or they're equal
-            width = squaresize;
-            height = (this.image.displayHeight / this.image.displayWidth) * squaresize;
-        } else {
-            // Height is the longest side
-            height = squaresize;
-            width = (this.image.displayWidth / this.image.displayHeight) * squaresize;
-        }
-        
-        this.image.setDisplaySize(width, height);
-        
-
+        this.resizeFromScreenRatio();
         this.image.setVisible(false);
 
     }
+
+
 
     hide(): void {
         this.graphics.clear();
@@ -94,6 +84,27 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         this.image.setRotation(this.image.rotation + rotationDifference);
     }
 
+    public resizeFromScreenRatio(): void {
+        let width, height;
+        if (this.image.displayWidth >= this.image.displayHeight) {
+            // Width is the longest side or they're equal
+            width = this.squaresize;
+            height = (this.image.displayHeight / this.image.displayWidth) * this.squaresize;
+        } else {
+            // Height is the longest side
+            height = this.squaresize;
+            width = (this.image.displayWidth / this.image.displayHeight) * this.squaresize;
+        }
+        
+        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth, 
+            window.innerHeight, 
+            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, width, height);
+
+
+        this.image.setDisplaySize(ratioValues.ratioWidth, ratioValues.ratioHeight);
+        
+    }
+    
 
     public rotateRight(rotationRate: number): void {
         this.rotateAroundPoint(Phaser.Math.DegToRad(rotationRate)); // Negative rotation for clockwise (right) rotation
