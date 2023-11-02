@@ -9,7 +9,7 @@ export class SpaceObject {
     static MAX_SIZE = 28;
     static MIN_SIZE = 15;
     static SCALE = 1.6;
-    static MIN_SIDES = 15;
+    static MIN_SIDES = 10;
     static MAX_SIDES = 40;
 
     private graphics: Phaser.GameObjects.Graphics;
