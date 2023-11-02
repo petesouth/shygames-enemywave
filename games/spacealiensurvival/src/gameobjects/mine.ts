@@ -20,15 +20,20 @@ export class Mine extends BaseExplodable {
         // Create the particle emitter
         return this.scene.add.particles(x, y, 'flares', {
             frame: [ 'red', 'yellow', 'green'],
-            color: [ 0xfacc22, 0xf89800, 0xf83600, 0x9f0404 ],
+            color: colors,
             lifespan: 2,
-            angle: { min: -140, max: -120 },
             scale: { start: 1, end: 0, ease: 'sine.in' },
             alpha: { start: 1, end: 0, ease: 'sine.in' },
-            speed: { min: 250, max: 350 },
+            speed: { min: 2, max: 8 },
+            angle: { min: 0, max: 360 },  // Particles will be emitted in all directions
             blendMode: 'ADD',
             visible: true
         });
+
+
+        
+        
+
         
     }
     public drawExplosion(): boolean {

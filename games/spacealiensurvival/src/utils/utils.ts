@@ -1,3 +1,4 @@
+import { MainScene } from "../scenes/MainScene";
 
 
 
@@ -5,8 +6,16 @@
 
 export class Utils {
 
+    public static compuateSingleNumberRatio(value:number) {
+        return Utils.computeRatioSizeDimension(window.innerWidth, window.innerHeight, MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, value, value).ratioHeight;
+    }
 
-    public static computeRatioSizeDimension(
+    public static compuateWidthHeightRatio(width:number, height:number) : { ratioWidth: number, ratioHeight: number } {
+        return Utils.computeRatioSizeDimension(window.innerWidth, window.innerHeight, MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, width, height);
+        
+    }
+
+    private static computeRatioSizeDimension(
         newGameWindowWidth: number, 
         newGameWindowHeight: number,  
         originalWidth: number, 

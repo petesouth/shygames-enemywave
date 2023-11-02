@@ -32,7 +32,7 @@ export class ExhaustFlame {
             color:  colors,
             colorEase: 'quad.out',
             lifespan: 600,
-            angle: { min: angle - 1, max: angle + 1 },
+            angle: { min: angle - 10, max: angle + 10 },
             scale: { start: 0.35, end: 0, ease: 'sine.out' },  // halved the start value
             speed: 100,
             advance: 2000,

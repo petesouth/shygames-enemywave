@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import { SplashScreen } from '../scenes/SplashScreen';
 import { Utils } from '../utils/utils';
-import { MainScene } from '../scenes/MainScene';
 
 // Constants derived from the polygon creation logic
 
@@ -37,19 +36,8 @@ export class SpaceObject {
         const scale = SpaceObject.SCALE; // Scaling factor
 
 
-        let size = Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE);
-        let maxDiameter = SpaceObject.MAX_SIZE * SpaceObject.SCALE * 2; // Diameter = 2 * Radius
-        let ratioValueSize = Utils.computeRatioSizeDimension(window.innerWidth,
-            window.innerHeight,
-            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, size, size);
-        let ratioValueMaxDiameter = Utils.computeRatioSizeDimension(window.innerWidth,
-            window.innerHeight,
-            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, size, size);
-
-
-        size = ratioValueSize.ratioHeight;
-        maxDiameter = ratioValueMaxDiameter.ratioHeight;
-
+        let size = Utils.compuateSingleNumberRatio(Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE));
+        
         const points = [];
         for (let i = 0; i < sides; i++) {
             // Add randomness to the point generation
@@ -172,9 +160,7 @@ export class SpaceObject {
     public static getMaxSpaceObjectWidthHeight(): { width: number, height: number } {
         const maxDiameter = SpaceObject.MAX_SIZE * SpaceObject.SCALE * 2; // Diameter = 2 * Radius
 
-        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth,
-            window.innerHeight,
-            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, maxDiameter, maxDiameter);
+        let ratioValues = Utils.compuateWidthHeightRatio(maxDiameter, maxDiameter);
 
 
         return {

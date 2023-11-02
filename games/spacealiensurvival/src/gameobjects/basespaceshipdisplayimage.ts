@@ -96,11 +96,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
             width = (this.image.displayWidth / this.image.displayHeight) * this.squaresize;
         }
 
-        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth,
-            window.innerHeight,
-            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, width, height);
-
-
+        let ratioValues = Utils.compuateWidthHeightRatio(width, height);
         this.image.setDisplaySize(ratioValues.ratioWidth, ratioValues.ratioHeight);
 
     }
@@ -207,16 +203,10 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     }
 
     public getDistanceFromTopToBottom(): number {
-        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth,
-            window.innerHeight,
-            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, this.squaresize, this.squaresize);
+        let ratioValuesDistance = Utils.compuateSingleNumberRatio(this.squaresize);
+        let ratioValuesExtraDistance = Utils.compuateSingleNumberRatio(10);
 
-        let ratioValuesExtra = Utils.computeRatioSizeDimension(window.innerWidth,
-            window.innerHeight,
-            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, 10, 10);
-
-
-        return ratioValues.ratioHeight - ratioValuesExtra.ratioHeight;
+        return ratioValuesDistance - ratioValuesExtraDistance;
     }
 
     public getCollisionPoints(): Phaser.Geom.Point[] {
