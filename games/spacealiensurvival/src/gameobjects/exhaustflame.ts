@@ -1,6 +1,7 @@
 // gameobjects/exhaustflame.ts
 import Phaser from 'phaser';
 import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
+import { Utils } from '../utils/utils';
 
 export class ExhaustFlame {
     private flameParticles: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -31,11 +32,11 @@ export class ExhaustFlame {
             frame: 'white',
             color:  colors,
             colorEase: 'quad.out',
-            lifespan: 600,
-            angle: { min: angle - 10, max: angle + 10 },
+            lifespan: Utils.compuateSingleNumberRatioMax(600),
+            angle: { min: Utils.compuateSingleNumberRatioMax(angle - 10), max: Utils.compuateSingleNumberRatioMax(angle + 10) },
             scale: { start: 0.35, end: 0, ease: 'sine.out' },  // halved the start value
-            speed: 100,
-            advance: 2000,
+            speed: Utils.compuateSingleNumberRatioMax(100),
+            advance: Utils.compuateSingleNumberRatioMax(2000),
             blendMode: 'ADD',
             visible: false
         });

@@ -240,7 +240,6 @@ export class BaseSpaceship extends BaseExplodable {
             return;
         }
 
-        console.log("-------------", ratioDamping, ratioThrust, ratioMaxSpeed)
         if (this.upKey?.isDown) {
             this.playThrustSound();
             const angle = this.baseSpaceshipDisplay.getForwardAngle();
