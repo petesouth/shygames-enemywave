@@ -52,6 +52,8 @@ export class BaseSpaceship extends BaseExplodable {
     protected missiles: Missile[] = [];
     protected baseSpaceshipDisplay?: BaseSpaceshipDisplay;
 
+    protected navigationPoint?: Phaser.Geom.Point | undefined;
+    private isNewClick: boolean = false;
 
     protected leftKey?: Phaser.Input.Keyboard.Key;
     protected rightKey?: Phaser.Input.Keyboard.Key;
@@ -90,7 +92,12 @@ export class BaseSpaceship extends BaseExplodable {
 
         this.forceField = new ForceField(this.scene, this);
         this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay, flameColors);
-   
+    
+    }
+
+    private handleMouseClick(pointer: Phaser.Input.Pointer): void {
+        const point = new Phaser.Geom.Point(pointer.x, pointer.y);
+        this.setNavigationPoint(point);
     }
 
     public resizeFromScreenRatio() {
@@ -112,12 +119,13 @@ export class BaseSpaceship extends BaseExplodable {
         this.stopSheildSound();
         this.stopThrustSound();
         this.baseSpaceshipDisplay?.destroy();
+        this.navigationPoint = undefined;
     }
 
     public explode(): void {
         this.baseSpaceshipDisplay?.hide();
-         super.explode();
-        
+        super.explode();
+
     }
 
     public isEverythingDestroyed() {
@@ -167,6 +175,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.velocity.set(0, 0);
         // Reset hitpoints
         this.hitpoints = 10;
+        this.scene.input.on('pointerdown', this.handleMouseClick, this);
     }
 
 
@@ -231,7 +240,69 @@ export class BaseSpaceship extends BaseExplodable {
     }
 
 
-    
+    public setNavigationPoint(point: Phaser.Geom.Point): void {
+        this.navigationPoint = point;
+        this.isNewClick = true;
+    }
+
+    public clearNavigationPoint() {
+        this.navigationPoint = undefined;
+        this.isNewClick = false;
+    }
+
+    private navigateToPoint(): void {
+        if (!this.navigationPoint || !this.baseSpaceshipDisplay) {
+            return;
+        }
+
+        // Obtain the centroid of the player's spaceship
+        const centroid = this.baseSpaceshipDisplay.getCentroid();
+
+        // Determine the distances
+        const distanceToNavPoint = Phaser.Math.Distance.BetweenPoints(centroid, this.navigationPoint);
+        const spaceshipLength = this.baseSpaceshipDisplay.getDistanceFromTopToBottom();
+
+        // Check if the spaceship is close to the navigation point
+        if (distanceToNavPoint < spaceshipLength * 2) {
+            // If the spaceship is close, clear the navigation point, stop the thrust, and let the spaceship glide
+            this.clearNavigationPoint();
+            this.stopThrustSound();
+            this.exhaustFlame.hide();
+            return;
+        }
+
+        // Determine the target distance to travel
+        const travelDistance = Math.min(distanceToNavPoint * 0.4, spaceshipLength * 4);
+
+        // Calculate the proportions of the travel distance relative to the total distance
+        const travelProportion = travelDistance / distanceToNavPoint;
+
+        // Determine the target coordinates to move towards
+        const targetX = centroid.x + (this.navigationPoint.x - centroid.x) * travelProportion;
+        const targetY = centroid.y + (this.navigationPoint.y - centroid.y) * travelProportion;
+
+        // Calculate the angle to the target point
+        const angleToPoint = Math.atan2(
+            targetY - centroid.y,
+            targetX - centroid.x
+        );
+
+        // Calculate the rotation difference
+        const rotationDifference = Phaser.Math.Angle.Wrap(angleToPoint - this.baseSpaceshipDisplay.getForwardAngle());
+
+        // Adjust the rotation of the spaceship to face the target point
+        this.baseSpaceshipDisplay.rotateAroundPoint(rotationDifference);
+
+        // Update the velocity based on the direction to the point
+        const ratioThrust = Utils.computeRatioSpeed(this.thrust);
+        this.velocity.x += ratioThrust * Math.cos(angleToPoint);
+        this.velocity.y += ratioThrust * Math.sin(angleToPoint);
+
+        this.playThrustSound();
+        this.exhaustFlame.show();
+    }
+
+
     public calculateVelocity(): void {
         const ratioDamping = Utils.computeRatioSpeed(this.damping);
         const ratioThrust = Utils.computeRatioSpeed(this.thrust);
@@ -248,6 +319,8 @@ export class BaseSpaceship extends BaseExplodable {
         } else {
             this.stopThrustSound();
         }
+
+        this.navigateToPoint();
 
         this.velocity.x *= ratioDamping;
         this.velocity.y *= ratioDamping;
@@ -414,47 +487,47 @@ export class BaseSpaceship extends BaseExplodable {
 
     public detectBounceCollisions(targetObjects: TargetObject[]) {
         if (!this.baseSpaceshipDisplay) {
-          return;
+            return;
         }
-      
+
         const centroidSpaceShip = this.baseSpaceshipDisplay.getCentroid();
         const thisSize = this.getObjectWidthHeight();
         const thisRadius = Math.min(thisSize.width, thisSize.height) / 2;
-      
+
         for (const targetObj of targetObjects) {
-          const targetCentroid = targetObj.getCentroid();
-          const targetSize = targetObj.getObjectWidthHeight();
-          const targetRadius = Math.min(targetSize.width, targetSize.height) / 2;
-      
-          const distance = Phaser.Math.Distance.BetweenPoints(targetCentroid, centroidSpaceShip);
-          const combinedRadii = (thisRadius + targetRadius) * Utils.compuateSingleNumberRatioMax(.8);
-      
-          if (distance <= combinedRadii) {
-            const collisionNormal = new Phaser.Math.Vector2(
-              centroidSpaceShip.x - targetCentroid.x,
-              centroidSpaceShip.y - targetCentroid.y
-            ).normalize();
-      
-            const relativeVelocity = this.getVelocity().clone().subtract(targetObj.getVelocity());
-            const velocityAlongNormal = relativeVelocity.dot(collisionNormal);
-      
-            if (velocityAlongNormal > 0) {
-              continue;
+            const targetCentroid = targetObj.getCentroid();
+            const targetSize = targetObj.getObjectWidthHeight();
+            const targetRadius = Math.min(targetSize.width, targetSize.height) / 2;
+
+            const distance = Phaser.Math.Distance.BetweenPoints(targetCentroid, centroidSpaceShip);
+            const combinedRadii = (thisRadius + targetRadius) * Utils.compuateSingleNumberRatioMax(.8);
+
+            if (distance <= combinedRadii) {
+                const collisionNormal = new Phaser.Math.Vector2(
+                    centroidSpaceShip.x - targetCentroid.x,
+                    centroidSpaceShip.y - targetCentroid.y
+                ).normalize();
+
+                const relativeVelocity = this.getVelocity().clone().subtract(targetObj.getVelocity());
+                const velocityAlongNormal = relativeVelocity.dot(collisionNormal);
+
+                if (velocityAlongNormal > 0) {
+                    continue;
+                }
+
+                const massThis = this.getVelocity().length();
+                const massTarget = targetObj.getVelocity().length();
+                const e = .5; // Coefficient of restitution for an elastic collision
+                const impulseScalar = (-(1 + e) * velocityAlongNormal) / (massThis + massTarget);
+                const impulse = collisionNormal.clone().multiply(new Phaser.Math.Vector2(impulseScalar * massTarget, impulseScalar * massTarget));
+
+                this.getVelocity().add(impulse);
+                targetObj.getVelocity().subtract(impulse.clone().multiply(new Phaser.Math.Vector2(massThis, massThis)));
             }
-      
-            const massThis = this.getVelocity().length();
-            const massTarget = targetObj.getVelocity().length();
-            const e = .5; // Coefficient of restitution for an elastic collision
-            const impulseScalar = (-(1 + e) * velocityAlongNormal) / (massThis + massTarget);
-            const impulse = collisionNormal.clone().multiply(new Phaser.Math.Vector2(impulseScalar * massTarget, impulseScalar * massTarget));
-      
-            this.getVelocity().add(impulse);
-            targetObj.getVelocity().subtract(impulse.clone().multiply(new Phaser.Math.Vector2(massThis, massThis)));
-          }
         }
-      }
-      
-    
+    }
+
+
     protected testCollisionAgainstGroup(sourceObject: BaseExplodable, targetObjects: TargetObject[]) {
 
         for (let i2 = 0; i2 < targetObjects.length; ++i2) {

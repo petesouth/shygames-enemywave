@@ -25,7 +25,10 @@ export class MainScene extends Phaser.Scene {
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     constructor() {
         super('MainScene');
+    }
 
+    private handleMouseClick(pointer: Phaser.Input.Pointer): void {
+        this.startPlayerGame();
     }
 
 
@@ -88,6 +91,8 @@ export class MainScene extends Phaser.Scene {
         }, 500);
 
         this.playGameSongSound();
+        this.input.on('pointerdown', this.handleMouseClick, this);
+
     }
 
 

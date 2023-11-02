@@ -57,6 +57,7 @@ export class MainSceneStartGameText {
         offset += 30;
 
         const instructionTexts = [
+            'Click Screen - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
             'R - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
             '\u2191 - Thrust Forward', '\u2190 - Rotate Left', '\u2192 - Rotate Right',
             'Space - Fire Cannon', 'G - Guided Missiles', 'M - Floating Mines', 'S - Shields'
