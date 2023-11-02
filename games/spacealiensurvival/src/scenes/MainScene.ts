@@ -12,7 +12,7 @@ import { BaseSpaceship } from '../gameobjects/basespaceship';
 
 export class MainScene extends Phaser.Scene {
 
-    public static GOLDEN_RATIO = { width: 2065, height: 1047};
+    public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
@@ -99,8 +99,8 @@ export class MainScene extends Phaser.Scene {
         this.createAsteroidsBasedOnScreenSize();
         this.mainSceneStartGameText.repositionStartGameText(w);
 
-        [this.playerspaceship, ...this.enemyspaceships].forEach((basSpaceShip: BaseSpaceship)=>{
-           basSpaceShip?.resizeFromScreenRatio(); 
+        [this.playerspaceship, ...this.enemyspaceships].forEach((basSpaceShip: BaseSpaceship) => {
+            basSpaceShip?.resizeFromScreenRatio();
         });
 
     }
@@ -110,7 +110,7 @@ export class MainScene extends Phaser.Scene {
         const w = window.innerWidth;
         const h = window.innerHeight;
         console.log("--width, height--", w, h);
-        
+
         this.mainSceneStartGameText.displayGameText(this.playerspaceship);
 
         this.spaceObjects.forEach(spaceObj => {
@@ -119,17 +119,17 @@ export class MainScene extends Phaser.Scene {
 
 
         if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
-            this.playerspaceship.handleBullets(this.enemyspaceships);
-            this.playerspaceship.handleMines(this.enemyspaceships);
-            this.playerspaceship.handleMissiles(this.enemyspaceships);
-            this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
             this.playerspaceship.detectBounceCollisions([...this.enemyspaceships, ...this.spaceObjects]);
         }
-        
+
+        this.playerspaceship.handleBullets(this.enemyspaceships);
+        this.playerspaceship.handleMines(this.enemyspaceships);
+        this.playerspaceship.handleMissiles(this.enemyspaceships);
+        this.playerspaceship.handleWeaponsAgainstSpaceObjets(this.spaceObjects);
 
         this.playerspaceship.render();
         this.playerspaceship.renderWeapons();
-        
+
 
         for (let i = 0; i < this.enemyspaceships.length; ++i) {
             const tenemyspaceship = this.enemyspaceships[i];
@@ -195,10 +195,10 @@ export class MainScene extends Phaser.Scene {
                 if (game.currentLevel >= 1) {
                     this.createBackgroundImage();
                     this.createAsteroidsBasedOnScreenSize();
-                    this.resizeStarBackground();    
+                    this.resizeStarBackground();
                 }
 
-                
+
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
                 this.timerBetweenLevels !== -1 &&
@@ -264,8 +264,8 @@ export class MainScene extends Phaser.Scene {
             if (this.starsBackgroundImage) {
                 this.starsBackgroundImage.destroy();
             }
-    
-            
+
+
             this.starsBackgroundImage = this.add.image(this.scale.width / 2,
                 this.scale.height / 2, newRandomName
             );

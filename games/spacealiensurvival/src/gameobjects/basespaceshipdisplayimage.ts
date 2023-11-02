@@ -32,7 +32,7 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         this.image.setOrigin(0.5); // Center the image on its position
         const centroid = this.getCentroid();
         this.image.setPosition(centroid.x, centroid.y);
-        
+
         this.resizeFromScreenRatio();
         this.image.setVisible(false);
 
@@ -62,13 +62,13 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
         return new Phaser.Geom.Point(centroidX, centroidY);
     }
 
-    
+
 
     public rotateAroundPoint(rotationDifference: number): void {
         const centroid = this.getCentroid();
         const cosAngle = Math.cos(rotationDifference);
         const sinAngle = Math.sin(rotationDifference);
-    
+
         const updatedPoints = this.squarePolygon.points.map(point => {
             const x = point.x - centroid.x;
             const y = point.y - centroid.y;
@@ -76,9 +76,9 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
             const rotatedY = x * sinAngle + y * cosAngle + centroid.y;
             return new Phaser.Geom.Point(rotatedX, rotatedY);
         });
-    
+
         this.squarePolygon.setTo(updatedPoints);
-    
+
         // Align the image's rotation with the angle difference 
         // so that it points towards the target point
         this.image.setRotation(this.image.rotation + rotationDifference);
@@ -95,16 +95,16 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
             height = this.squaresize;
             width = (this.image.displayWidth / this.image.displayHeight) * this.squaresize;
         }
-        
-        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth, 
-            window.innerHeight, 
+
+        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth,
+            window.innerHeight,
             MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, width, height);
 
 
         this.image.setDisplaySize(ratioValues.ratioWidth, ratioValues.ratioHeight);
-        
+
     }
-    
+
 
     public rotateRight(rotationRate: number): void {
         this.rotateAroundPoint(Phaser.Math.DegToRad(rotationRate)); // Negative rotation for clockwise (right) rotation
@@ -207,7 +207,16 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     }
 
     public getDistanceFromTopToBottom(): number {
-        return this.squaresize - 10;
+        let ratioValues = Utils.computeRatioSizeDimension(window.innerWidth,
+            window.innerHeight,
+            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, this.squaresize, this.squaresize);
+
+        let ratioValuesExtra = Utils.computeRatioSizeDimension(window.innerWidth,
+            window.innerHeight,
+            MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height, 10, 10);
+
+
+        return ratioValues.ratioHeight - ratioValuesExtra.ratioHeight;
     }
 
     public getCollisionPoints(): Phaser.Geom.Point[] {
