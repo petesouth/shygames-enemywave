@@ -297,7 +297,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.baseSpaceshipDisplay.rotateAroundPoint(rotationDifference);
 
         // Update the velocity based on the direction to the point
-        const ratioThrust = Utils.computeRatioSpeed(this.thrust);
+        const ratioThrust = Utils.computeRatioValue(this.thrust);
         this.velocity.x += ratioThrust * Math.cos(angleToPoint);
         this.velocity.y += ratioThrust * Math.sin(angleToPoint);
 
@@ -307,9 +307,8 @@ export class BaseSpaceship extends BaseExplodable {
 
     public calculateVelocity(): void {
 
-        const ratioDamping = Utils.computeRatioSpeed(this.damping);
-        const ratioThrust = Utils.computeRatioSpeed(this.thrust);
-        const ratioMaxSpeed = Utils.computeRatioSpeed(this.maxSpeed);
+        const ratioThrust = Utils.computeRatioValue(this.thrust);
+        const ratioMaxSpeed = Utils.computeRatioValue(this.maxSpeed);
         if (!this.baseSpaceshipDisplay) {
             return;
         }
@@ -328,8 +327,8 @@ export class BaseSpaceship extends BaseExplodable {
         }
 
 
-        this.velocity.x *= ratioDamping;
-        this.velocity.y *= ratioDamping;
+        this.velocity.x *= this.damping;
+        this.velocity.y *= this.damping;
 
         // Check the magnitude of the velocity vector
         const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
@@ -506,7 +505,7 @@ export class BaseSpaceship extends BaseExplodable {
             const targetRadius = Math.min(targetSize.width, targetSize.height) / 2;
 
             const distance = Phaser.Math.Distance.BetweenPoints(targetCentroid, centroidSpaceShip);
-            const combinedRadii = (thisRadius + targetRadius) * Utils.compuateSingleNumberRatioMax(.8);
+            const combinedRadii = (thisRadius + targetRadius) * Utils.computeRatioValue(.8);
 
             if (distance <= combinedRadii) {
                 const collisionNormal = new Phaser.Math.Vector2(

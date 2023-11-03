@@ -4,6 +4,7 @@ import gGameStore from '../store/store';
 import { gameActions } from '../store/gamestore';
 import { BaseExplodableState } from './baseExplodable';
 import { SplashScreen } from '../scenes/SplashScreen';
+import { Utils } from '../utils/utils';
 
 
 export interface EnemySpaceshipConfig {
@@ -102,8 +103,9 @@ export class EnemySpaceship extends BaseSpaceship {
         const angle = Math.atan2(directionY, directionX);
 
         // Randomized Thrust
-        const randomThrustOffset = Phaser.Math.FloatBetween(-0.1, 0.1) * this.thrust;
+        const randomThrustOffset = Phaser.Math.FloatBetween(-0.1, 0.1) * Utils.computeRatioValue(this.thrust);
         const effectiveThrust = (this.jetOn === true) ? (this.thrust + randomThrustOffset) : 1;
+
 
         this.velocity.x += effectiveThrust * Math.cos(angle);
         this.velocity.y += effectiveThrust * Math.sin(angle);
@@ -119,8 +121,8 @@ export class EnemySpaceship extends BaseSpaceship {
         // Check the magnitude of the velocity vector
         const speed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.y * this.velocity.y);
 
-        if (speed > this.maxSpeed) {
-            const scale = this.maxSpeed / speed;
+        if (speed > Utils.computeRatioValue(this.maxSpeed)) {
+            const scale = Utils.computeRatioValue(this.maxSpeed) / speed;
             this.velocity.x *= scale;
             this.velocity.y *= scale;
         }

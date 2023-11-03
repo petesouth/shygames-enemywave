@@ -32,11 +32,11 @@ export class ExhaustFlame {
             frame: 'white',
             color:  colors,
             colorEase: 'quad.out',
-            lifespan: Utils.compuateSingleNumberRatioMax(600),
-            angle: { min: Utils.compuateSingleNumberRatioMax(angle - 10), max: Utils.compuateSingleNumberRatioMax(angle + 10) },
+            lifespan: Utils.computeRatioValue(600),
+            angle: { min: Utils.computeRatioValue(angle - 10), max: Utils.computeRatioValue(angle + 10) },
             scale: { start: 0.35, end: 0, ease: 'sine.out' },  // halved the start value
-            speed: Utils.compuateSingleNumberRatioMax(100),
-            advance: Utils.compuateSingleNumberRatioMax(2000),
+            speed: Utils.computeRatioValue(100),
+            advance: Utils.computeRatioValue(2000),
             blendMode: 'ADD',
             visible: false
         });

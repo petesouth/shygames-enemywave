@@ -203,8 +203,8 @@ export class BaseSpaceshipDisplayImage implements BaseSpaceshipDisplay {
     }
 
     public getDistanceFromTopToBottom(): number {
-        let ratioValuesDistance = Utils.compuateSingleNumberRatioMax(this.squaresize);
-        let ratioValuesExtraDistance = Utils.compuateSingleNumberRatioMax(10);
+        let ratioValuesDistance = Utils.computeRatioValue(this.squaresize);
+        let ratioValuesExtraDistance = Utils.computeRatioValue(10);
 
         return ratioValuesDistance - ratioValuesExtraDistance;
     }

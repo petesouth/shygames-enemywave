@@ -36,7 +36,7 @@ export class SpaceObject {
         const scale = SpaceObject.SCALE; // Scaling factor
 
 
-        let size = Utils.compuateSingleNumberRatioMax(Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE));
+        let size = Utils.computeRatioValue(Phaser.Math.Between(SpaceObject.MIN_SIZE, SpaceObject.MAX_SIZE));
         
         const points = [];
         for (let i = 0; i < sides; i++) {

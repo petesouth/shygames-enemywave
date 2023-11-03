@@ -33,7 +33,7 @@ export class Bullet extends BaseExplodable {
     
 
     public drawObjectAlive() {
-            const ratioSpeed = Utils.computeRatioSpeed(this.speed);
+            const ratioSpeed = Utils.computeRatioValue(this.speed);
       
 
             const dx = this.direction.x * ratioSpeed;
@@ -50,7 +50,7 @@ export class Bullet extends BaseExplodable {
             const chosenColor = Phaser.Utils.Array.GetRandom(this.colors);
             this.graphics.fillStyle(chosenColor);
             const theCenter = this.getCentroid();
-            this.graphics.fillCircle(theCenter.x, theCenter.y, Utils.compuateSingleNumberRatioMax(4));  // 4 pixel radius
+            this.graphics.fillCircle(theCenter.x, theCenter.y, Utils.computeRatioValue(4));  // 4 pixel radius
             this.handleScreenWrap();
     }
 
