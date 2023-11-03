@@ -86,7 +86,7 @@ export class SpaceObject {
         }));
 
         // Clamp the velocity magnitude to a maximum value
-        const maxVelocityMagnitude = 7; // Adjust as needed
+        const maxVelocityMagnitude = Utils.computeRatioValue(7); // Adjust as needed
         const velocityMagnitude = this.velocity.length();
 
         if (velocityMagnitude > maxVelocityMagnitude) {
