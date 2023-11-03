@@ -99,17 +99,15 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-
     createUIButtons() {
-        const { width, height } = this.scale;
-    
+
         // Create button background graphics
         const buttonGraphics = this.add.graphics();
-        buttonGraphics.fillStyle(0x0077be);  // Ocean blue fill
         buttonGraphics.lineStyle(2, 0xffffff);  // White border
-    
+
         // Helper function to create a button
-        const createButton = (x: number, y: number, width: number, height: number, label: string) => {
+        const createButton = (x: number, y: number, width: number, height: number, label: string, fillColor: number) => {
+            buttonGraphics.fillStyle(fillColor);  // Set fill color based on argument
             buttonGraphics.strokeRoundedRect(x, y, width, height, 10);  // Rounded corners
             buttonGraphics.fillRoundedRect(x, y, width, height, 10);  // Rounded corners
             const text = this.add.text(x + (width / 2), y + (height / 2), label, { fontSize: '10px', color: '#fff' })
@@ -119,34 +117,34 @@ export class MainScene extends Phaser.Scene {
                 .setOrigin(0, 0)
                 .setInteractive()
                 .on('pointerdown', (pointer: Phaser.Input.Pointer, localX: number, localY: number, event: Phaser.Types.Input.EventData) => {
-                    this.handleButton(label);
+                    this.handleButton(label, buttonGraphics);
                     event.stopPropagation();
                 })
                 .setDepth(0);  // Ensure zone is rendered below text
-            return { text, zone };
+            return { text, zone, graphics: buttonGraphics };
         };
-    
-        // Create the 'Shields' button at the top left corner
-        createButton(10, 10, 70, 30, 'Shields');
-    
-        // Create buttons at the left column underneath the 'Shields' button
-        const buttons = ['Fire', 'Missiles', 'Mines', 'Fullscreen'];
-        buttons.forEach((label, index) => {
-            const buttonX = 10;  // Left column
-            const buttonY = 50 + (index * 40);  // Underneath 'Shields' button, increased spacing to accommodate for border
-            createButton(buttonX, buttonY, 70, 30, label);  // Adjusted width to match 'Shields' button
+
+        // Array of buttons along with their properties
+        const buttons: { label: string, activeProperty: string, y: number }[] = [
+            { label: 'Shields', activeProperty: 'turnOnShields', y: 10 },
+            { label: 'Fire', activeProperty: 'turnOnBullets', y: 50 },
+            { label: 'Missiles', activeProperty: 'turnOnMissiles', y: 90 },
+            { label: 'Mines', activeProperty: 'turnOnMines', y: 130 },
+            { label: 'Fullscreen', activeProperty: '', y: 170 }  // 'Fullscreen' button color remains unchanged
+        ];
+        buttons.forEach((button) => {
+            const fillColor = (this.playerspaceship as any)[button.activeProperty] ? 0xff0000 : 0x0077be;
+            createButton(10, button.y, 70, 30, button.label, fillColor);
         });
-    
+
         // Update button positions on resize
         this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
             // ... (update positions as needed)
         });
     }
-    
-    
 
 
-    handleButton(label: string) {
+    handleButton(label: string, buttonGraphics: Phaser.GameObjects.Graphics) {
         switch (label) {
             case 'Shields':
                 this.playerspaceship.turnOnShields = !this.playerspaceship.turnOnShields;
@@ -165,8 +163,39 @@ export class MainScene extends Phaser.Scene {
                 Game.toggleFullscreen();
                 break;
         }
+
+        // Update button colors
+        this.updateButtonColors(buttonGraphics);
     }
 
+    updateButtonColors(buttonGraphics: Phaser.GameObjects.Graphics) {
+        buttonGraphics.clear();
+        buttonGraphics.lineStyle(2, 0xffffff);  // White border
+
+        // Update 'Shields' button color
+        buttonGraphics.fillStyle(this.playerspaceship.turnOnShields ? 0xff0000 : 0x0077be);
+        buttonGraphics.strokeRoundedRect(10, 10, 70, 30, 10);
+        buttonGraphics.fillRoundedRect(10, 10, 70, 30, 10);
+
+        // Update other button colors, excluding 'Fullscreen'
+        const buttons = [
+            { label: 'Fire', activeProperty: 'turnOnBullets', y: 50 },
+            { label: 'Missiles', activeProperty: 'turnOnMissiles', y: 90 },
+            { label: 'Mines', activeProperty: 'turnOnMines', y: 130 },
+        ];
+        type ButtonProperty = 'turnOnShields' | 'turnOnBullets' | 'turnOnMissiles' | 'turnOnMines';
+
+        buttons.forEach((button) => {
+            buttonGraphics.fillStyle((this.playerspaceship as any)[button.activeProperty] ? 0xff0000 : 0x0077be);
+            buttonGraphics.strokeRoundedRect(10, button.y, 70, 30, 10);
+            buttonGraphics.fillRoundedRect(10, button.y, 70, 30, 10);
+        });
+
+        // Handle 'Fullscreen' button separately to keep it blue
+        buttonGraphics.fillStyle(0x0077be);
+        buttonGraphics.strokeRoundedRect(10, 170, 70, 30, 10);
+        buttonGraphics.fillRoundedRect(10, 170, 70, 30, 10);
+    }
 
     handleWindowResize() {
         const w = window.innerWidth;
