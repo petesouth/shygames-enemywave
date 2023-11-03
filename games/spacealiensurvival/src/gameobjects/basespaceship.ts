@@ -92,12 +92,15 @@ export class BaseSpaceship extends BaseExplodable {
 
         this.forceField = new ForceField(this.scene, this);
         this.exhaustFlame = new ExhaustFlame(this.scene, this.baseSpaceshipDisplay, flameColors);
-    
+
     }
 
     private handleMouseClick(pointer: Phaser.Input.Pointer): void {
         const point = new Phaser.Geom.Point(pointer.x, pointer.y);
         this.setNavigationPoint(point);
+        this.playThrustSound();
+
+
     }
 
     public resizeFromScreenRatio() {
@@ -263,7 +266,7 @@ export class BaseSpaceship extends BaseExplodable {
         const spaceshipLength = this.baseSpaceshipDisplay.getDistanceFromTopToBottom();
 
         // Check if the spaceship is close to the navigation point
-        if (distanceToNavPoint < spaceshipLength * 2) {
+        if (distanceToNavPoint < spaceshipLength * 1.2) {
             // If the spaceship is close, clear the navigation point, stop the thrust, and let the spaceship glide
             this.clearNavigationPoint();
             this.stopThrustSound();
@@ -298,12 +301,12 @@ export class BaseSpaceship extends BaseExplodable {
         this.velocity.x += ratioThrust * Math.cos(angleToPoint);
         this.velocity.y += ratioThrust * Math.sin(angleToPoint);
 
-        this.playThrustSound();
         this.exhaustFlame.show();
     }
 
 
     public calculateVelocity(): void {
+
         const ratioDamping = Utils.computeRatioSpeed(this.damping);
         const ratioThrust = Utils.computeRatioSpeed(this.thrust);
         const ratioMaxSpeed = Utils.computeRatioSpeed(this.maxSpeed);
@@ -311,16 +314,19 @@ export class BaseSpaceship extends BaseExplodable {
             return;
         }
 
-        if (this.upKey?.isDown) {
-            this.playThrustSound();
-            const angle = this.baseSpaceshipDisplay.getForwardAngle();
-            this.velocity.x += ratioThrust * Math.cos(angle);
-            this.velocity.y += ratioThrust * Math.sin(angle);
+        if (this.navigationPoint) {
+            this.navigateToPoint();
         } else {
-            this.stopThrustSound();
+            if (this.upKey?.isDown) {
+                this.playThrustSound();
+                const angle = this.baseSpaceshipDisplay.getForwardAngle();
+                this.velocity.x += ratioThrust * Math.cos(angle);
+                this.velocity.y += ratioThrust * Math.sin(angle);
+            } else {
+                this.stopThrustSound();
+            }
         }
 
-        this.navigateToPoint();
 
         this.velocity.x *= ratioDamping;
         this.velocity.y *= ratioDamping;
