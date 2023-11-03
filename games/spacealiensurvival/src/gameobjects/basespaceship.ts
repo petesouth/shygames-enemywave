@@ -27,6 +27,12 @@ interface TargetObject {
 export class BaseSpaceship extends BaseExplodable {
     public static halfBaseWidth = 10;
     public static halfHeight = 15;
+    
+    public turnOnShields: boolean = false;
+    public turnOnBullets: boolean = false;
+    public turnOnMissiles: boolean = false;
+    public turnOnMines: boolean = false;
+
 
     protected maxSpeed: number = 8;
 
@@ -372,7 +378,7 @@ export class BaseSpaceship extends BaseExplodable {
 
         this._points = this.baseSpaceshipDisplay.drawObjectAlive(this.velocity);
 
-        if (this.shieldKey?.isDown) {
+        if (this.shieldKey?.isDown || this.turnOnShields === true) {
             this.forceField.show();
             this.playShieldSound();
         } else {
@@ -424,7 +430,7 @@ export class BaseSpaceship extends BaseExplodable {
 
         const currentTime = this.scene.time.now;
 
-        if (this.missileKey?.isDown &&
+        if ((this.missileKey?.isDown || (this.turnOnMissiles && !this.turnOnShields)) &&
             (currentTime - this.missileLastFired > this.missileFireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
@@ -455,7 +461,7 @@ export class BaseSpaceship extends BaseExplodable {
 
         const currentTime = this.scene.time.now;
 
-        if (this.fireKey?.isDown &&
+        if ((this.fireKey?.isDown || (this.turnOnBullets && !this.turnOnShields)) &&
             (currentTime - this.lastFired > this.fireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
@@ -473,7 +479,7 @@ export class BaseSpaceship extends BaseExplodable {
 
         const currentTime = this.scene.time.now;
 
-        if (this.mineKey?.isDown &&
+        if ((this.mineKey?.isDown || (this.turnOnMines && !this.turnOnShields)) &&
             (currentTime - this.lastMinePlaced > this.mineRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {

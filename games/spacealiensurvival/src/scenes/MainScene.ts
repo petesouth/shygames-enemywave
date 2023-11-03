@@ -149,16 +149,16 @@ export class MainScene extends Phaser.Scene {
     handleButton(label: string) {
         switch (label) {
             case 'Shields':
-                // handle fire
+                this.playerspaceship.turnOnShields = !this.playerspaceship.turnOnShields;
                 break;
             case 'Fire':
-                // handle fire
+                this.playerspaceship.turnOnBullets = !this.playerspaceship.turnOnBullets;
                 break;
             case 'Missiles':
-                // handle missiles
+                this.playerspaceship.turnOnMissiles = !this.playerspaceship.turnOnMissiles;
                 break;
             case 'Mines':
-                // handle mines
+                this.playerspaceship.turnOnMines = !this.playerspaceship.turnOnMines;
                 break;
             case 'Fullscreen':
                 // handle fullscreen
