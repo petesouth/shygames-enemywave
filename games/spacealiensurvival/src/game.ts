@@ -56,7 +56,7 @@ export default class Game extends Phaser.Game {
     handleKeyDown(event: KeyboardEvent) {
         // Check if the Ctrl key is pressed (key code 17) and the "E" key (key code 69)
         if (event.ctrlKey && event.keyCode === 69) {
-            this.toggleFullscreen();
+            Game.toggleFullscreen();
         } else if (event.keyCode === 82) {
             const mainScene = this.scene.getScene("MainScene") as MainScene;
             mainScene.startPlayerGame();
@@ -65,10 +65,10 @@ export default class Game extends Phaser.Game {
         }
     }
 
-    toggleFullscreen() {
+    public static toggleFullscreen() {
         if (!document.fullscreenElement) {
-            const canvas = this.canvas as HTMLCanvasElement;
-            canvas.requestFullscreen().catch((err) => {
+            const canvas = document.querySelector('canvas');
+            canvas?.requestFullscreen().catch((err) => {
                 console.error("Fullscreen request failed:", err);
             });
         } else {

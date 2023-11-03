@@ -8,6 +8,7 @@ import { gameActions } from '../store/gamestore';
 import { SplashScreen } from './SplashScreen';
 import { MainSceneStartGameText } from './MainSceneStartGameText';
 import { BaseSpaceship } from '../gameobjects/basespaceship';
+import Game from '../game';
 
 
 export class MainScene extends Phaser.Scene {
@@ -66,7 +67,9 @@ export class MainScene extends Phaser.Scene {
             });
             this.enemyspaceships = [];
             this.timerBetweenLevels = -1;
+            Game.toggleFullscreen();
         }
+
     }
 
 
