@@ -369,25 +369,59 @@ export class MainScene extends Phaser.Scene {
             if (this.starsBackgroundImage) {
                 this.starsBackgroundImage.destroy();
             }
-
-
-            this.starsBackgroundImage = this.add.image(this.scale.width / 2,
-                this.scale.height / 2, newRandomName
+    
+            this.starsBackgroundImage = this.add.image(window.innerWidth / 2,
+                window.innerHeight / 2, newRandomName
             );
-
+    
             this.currentBackgroundName = newRandomName;
-
         }
-
+    
+        this.resizeStarBackground();
     }
+    
 
     public resizeStarBackground() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        this.starsBackgroundImage?.setDepth(-1);
-        this.starsBackgroundImage?.setPosition(w / 2, h / 2);
-        this.starsBackgroundImage?.setDisplaySize((w), (h));
+        if( !this.starsBackgroundImage ) {
+            return;
+        }
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const screenAspectRatio = screenWidth / screenHeight;
+    
+        const imageWidth = this.starsBackgroundImage.width;
+        const imageHeight = this.starsBackgroundImage.height;
+        const imageAspectRatio = imageWidth / imageHeight;
+    
+        let newWidth, newHeight;
+    
+        if (imageAspectRatio > screenAspectRatio) {
+            // The image is wider relative to the screen, set the image width to match the screen width
+            newWidth = screenWidth;
+            newHeight = newWidth / imageAspectRatio;  // Adjust height proportionally
+    
+            // Check if the new height is less than the screen height, if so adjust the dimensions
+            if (newHeight < screenHeight) {
+                newHeight = screenHeight;
+                newWidth = newHeight * imageAspectRatio;  // Adjust width proportionally
+            }
+        } else {
+            // The image is taller relative to the screen, or has the same aspect ratio, set the image height to match the screen height
+            newHeight = screenHeight;
+            newWidth = newHeight * imageAspectRatio;  // Adjust width proportionally
+    
+            // Check if the new width is less than the screen width, if so adjust the dimensions
+            if (newWidth < screenWidth) {
+                newWidth = screenWidth;
+                newHeight = newWidth / imageAspectRatio;  // Adjust height proportionally
+            }
+        }
+    
+        this.starsBackgroundImage.setDisplaySize(newWidth, newHeight);
+    
+        // Ensure the image is positioned in the center of the screen
+        this.starsBackgroundImage.setPosition(screenWidth / 2, screenHeight / 2);
+    
     }
 
 }
