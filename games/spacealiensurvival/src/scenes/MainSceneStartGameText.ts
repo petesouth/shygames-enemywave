@@ -18,6 +18,7 @@ export class MainSceneStartGameText {
 
     showLevelAnnounceText() {
         this.levelAnnounceText?.setVisible(true);
+        this.levelAnnounceText?.setDepth(1);
     }
 
     hideLevelAnnounceText() {
@@ -27,8 +28,8 @@ export class MainSceneStartGameText {
 
     createStartGameText() {
         this.scoreText = this.scene.add.text(
-            50,
-            50,
+            100,
+            10,
             'Player Kills: 0 - Level: 0',
             { font: '16px Arial', color: '#ffffff' }
         );
@@ -36,7 +37,7 @@ export class MainSceneStartGameText {
 
         this.levelAnnounceText = this.scene.add.text(
             (window.innerWidth / 2),
-            70,
+            80,
             'Starting level 1',
             { font: '16px Arial', color: '#ffffff' }
         );

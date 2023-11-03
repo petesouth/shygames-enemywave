@@ -112,7 +112,7 @@ export class MainScene extends Phaser.Scene {
         const createButton = (x: number, y: number, width: number, height: number, label: string) => {
             buttonGraphics.strokeRoundedRect(x, y, width, height, 10);  // Rounded corners
             buttonGraphics.fillRoundedRect(x, y, width, height, 10);  // Rounded corners
-            const text = this.add.text(x + (width / 2), y + (height / 2), label, { fontSize: '12px', color: '#fff' })
+            const text = this.add.text(x + (width / 2), y + (height / 2), label, { fontSize: '10px', color: '#fff' })
                 .setOrigin(0.5, 0.5)  // Center the text within the button
                 .setDepth(1);
             const zone = this.add.zone(x, y, width, height)
@@ -129,12 +129,12 @@ export class MainScene extends Phaser.Scene {
         // Create the 'Shields' button at the top left corner
         createButton(10, 10, 70, 30, 'Shields');
     
-        // Create buttons at the top right corner
+        // Create buttons at the left column underneath the 'Shields' button
         const buttons = ['Fire', 'Missiles', 'Mines', 'Fullscreen'];
         buttons.forEach((label, index) => {
-            const buttonX = width - 110;  // Adjusted position to the left
-            const buttonY = 10 + (index * 40);  // Increased spacing to accommodate for border
-            createButton(buttonX, buttonY, 100, 30, label);
+            const buttonX = 10;  // Left column
+            const buttonY = 50 + (index * 40);  // Underneath 'Shields' button, increased spacing to accommodate for border
+            createButton(buttonX, buttonY, 70, 30, label);  // Adjusted width to match 'Shields' button
         });
     
         // Update button positions on resize
@@ -142,6 +142,7 @@ export class MainScene extends Phaser.Scene {
             // ... (update positions as needed)
         });
     }
+    
     
 
 
