@@ -95,7 +95,75 @@ export class MainScene extends Phaser.Scene {
 
         this.playGameSongSound();
         this.input.on('pointerdown', this.handleMouseClick, this);
+        this.createUIButtons();
 
+    }
+
+
+    createUIButtons() {
+        const { width, height } = this.scale;
+    
+        // Create button background graphics
+        const buttonGraphics = this.add.graphics();
+        buttonGraphics.fillStyle(0x0077be);  // Ocean blue fill
+        buttonGraphics.lineStyle(2, 0xffffff);  // White border
+    
+        // Helper function to create a button
+        const createButton = (x: number, y: number, width: number, height: number, label: string) => {
+            buttonGraphics.strokeRoundedRect(x, y, width, height, 10);  // Rounded corners
+            buttonGraphics.fillRoundedRect(x, y, width, height, 10);  // Rounded corners
+            const text = this.add.text(x + (width / 2), y + (height / 2), label, { fontSize: '12px', color: '#fff' })
+                .setOrigin(0.5, 0.5)  // Center the text within the button
+                .setDepth(1);
+            const zone = this.add.zone(x, y, width, height)
+                .setOrigin(0, 0)
+                .setInteractive()
+                .on('pointerdown', (pointer: Phaser.Input.Pointer, localX: number, localY: number, event: Phaser.Types.Input.EventData) => {
+                    this.handleButton(label);
+                    event.stopPropagation();
+                })
+                .setDepth(0);  // Ensure zone is rendered below text
+            return { text, zone };
+        };
+    
+        // Create the 'Shields' button at the top left corner
+        createButton(10, 10, 70, 30, 'Shields');
+    
+        // Create buttons at the top right corner
+        const buttons = ['Fire', 'Missiles', 'Mines', 'Fullscreen'];
+        buttons.forEach((label, index) => {
+            const buttonX = width - 110;  // Adjusted position to the left
+            const buttonY = 10 + (index * 40);  // Increased spacing to accommodate for border
+            createButton(buttonX, buttonY, 100, 30, label);
+        });
+    
+        // Update button positions on resize
+        this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
+            // ... (update positions as needed)
+        });
+    }
+    
+
+
+    handleButton(label: string) {
+        switch (label) {
+            case 'Shields':
+                // handle fire
+                break;
+            case 'Fire':
+                // handle fire
+                break;
+            case 'Missiles':
+                // handle missiles
+                break;
+            case 'Mines':
+                // handle mines
+                break;
+            case 'Fullscreen':
+                // handle fullscreen
+                Game.toggleFullscreen();
+                break;
+        }
     }
 
 
@@ -117,7 +185,7 @@ export class MainScene extends Phaser.Scene {
 
         const w = window.innerWidth;
         const h = window.innerHeight;
-        
+
         this.mainSceneStartGameText.displayGameText(this.playerspaceship);
 
         this.spaceObjects.forEach(spaceObj => {

@@ -27,8 +27,8 @@ export class MainSceneStartGameText {
 
     createStartGameText() {
         this.scoreText = this.scene.add.text(
-            40,
-            40,
+            50,
+            50,
             'Player Kills: 0 - Level: 0',
             { font: '16px Arial', color: '#ffffff' }
         );
@@ -36,7 +36,7 @@ export class MainSceneStartGameText {
 
         this.levelAnnounceText = this.scene.add.text(
             (window.innerWidth / 2),
-            60,
+            70,
             'Starting level 1',
             { font: '16px Arial', color: '#ffffff' }
         );
