@@ -9,25 +9,25 @@ export class SplashScreen extends Phaser.Scene {
     public static IMAGE_BORDER_PADDING = 60;
 
     public splashText?: Phaser.GameObjects.Text;
-    public image?: Phaser.GameObjects.Image;
+    public gamescreenBackgroundImage?: Phaser.GameObjects.Image;
 
-    public static textureNames = ["bricks", 
-                                  "bricks2", 
-                                  "rockwall", 
-                                  "metal"];
+    public static textureNames = ["bricks",
+        "bricks2",
+        "rockwall",
+        "metal"];
 
-    public static enemySpaceships = ["enemyspaceship4", 
-                                     "enemyspaceship4B", 
-                                     "bossenemyspaceship4", 
-                                     "enemysaucer1", 
-                                     "enemysaucer2", 
-                                     "darthvader", 
-                                     "enemyspacejet" ];
+    public static enemySpaceships = ["enemyspaceship4",
+        "enemyspaceship4B",
+        "bossenemyspaceship4",
+        "enemysaucer1",
+        "enemysaucer2",
+        "darthvader",
+        "enemyspacejet"];
 
-    public static backgrounds = ["background1", "background2", "background3", "background4", "background5", 
-                                 "background6", "background7", "background8", "background9", "background10",
-                                 "background11", "background12", "background13", "background14", "background15",
-                                 "background16", "background17", "background18", "background19", "background20"];
+    public static backgrounds = ["background1", "background2", "background3", "background4", "background5",
+        "background6", "background7", "background8", "background9", "background10",
+        "background11", "background12", "background13", "background14", "background15",
+        "background16", "background17", "background18", "background19", "background20"];
 
 
     constructor() {
@@ -58,7 +58,7 @@ export class SplashScreen extends Phaser.Scene {
         this.load.audio('fail', 'sound/fail.mp3');
         this.load.audio('success', 'sound/success.mp3');
         this.load.audio('levelcomplete', 'sound/levelcomplete.mp3');
-        
+
 
         this.splashText.setText("Loading Player...")
         this.load.atlas('flares', 'images/flares.png', 'images/flares.json');
@@ -66,11 +66,11 @@ export class SplashScreen extends Phaser.Scene {
 
         this.splashText.setText("SplashScreen...")
         this.load.image('gamescreen', 'images/gamescreen.png');
-        
+
         SplashScreen.enemySpaceships.forEach((spaceship) => {
             this.splashText?.setText("Loading enemies: " + spaceship + "...");
             this.load.image(spaceship, 'images/' + spaceship + '.png');
-        
+
         });
 
         SplashScreen.backgrounds.forEach((background) => {
@@ -89,11 +89,7 @@ export class SplashScreen extends Phaser.Scene {
     }
 
     create() {
-        this.image = this.add.image(this.scale.width / 2,
-            this.scale.height / 2,
-            "gamescreen");
-        this.image?.setDisplaySize((this.scale.width) - SplashScreen.IMAGE_BORDER_PADDING, (this.scale.height) - SplashScreen.IMAGE_BORDER_PADDING);
-
+        this.createBackgroundImage();
         this.splashText?.setText('ShyHumanGames LLC - Click to Start');
         this.splashText?.setOrigin(0.5);
         this.splashText?.setDepth(1);
@@ -109,7 +105,7 @@ export class SplashScreen extends Phaser.Scene {
                 this.handleWindowResize();
             }
         }, 500);
-    
+
     }
 
 
@@ -123,7 +119,47 @@ export class SplashScreen extends Phaser.Scene {
         this.splashText?.setDepth(1);
 
 
-        this.image?.setPosition(w / 2, h / 2);
-        this.image?.setDisplaySize((w) - SplashScreen.IMAGE_BORDER_PADDING, (h) - SplashScreen.IMAGE_BORDER_PADDING);
+        this.resizeStarBackground();
+    }
+
+
+
+    createBackgroundImage() {
+        this.gamescreenBackgroundImage = this.add.image(window.innerWidth / 2,
+            window.innerHeight / 2, "gamescreen"
+        );
+
+        this.resizeStarBackground();
+    }
+
+
+    public resizeStarBackground() {
+        if (!this.gamescreenBackgroundImage) {
+            return;
+        }
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        const screenAspectRatio = screenWidth / screenHeight;
+
+        const imageWidth = this.gamescreenBackgroundImage.width;
+        const imageHeight = this.gamescreenBackgroundImage.height;
+        const imageAspectRatio = imageWidth / imageHeight;
+
+        let newWidth, newHeight;
+
+        // The image is wider relative to the screen, set the image width to match the screen width
+        newWidth = screenWidth;
+        newHeight = newWidth / imageAspectRatio;  // Adjust height proportionally
+
+        // Check if the new height is less than the screen height, if so adjust the dimensions
+        if (newHeight < screenHeight) {
+            newHeight = screenHeight;
+            newWidth = newHeight * imageAspectRatio;  // Adjust width proportionally
+        }
+        this.gamescreenBackgroundImage.setDisplaySize(newWidth, newHeight);
+
+        // Ensure the image is positioned in the center of the screen
+        this.gamescreenBackgroundImage.setPosition(screenWidth / 2, screenHeight / 2);
+
     }
 }
