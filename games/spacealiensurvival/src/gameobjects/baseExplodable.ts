@@ -12,7 +12,7 @@ export abstract class BaseExplodable {
     protected scene: Phaser.Scene;
     protected graphics: Phaser.GameObjects.Graphics;
     protected popSize: number = 0;
-    protected maxPopSize: number = 10;
+    protected maxPopSize: number = 5;
     protected _points: Phaser.Geom.Point[] = [];
     public state: BaseExplodableState = BaseExplodableState.ALIVE;
     protected explosionEmitter?: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -23,7 +23,7 @@ export abstract class BaseExplodable {
 
         this.explosionEmitter = this.scene.add.particles(centroid.x, centroid.y, 'flares', {
             frame: this.explosionColors,
-            lifespan: Utils.computeRatioValue(this.maxPopSize * 10),
+            lifespan: Utils.computeRatioValue(this.maxPopSize),
             speed: { min: 150, max: 250 },
             scale: { start: 0.8, end: 0 },
             gravityY: 150,
@@ -31,7 +31,8 @@ export abstract class BaseExplodable {
             emitting: false
         });
         this.explosionEmitter?.setPosition(this.getCentroid().x, this.getCentroid().y);
-        this.explosionEmitter?.explode(16);
+        this.explosionEmitter?.explode(Utils.computeRatioValue(this.maxPopSize));
+        
     }
 
     public getPoints(): Phaser.Geom.Point[] {
@@ -78,7 +79,6 @@ export abstract class BaseExplodable {
 
         this.destroy();
         this.createExplosionEmitter();
-        this.explosionEmitter?.explode(Utils.computeRatioValue(this.maxPopSize));
         return false;
     }
 

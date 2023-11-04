@@ -22,7 +22,8 @@ export class Mine extends BaseExplodable {
             frame: [ 'red', 'yellow', 'green'],
             color: colors,
             lifespan: 2,
-            scale: { start: 1, end: 0, ease: 'sine.in' },
+            radial: true,
+            scale: { start: 1, end: 0, ease: 'sine.in' },  // Changed start from 1 to 0.5
             alpha: { start: 1, end: 0, ease: 'sine.in' },
             speed: { min: 2, max: 8 },
             angle: { min: 0, max: 360 },  // Particles will be emitted in all directions

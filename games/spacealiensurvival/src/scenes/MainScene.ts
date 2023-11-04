@@ -67,7 +67,6 @@ export class MainScene extends Phaser.Scene {
             });
             this.enemyspaceships = [];
             this.timerBetweenLevels = -1;
-            Game.toggleFullscreen();
         }
 
     }
@@ -120,7 +119,7 @@ export class MainScene extends Phaser.Scene {
                     this.handleButton(label, buttonGraphics);
                     event.stopPropagation();
                 })
-                .setDepth(0);  // Ensure zone is rendered below text
+                .setDepth(1);  // Ensure zone is rendered below text
             return { text, zone, graphics: buttonGraphics };
         };
 
@@ -183,8 +182,7 @@ export class MainScene extends Phaser.Scene {
             { label: 'Missiles', activeProperty: 'turnOnMissiles', y: 90 },
             { label: 'Mines', activeProperty: 'turnOnMines', y: 130 },
         ];
-        type ButtonProperty = 'turnOnShields' | 'turnOnBullets' | 'turnOnMissiles' | 'turnOnMines';
-
+        
         buttons.forEach((button) => {
             buttonGraphics.fillStyle((this.playerspaceship as any)[button.activeProperty] ? 0xff0000 : 0x0077be);
             buttonGraphics.strokeRoundedRect(10, button.y, 70, 30, 10);
@@ -300,7 +298,6 @@ export class MainScene extends Phaser.Scene {
                 if (game.currentLevel >= 1) {
                     this.createBackgroundImage();
                     this.createAsteroidsBasedOnScreenSize();
-                    this.resizeStarBackground();
                 }
 
 
@@ -420,8 +417,9 @@ export class MainScene extends Phaser.Scene {
         this.starsBackgroundImage.setDisplaySize(newWidth, newHeight);
     
         // Ensure the image is positioned in the center of the screen
+
         this.starsBackgroundImage.setPosition(screenWidth / 2, screenHeight / 2);
-    
+        this.starsBackgroundImage.setDepth(-1);
     }
 
 }
