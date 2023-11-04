@@ -121,9 +121,18 @@ export class BaseSpaceship extends BaseExplodable {
         this.exhaustFlame.hide();
         this.forceField.hide();
         // Destroy bullets, missiles, and mines
-        this.bullets.forEach(bullet => bullet.destroy());
-        this.missiles.forEach(missile => missile.destroy());
-        this.mines.forEach(mine => mine.destroy());
+        this.bullets.forEach(bullet => { 
+            bullet.destroy()
+            bullet.drawExplosion();
+        });
+        this.missiles.forEach(missile => { 
+            missile.destroy()
+            missile.drawExplosion();
+        });
+        this.mines.forEach(mine => {
+            mine.destroy();
+            mine.drawExplosion();
+        });
 
         this.stopSheildSound();
         this.stopThrustSound();
@@ -133,6 +142,7 @@ export class BaseSpaceship extends BaseExplodable {
 
     public explode(): void {
         this.baseSpaceshipDisplay?.hide();
+        this.destroy();
         super.explode();
 
     }
