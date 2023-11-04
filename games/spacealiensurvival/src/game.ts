@@ -66,19 +66,34 @@ export default class Game extends Phaser.Game {
     }
 
     public static toggleFullscreen() {
-        if (!document.fullscreenElement) {
-            const canvas = document.querySelector('canvas');
-            canvas?.requestFullscreen().catch((err) => {
-                console.error("Fullscreen request failed:", err);
-            });
+        const doc: any = document;
+        if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
+            const canvas = doc.querySelector('canvas');
+            if (canvas.requestFullscreen) {
+                canvas.requestFullscreen().catch((err) => {
+                    console.error("Fullscreen request failed:", err);
+                });
+            } else if (canvas.webkitRequestFullscreen) {
+                canvas.webkitRequestFullscreen().catch((err) => {
+                    console.error("Fullscreen request failed:", err);
+                });
+            }
         } else {
-            document.exitFullscreen();
+            if (doc.exitFullscreen) {
+                doc.exitFullscreen();
+            } else if (doc.webkitExitFullscreen) {
+                doc.webkitExitFullscreen();
+            }
         }
     }
-
+    
     exitFullscreen() {
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
+        const doc: any = document;
+        if (doc.exitFullscreen) {
+            doc.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+            doc.webkitExitFullscreen();
         }
     }
+    
 }

@@ -24,10 +24,26 @@ export class SplashScreen extends Phaser.Scene {
         "darthvader",
         "enemyspacejet"];
 
-    public static backgrounds = ["background1", "background2", "background3", "background4", "background5",
-        "background6", "background7", "background8", "background9", "background10",
-        "background11", "background12", "background13", "background14", "background15",
-        "background16", "background17", "background18", "background19", "background20"];
+    public static backgrounds = ["background1", 
+                                 "background2", 
+                                 "background3", 
+                                 "background4", 
+                                 "background5",
+                                 "background6", 
+                                 "background7", 
+                                 "background8", 
+                                 "background9", 
+                                 "background10",
+                                 "background11", 
+                                 "background12", 
+                                 "background13", 
+                                 "background14", 
+                                 "background15",
+                                 "background16", 
+                                 "background17", 
+                                 "background18", 
+                                 "background19", 
+                                 "background20"];
 
 
     constructor() {
@@ -78,14 +94,10 @@ export class SplashScreen extends Phaser.Scene {
             this.load.image(background, 'backgrounds/' + background + '.png');
         });
 
-
-
         SplashScreen.textureNames.forEach((texture) => {
             this.splashText?.setText("Loading textures " + texture + "...");
             this.load.image(texture, 'textures/' + texture + '.png');
         });
-
-
     }
 
     create() {

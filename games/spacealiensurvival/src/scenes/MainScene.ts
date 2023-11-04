@@ -361,6 +361,7 @@ export class MainScene extends Phaser.Scene {
 
 
     createBackgroundImage() {
+        
         let newRandomName = Phaser.Utils.Array.GetRandom(SplashScreen.backgrounds);
         if (this.currentBackgroundName == "" || newRandomName !== this.currentBackgroundName) {
             if (this.starsBackgroundImage) {
