@@ -70,11 +70,11 @@ export default class Game extends Phaser.Game {
         if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
             const canvas = doc.querySelector('canvas');
             if (canvas.requestFullscreen) {
-                canvas.requestFullscreen().catch((err) => {
+                canvas.requestFullscreen().catch((err:any) => {
                     console.error("Fullscreen request failed:", err);
                 });
             } else if (canvas.webkitRequestFullscreen) {
-                canvas.webkitRequestFullscreen().catch((err) => {
+                canvas.webkitRequestFullscreen().catch((err:any) => {
                     console.error("Fullscreen request failed:", err);
                 });
             }
