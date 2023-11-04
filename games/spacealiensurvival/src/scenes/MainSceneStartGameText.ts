@@ -50,7 +50,7 @@ export class MainSceneStartGameText {
         this.gameNameText = this.scene.add.text(
             (window.innerWidth / 2),
             offset,
-            'ShyHumanGames LLC - Space Alien Survival',
+            'ShyHumanGames Software - Space Alien Survival',
             { font: '16px Arial', color: '#ffffff' }
         );
         this.gameNameText.setOrigin(0.5);
@@ -58,10 +58,18 @@ export class MainSceneStartGameText {
         offset += 30;
 
         const instructionTexts = [
-            'Click Screen - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
-            'R - Start Game / Re-spawn', 'CTRL-E - Fullscreen',
-            '\u2191 - Thrust Forward', '\u2190 - Rotate Left', '\u2192 - Rotate Right',
-            'Space - Fire Cannon', 'G - Guided Missiles', 'M - Floating Mines', 'S - Shields'
+            'Mobile: Add Game To Homescreen for Fullscreen', 
+            'Widnows: F11 - Fullscreen',
+            'Mac: Control-⌘-F - Fullscreen',
+            'Click Screen - Start Game / Re-spawn', 
+            'CTRL-E - Fullscreen',
+            '\u2191 - Thrust Forward', 
+            '\u2190 - Rotate Left', 
+            '\u2192 - Rotate Right',
+            'Space - Fire Cannon', 
+            'G - Guided Missiles', 
+            'M - Floating Mines', 
+            'S - Shields'
         ];
 
         instructionTexts.forEach(instruction => {

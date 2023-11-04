@@ -40,7 +40,6 @@ export default class Game extends Phaser.Game {
 
         // Add event listeners for key presses
         window.addEventListener("resize", this.handleWindowResize.bind(this));
-        window.addEventListener("keydown", this.handleKeyDown.bind(this));
         document.getElementById("game")?.focus();
 
     }
@@ -53,47 +52,8 @@ export default class Game extends Phaser.Game {
 
     }
 
-    handleKeyDown(event: KeyboardEvent) {
-        // Check if the Ctrl key is pressed (key code 17) and the "E" key (key code 69)
-        if (event.ctrlKey && event.keyCode === 69) {
-            Game.toggleFullscreen();
-        } else if (event.keyCode === 82) {
-            const mainScene = this.scene.getScene("MainScene") as MainScene;
-            mainScene.startPlayerGame();
-        } else if (event.key === "Escape") {
-            this.exitFullscreen();
-        }
-    }
-
-    public static toggleFullscreen() {
-        const doc: any = document;
-        if (!doc.fullscreenElement && !doc.webkitFullscreenElement) {
-            const canvas = doc.querySelector('canvas');
-            if (canvas.requestFullscreen) {
-                canvas.requestFullscreen().catch((err:any) => {
-                    console.error("Fullscreen request failed:", err);
-                });
-            } else if (canvas.webkitRequestFullscreen) {
-                canvas.webkitRequestFullscreen().catch((err:any) => {
-                    console.error("Fullscreen request failed:", err);
-                });
-            }
-        } else {
-            if (doc.exitFullscreen) {
-                doc.exitFullscreen();
-            } else if (doc.webkitExitFullscreen) {
-                doc.webkitExitFullscreen();
-            }
-        }
-    }
     
-    exitFullscreen() {
-        const doc: any = document;
-        if (doc.exitFullscreen) {
-            doc.exitFullscreen();
-        } else if (doc.webkitExitFullscreen) {
-            doc.webkitExitFullscreen();
-        }
-    }
+
+   
     
 }

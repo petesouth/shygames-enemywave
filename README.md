@@ -29,7 +29,7 @@ A C# Application that seamlessly renders a browser window over its panel area, i
 - [Shy Human Games - Game Feed Live](https://petesouth.github.io/shyhumangames-gamefeed/)
 - [games/spacealiensurvival](https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html)
 
-### Copyright 2023 ShyHumanGames LLC
+### Copyright 2023 ShyHumanGames Software
 
 License for the Use of "This Software"
 
@@ -41,6 +41,6 @@ The Software is furnished "as is", devoid of any warranties, either expressed or
 
 Sublicensing, distribution, sale, or commercial utilization of the Software beyond the explicit permissions granted herein is prohibited. Modification, reverse-engineering, decompilation, or any attempts to extract the source code of the Software are forbidden, save for educational or personal purposes as permitted herein.
 
-All rights, title, and interest in and to the Software (excluding content provided by users) are, and will remain the exclusive property of ShyHumanGames LLC. The Software is safeguarded by copyright, trademark, and other laws both within the United States and foreign jurisdictions.
+All rights, title, and interest in and to the Software (excluding content provided by users) are, and will remain the exclusive property of ShyHumanGames Software. The Software is safeguarded by copyright, trademark, and other laws both within the United States and foreign jurisdictions.
 
 For inquiries regarding this license, please reach out to pete_south@yahoo.com.

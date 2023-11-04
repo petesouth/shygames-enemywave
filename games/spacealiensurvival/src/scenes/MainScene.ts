@@ -8,7 +8,6 @@ import { gameActions } from '../store/gamestore';
 import { SplashScreen } from './SplashScreen';
 import { MainSceneStartGameText } from './MainSceneStartGameText';
 import { BaseSpaceship } from '../gameobjects/basespaceship';
-import Game from '../game';
 
 
 export class MainScene extends Phaser.Scene {
@@ -17,13 +16,13 @@ export class MainScene extends Phaser.Scene {
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
-    private currentBackgroundName: string = "";
     private timerBetweenLevels: number = -1;
     private timerBetweenLevelsWaitCount: number = 12000;
     private betweenGames: boolean = false;
     private spaceObjects: SpaceObject[] = [];
     private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
+
     constructor() {
         super('MainScene');
     }
@@ -94,106 +93,11 @@ export class MainScene extends Phaser.Scene {
 
         this.playGameSongSound();
         this.input.on('pointerdown', this.handleMouseClick, this);
-        this.createUIButtons();
 
     }
 
-    createUIButtons() {
-
-        // Create button background graphics
-        const buttonGraphics = this.add.graphics();
-        buttonGraphics.lineStyle(2, 0xffffff);  // White border
-
-        // Helper function to create a button
-        const createButton = (x: number, y: number, width: number, height: number, label: string, fillColor: number) => {
-            buttonGraphics.fillStyle(fillColor);  // Set fill color based on argument
-            buttonGraphics.strokeRoundedRect(x, y, width, height, 10);  // Rounded corners
-            buttonGraphics.fillRoundedRect(x, y, width, height, 10);  // Rounded corners
-            const text = this.add.text(x + (width / 2), y + (height / 2), label, { fontSize: '10px', color: '#fff' })
-                .setOrigin(0.5, 0.5)  // Center the text within the button
-                .setDepth(1);
-            const zone = this.add.zone(x, y, width, height)
-                .setOrigin(0, 0)
-                .setInteractive()
-                .on('pointerdown', (pointer: Phaser.Input.Pointer, localX: number, localY: number, event: Phaser.Types.Input.EventData) => {
-                    this.handleButton(label, buttonGraphics);
-                    event.stopPropagation();
-                })
-                .setDepth(1);  // Ensure zone is rendered below text
-            return { text, zone, graphics: buttonGraphics };
-        };
-
-        // Array of buttons along with their properties
-        const buttons: { label: string, activeProperty: string, y: number }[] = [
-            { label: 'Shields', activeProperty: 'turnOnShields', y: 10 },
-            { label: 'Fire', activeProperty: 'turnOnBullets', y: 50 },
-            { label: 'Missiles', activeProperty: 'turnOnMissiles', y: 90 },
-            { label: 'Mines', activeProperty: 'turnOnMines', y: 130 },
-            { label: 'Fullscreen', activeProperty: '', y: 170 }  // 'Fullscreen' button color remains unchanged
-        ];
-        buttons.forEach((button) => {
-            const fillColor = (this.playerspaceship as any)[button.activeProperty] ? 0xff0000 : 0x0077be;
-            createButton(10, button.y, 70, 30, button.label, fillColor);
-        });
-
-        // Update button positions on resize
-        this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
-            // ... (update positions as needed)
-        });
-    }
 
 
-    handleButton(label: string, buttonGraphics: Phaser.GameObjects.Graphics) {
-        switch (label) {
-            case 'Shields':
-                this.playerspaceship.turnOnShields = !this.playerspaceship.turnOnShields;
-                break;
-            case 'Fire':
-                this.playerspaceship.turnOnBullets = !this.playerspaceship.turnOnBullets;
-                break;
-            case 'Missiles':
-                this.playerspaceship.turnOnMissiles = !this.playerspaceship.turnOnMissiles;
-                break;
-            case 'Mines':
-                this.playerspaceship.turnOnMines = !this.playerspaceship.turnOnMines;
-                break;
-            case 'Fullscreen':
-                // handle fullscreen
-                Game.toggleFullscreen();
-                break;
-        }
-
-        // Update button colors
-        this.updateButtonColors(buttonGraphics);
-    }
-
-    updateButtonColors(buttonGraphics: Phaser.GameObjects.Graphics) {
-        buttonGraphics.clear();
-        buttonGraphics.lineStyle(2, 0xffffff);  // White border
-
-        // Update 'Shields' button color
-        buttonGraphics.fillStyle(this.playerspaceship.turnOnShields ? 0xff0000 : 0x0077be);
-        buttonGraphics.strokeRoundedRect(10, 10, 70, 30, 10);
-        buttonGraphics.fillRoundedRect(10, 10, 70, 30, 10);
-
-        // Update other button colors, excluding 'Fullscreen'
-        const buttons = [
-            { label: 'Fire', activeProperty: 'turnOnBullets', y: 50 },
-            { label: 'Missiles', activeProperty: 'turnOnMissiles', y: 90 },
-            { label: 'Mines', activeProperty: 'turnOnMines', y: 130 },
-        ];
-        
-        buttons.forEach((button) => {
-            buttonGraphics.fillStyle((this.playerspaceship as any)[button.activeProperty] ? 0xff0000 : 0x0077be);
-            buttonGraphics.strokeRoundedRect(10, button.y, 70, 30, 10);
-            buttonGraphics.fillRoundedRect(10, button.y, 70, 30, 10);
-        });
-
-        // Handle 'Fullscreen' button separately to keep it blue
-        buttonGraphics.fillStyle(0x0077be);
-        buttonGraphics.strokeRoundedRect(10, 170, 70, 30, 10);
-        buttonGraphics.fillRoundedRect(10, 170, 70, 30, 10);
-    }
 
     handleWindowResize() {
         const w = window.innerWidth;
@@ -295,10 +199,7 @@ export class MainScene extends Phaser.Scene {
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
 
-                if (game.currentLevel >= 1) {
-                    this.createBackgroundImage();
-                    this.createAsteroidsBasedOnScreenSize();
-                }
+
 
 
             } else if (this.betweenGames === false &&
@@ -312,6 +213,7 @@ export class MainScene extends Phaser.Scene {
                 gGameStore.dispatch(gameActions.incrementCurrentLevel({}));
                 this.betweenGames = true;
                 this.timerBetweenLevels = Date.now();
+                this.createBackgroundImage();
             }
         }
     }
@@ -361,43 +263,49 @@ export class MainScene extends Phaser.Scene {
 
 
     createBackgroundImage() {
-        
-        let newRandomName = Phaser.Utils.Array.GetRandom(SplashScreen.backgrounds);
-        if (this.currentBackgroundName == "" || newRandomName !== this.currentBackgroundName) {
-            if (this.starsBackgroundImage) {
-                this.starsBackgroundImage.destroy();
-            }
-    
-            this.starsBackgroundImage = this.add.image(window.innerWidth / 2,
-                window.innerHeight / 2, newRandomName
-            );
-    
-            this.currentBackgroundName = newRandomName;
+
+        const currentLevel = gGameStore.getState().game.currentLevel;
+        let backgroundName = "background";
+
+        if (currentLevel < 1) {
+            backgroundName += 1;
+        } else {
+            const levelMod = currentLevel % 20;
+            backgroundName += (levelMod === 0) ? 20 : levelMod;
         }
-    
+
+        if (this.starsBackgroundImage) {
+            this.starsBackgroundImage.destroy();
+        }
+
+        this.starsBackgroundImage = this.add.image(window.innerWidth / 2,
+            window.innerHeight / 2, backgroundName
+        );
+
+
         this.resizeStarBackground();
     }
-    
+
 
     public resizeStarBackground() {
-        if( !this.starsBackgroundImage ) {
+        if (!this.starsBackgroundImage) {
             return;
         }
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
         const screenAspectRatio = screenWidth / screenHeight;
-    
+
         const imageWidth = this.starsBackgroundImage.width;
         const imageHeight = this.starsBackgroundImage.height;
         const imageAspectRatio = imageWidth / imageHeight;
-    
+
         let newWidth, newHeight;
-    
+
         if (imageAspectRatio > screenAspectRatio) {
             // The image is wider relative to the screen, set the image width to match the screen width
             newWidth = screenWidth;
             newHeight = newWidth / imageAspectRatio;  // Adjust height proportionally
-    
+
             // Check if the new height is less than the screen height, if so adjust the dimensions
             if (newHeight < screenHeight) {
                 newHeight = screenHeight;
@@ -407,16 +315,16 @@ export class MainScene extends Phaser.Scene {
             // The image is taller relative to the screen, or has the same aspect ratio, set the image height to match the screen height
             newHeight = screenHeight;
             newWidth = newHeight * imageAspectRatio;  // Adjust width proportionally
-    
+
             // Check if the new width is less than the screen width, if so adjust the dimensions
             if (newWidth < screenWidth) {
                 newWidth = screenWidth;
                 newHeight = newWidth / imageAspectRatio;  // Adjust height proportionally
             }
         }
-    
+
         this.starsBackgroundImage.setDisplaySize(newWidth, newHeight);
-    
+
         // Ensure the image is positioned in the center of the screen
 
         this.starsBackgroundImage.setPosition(screenWidth / 2, screenHeight / 2);

@@ -194,7 +194,7 @@ export class BaseSpaceship extends BaseExplodable {
         this.velocity.set(0, 0);
         // Reset hitpoints
         this.hitpoints = 10;
-        this.scene.input.on('pointerdown', this.handleMouseClick, this);
+        //this.scene.input.on('pointerdown', this.handleMouseClick, this);
     }
 
 
