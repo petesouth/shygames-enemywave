@@ -156,11 +156,17 @@ export class MainScene extends Phaser.Scene {
         const buttonLabels = ['\u2190', '\u2191', '\u2192', 'S', 'F', 'G', 'M'];
         const buttonWidth = this.scale.width / (buttonLabels.length + 2);
         buttonLabels.forEach((label, index) => {
-            const button = this.add.text(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30, label, { color: '#0f0' })
+            const button = this.add.text(
+                this.buttonLeftMargin + index * buttonWidth + buttonWidth / 2,
+                this.scale.height - 30 - buttonWidth / 2,
+                label,
+                { color: '#0f0', align: 'center' }
+            )
+                .setOrigin(0.5, 0.5)
                 .setInteractive({
-                    hitArea: new Phaser.Geom.Rectangle(0, 0, buttonWidth, 40),
+                    hitArea: new Phaser.Geom.Rectangle(-buttonWidth / 2, -buttonWidth / 2, buttonWidth * 2, buttonWidth * 2),
                     hitAreaCallback: Phaser.Geom.Rectangle.Contains
-                })
+                })                
                 .setDepth(100)
                 .on('pointerdown', () => {
                     console.log("pointerdown", label)
@@ -173,11 +179,21 @@ export class MainScene extends Phaser.Scene {
                 .on('pointerout', () => {
                     console.log("pointerup", label)
                     this.handleButtonUp(label);
-                })
+                });
 
             this.buttons.push(button);
         });
     }
+
+
+    resizeButtons() {
+        const buttonWidth = this.scale.width / (this.buttons.length + 2);
+        this.buttons.forEach((button, index) => {
+            button.setPosition(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30);
+        });
+    }
+
+
 
     handleButtonDown(label: string) {
         switch (label) {
@@ -233,15 +249,6 @@ export class MainScene extends Phaser.Scene {
 
         }
     }
-
-
-    resizeButtons() {
-        const buttonWidth = this.scale.width / (this.buttons.length + 2);
-        this.buttons.forEach((button, index) => {
-            button.setPosition(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30);
-        });
-    }
-
 
     handleWindowResize() {
         const w = window.innerWidth;
