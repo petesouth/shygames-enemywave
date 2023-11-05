@@ -9,7 +9,11 @@ export class Utils {
     public static computeRatioValue(speed: number): number {
         const scale = Math.max(window.innerWidth, window.innerHeight);
         const origScale = Math.max(MainScene.GOLDEN_RATIO.width, MainScene.GOLDEN_RATIO.height);
-        const percentDifference = scale / origScale;
+        let percentDifference = scale / origScale;
+        if( percentDifference < .5 ) {
+            percentDifference = .5;
+        }
+
         const scaledSpeed = speed * percentDifference;
         return scaledSpeed;
     }
