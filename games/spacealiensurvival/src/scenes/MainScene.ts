@@ -22,52 +22,10 @@ export class MainScene extends Phaser.Scene {
     private spaceObjects: SpaceObject[] = [];
     private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
-
+    private buttons: Phaser.GameObjects.Text[] = [];
+    private buttonLeftMargin = 50;
     constructor() {
         super('MainScene');
-    }
-
-    private handleMouseClick(pointer: Phaser.Input.Pointer): void {
-        this.startPlayerGame();
-    }
-
-
-    public playGameSongSound(): void {
-        if (this.gamesongSound && !this.gamesongSound.isPlaying) {
-            this.gamesongSound.play();
-        }
-    }
-
-    public stopGameSongSound(): void {
-        if (this.gamesongSound && this.gamesongSound.isPlaying) {
-            this.gamesongSound.stop();
-        }
-    }
-
-    public playSuccessSound(): void {
-        let sound = this.sound.add('levelcomplete', { loop: false });
-        sound.play();
-    }
-
-    public playLevelComplete(): void {
-        let sound = this.sound.add('success', { loop: false });
-        sound.play();
-    }
-
-
-    startPlayerGame() {
-        if (this.playerspaceship && this.playerspaceship.state === BaseExplodableState.DESTROYED) {
-            gGameStore.dispatch(gameActions.startCurrentLevel({}));
-            this.playerspaceship.spawn();
-            this.stopGameSongSound();
-            this.betweenGames = true;
-            this.enemyspaceships.forEach((ship) => {
-                ship.destroy();
-            });
-            this.enemyspaceships = [];
-            this.timerBetweenLevels = -1;
-        }
-
     }
 
 
@@ -93,26 +51,10 @@ export class MainScene extends Phaser.Scene {
 
         this.playGameSongSound();
         this.input.on('pointerdown', this.handleMouseClick, this);
+        this.createButtons();
 
     }
-
-
-
-
-    handleWindowResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        this.scale.setGameSize(w, h);
-        this.resizeStarBackground();
-        this.createAsteroidsBasedOnScreenSize();
-        this.mainSceneStartGameText.repositionStartGameText(w);
-
-        [this.playerspaceship, ...this.enemyspaceships].forEach((basSpaceShip: BaseSpaceship) => {
-            basSpaceShip?.resizeFromScreenRatio();
-        });
-
-    }
-
+    
     update() {
 
         const w = window.innerWidth;
@@ -164,6 +106,85 @@ export class MainScene extends Phaser.Scene {
 
         this.calculateLevelAndEnemySpawning();
 
+    }
+
+    private handleMouseClick(pointer: Phaser.Input.Pointer): void {
+        this.startPlayerGame();
+    }
+
+
+    public playGameSongSound(): void {
+        if (this.gamesongSound && !this.gamesongSound.isPlaying) {
+            this.gamesongSound.play();
+        }
+    }
+
+    public stopGameSongSound(): void {
+        if (this.gamesongSound && this.gamesongSound.isPlaying) {
+            this.gamesongSound.stop();
+        }
+    }
+
+    public playSuccessSound(): void {
+        let sound = this.sound.add('levelcomplete', { loop: false });
+        sound.play();
+    }
+
+    public playLevelComplete(): void {
+        let sound = this.sound.add('success', { loop: false });
+        sound.play();
+    }
+
+
+    startPlayerGame() {
+        if (this.playerspaceship && this.playerspaceship.state === BaseExplodableState.DESTROYED) {
+            gGameStore.dispatch(gameActions.startCurrentLevel({}));
+            this.playerspaceship.spawn();
+            this.stopGameSongSound();
+            this.betweenGames = true;
+            this.enemyspaceships.forEach((ship) => {
+                ship.destroy();
+            });
+            this.enemyspaceships = [];
+            this.timerBetweenLevels = -1;
+        }
+
+    }
+
+
+    createButtons() {
+        const buttonLabels = ['\u2190', '\u2191', '\u2192', 'S', 'F', 'G', 'M'];
+        const buttonWidth = this.scale.width / (buttonLabels.length + 2);
+        buttonLabels.forEach((label, index) => {
+            const button = this.add.text(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30, label, { color: '#0f0' })
+            .setInteractive()
+            .on('pointerdown', () => { /* Handle button click */ });
+        
+            this.buttons.push(button);
+        });
+    }
+
+    resizeButtons() {
+        const buttonWidth = this.scale.width / (this.buttons.length + 2);
+        this.buttons.forEach((button, index) => {
+            button.setPosition(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30);
+        });
+    }
+
+
+    handleWindowResize() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        this.scale.setGameSize(w, h);
+        this.resizeStarBackground();
+        this.createAsteroidsBasedOnScreenSize();
+        this.mainSceneStartGameText.repositionStartGameText(w);
+
+        [this.playerspaceship, ...this.enemyspaceships].forEach((basSpaceShip: BaseSpaceship) => {
+            basSpaceShip?.resizeFromScreenRatio();
+        });
+
+        this.resizeButtons();
 
     }
 
