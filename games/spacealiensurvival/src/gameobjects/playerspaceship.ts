@@ -7,8 +7,6 @@ import gGameStore from '../store/store';
 
 export class PlayerSpaceship extends BaseSpaceship {
     
-    [key: string]: boolean | any; 
-    
     constructor(scene: Phaser.Scene) {
         super(scene, SpaceShipType.IMAGE, "playerspaceship", [ 0x96e0da, 0x937ef3 ], window.innerWidth / 2);
 

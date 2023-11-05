@@ -54,7 +54,7 @@ export class MainScene extends Phaser.Scene {
         this.createButtons();
 
     }
-    
+
     update() {
 
         const w = window.innerWidth;
@@ -157,12 +157,80 @@ export class MainScene extends Phaser.Scene {
         const buttonWidth = this.scale.width / (buttonLabels.length + 2);
         buttonLabels.forEach((label, index) => {
             const button = this.add.text(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30, label, { color: '#0f0' })
-            .setInteractive()
-            .on('pointerdown', () => { /* Handle button click */ });
-        
+                .setInteractive()
+                .setDepth(100)
+                .on('pointerdown', () => {
+                    console.log("pointerdown", label)
+                    this.handleButtonDown(label);
+                })
+                .on('pointerup', () => {
+                    console.log("pointerup", label)
+                    this.handleButtonUp(label);
+                })
+                .on('pointerout', () => {
+                    console.log("pointerup", label)
+                    this.handleButtonUp(label);
+                })
+
             this.buttons.push(button);
         });
     }
+
+    handleButtonDown(label: string) {
+        switch (label) {
+            case '\u2190':
+                this.playerspaceship.turnOnLeft = true;
+                break;
+            case '\u2191':
+                this.playerspaceship.turnOnForward = true;
+                break;
+            case '\u2192':
+                this.playerspaceship.turnOnRight = true;
+                break;
+            case 'S':
+                this.playerspaceship.turnOnShields = true;
+                break;
+            case 'F':
+                this.playerspaceship.turnOnBullets = true;
+                break;
+            case 'G':
+                this.playerspaceship.turnOnMissiles = true;
+                break;
+            case 'M':
+                this.playerspaceship.turnOnMines = true;
+                break;
+
+        }
+    }
+
+
+    handleButtonUp(label: string) {
+        switch (label) {
+            case '\u2190':
+                this.playerspaceship.turnOnLeft = false;
+                break;
+            case '\u2191':
+                this.playerspaceship.turnOnForward = false;
+                break;
+            case '\u2192':
+                this.playerspaceship.turnOnRight = false;
+                break;
+            case 'S':
+                this.playerspaceship.turnOnShields = false;
+                break;
+            case 'F':
+                this.playerspaceship.turnOnBullets = false;
+                break;
+            case 'G':
+                this.playerspaceship.turnOnMissiles = false;
+                break;
+            case 'M':
+                this.playerspaceship.turnOnMines = false;
+                break;
+
+        }
+    }
+
 
     resizeButtons() {
         const buttonWidth = this.scale.width / (this.buttons.length + 2);

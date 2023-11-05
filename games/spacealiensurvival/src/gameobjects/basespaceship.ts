@@ -28,6 +28,9 @@ export class BaseSpaceship extends BaseExplodable {
     public static halfBaseWidth = 10;
     public static halfHeight = 15;
     
+    public turnOnLeft: boolean = false;
+    public turnOnRight: boolean = false;
+    public turnOnForward: boolean = false;
     public turnOnShields: boolean = false;
     public turnOnBullets: boolean = false;
     public turnOnMissiles: boolean = false;
@@ -332,7 +335,7 @@ export class BaseSpaceship extends BaseExplodable {
         if (this.navigationPoint) {
             this.navigateToPoint();
         } else {
-            if (this.upKey?.isDown) {
+            if (this.upKey?.isDown || this.turnOnForward === true) {
                 this.playThrustSound();
                 const angle = this.baseSpaceshipDisplay.getForwardAngle();
                 this.velocity.x += ratioThrust * Math.cos(angle);
@@ -362,13 +365,13 @@ export class BaseSpaceship extends BaseExplodable {
         if (!this.baseSpaceshipDisplay) {
             return;
         }
-        if (this.leftKey?.isDown) {
+        if (this.leftKey?.isDown || this.turnOnLeft === true) {
             this.baseSpaceshipDisplay.rotateLeft(this.rotationRate);
-        } else if (this.rightKey?.isDown) {
+        } else if (this.rightKey?.isDown || this.turnOnRight === true) {
             this.baseSpaceshipDisplay.rotateRight(this.rotationRate);
         }
 
-        if (this.upKey?.isDown) {
+        if (this.upKey?.isDown || this.turnOnForward === true) {
             this.exhaustFlame.show();
         } else {
             this.exhaustFlame.hide();
