@@ -157,7 +157,10 @@ export class MainScene extends Phaser.Scene {
         const buttonWidth = this.scale.width / (buttonLabels.length + 2);
         buttonLabels.forEach((label, index) => {
             const button = this.add.text(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30, label, { color: '#0f0' })
-                .setInteractive()
+                .setInteractive({
+                    hitArea: new Phaser.Geom.Rectangle(0, 0, buttonWidth, 40),
+                    hitAreaCallback: Phaser.Geom.Rectangle.Contains
+                })
                 .setDepth(100)
                 .on('pointerdown', () => {
                     console.log("pointerdown", label)
