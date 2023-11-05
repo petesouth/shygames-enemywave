@@ -173,6 +173,12 @@ export class MainScene extends Phaser.Scene {
                 })
                 .on('pointerout', () => {
                     this.handleButtonUp(label);
+                })
+                .on('pointerdown', () => {
+                    this.handleButtonDown(label);
+                })
+                .on('pointerup', () => {
+                    this.handleButtonUp(label);
                 });
 
             this.buttons.push(button);
