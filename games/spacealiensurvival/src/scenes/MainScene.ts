@@ -41,14 +41,6 @@ export class MainScene extends Phaser.Scene {
 
         this.mainSceneStartGameText.createStartGameText();
 
-
-        setInterval(() => {
-            if (this.scale.width < window.innerWidth ||
-                this.scale.height < window.innerHeight) {
-                this.handleWindowResize();
-            }
-        }, 500);
-
         this.playGameSongSound();
         this.input.on('pointerdown', this.handleMouseClick, this);
         this.createButtons();
@@ -154,7 +146,7 @@ export class MainScene extends Phaser.Scene {
 
     createButtons() {
         const buttonLabels = ['\u2190', '\u2191', '\u2192', 'S', 'F', 'G', 'M'];
-        const buttonWidth = this.scale.width / (buttonLabels.length + 2);
+        const buttonWidth = window.innerWidth / (buttonLabels.length + 2);
         buttonLabels.forEach((label, index) => {
             const button = this.add.text(
                 this.buttonLeftMargin + index * buttonWidth + buttonWidth / 2,
@@ -187,7 +179,7 @@ export class MainScene extends Phaser.Scene {
 
 
     resizeButtons() {
-        const buttonWidth = this.scale.width / (this.buttons.length + 2);
+        const buttonWidth = window.innerWidth / (this.buttons.length + 2);
         this.buttons.forEach((button, index) => {
             button.setPosition(this.buttonLeftMargin + index * buttonWidth, this.scale.height - 30);
         });

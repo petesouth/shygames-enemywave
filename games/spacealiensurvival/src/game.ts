@@ -53,7 +53,13 @@ export default class Game extends Phaser.Game {
         this.input.addPointer();
         this.input.addPointer();
         this.input.addPointer();
-        
+
+        setInterval(() => {
+            if (this.scale.width < window.innerWidth ||
+                this.scale.height < window.innerHeight) {
+                this.handleWindowResize();
+            }
+        }, 500);
 
     }
 
