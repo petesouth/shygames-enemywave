@@ -46,6 +46,14 @@ export default class Game extends Phaser.Game {
         // Add event listeners for key presses
         window.addEventListener("resize", this.handleWindowResize.bind(this));
         document.getElementById("game")?.focus();
+        this.input.addPointer();
+        this.input.addPointer();
+        this.input.addPointer();
+        this.input.addPointer();
+        this.input.addPointer();
+        this.input.addPointer();
+        this.input.addPointer();
+        
 
     }
 
