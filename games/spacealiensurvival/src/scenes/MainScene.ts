@@ -168,16 +168,10 @@ export class MainScene extends Phaser.Scene {
                     hitAreaCallback: Phaser.Geom.Rectangle.Contains
                 })                
                 .setDepth(100)
-                .on('pointerdown', () => {
-                    console.log("pointerdown", label)
+                .on('pointerover', () => {
                     this.handleButtonDown(label);
                 })
-                .on('pointerup', () => {
-                    console.log("pointerup", label)
-                    this.handleButtonUp(label);
-                })
                 .on('pointerout', () => {
-                    console.log("pointerup", label)
                     this.handleButtonUp(label);
                 });
 
