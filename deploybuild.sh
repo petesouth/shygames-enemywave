@@ -5,8 +5,6 @@ rm -rf docs/images
 rm -rf docs/asset-manifest.json
 rm -rf docs/images/ShyHumanGameRobot.png
 rm -rf docs/index.html
-rm -rf docs/logo192.png
-rm -rf docs/logo512.png
 rm -rf docs/manifest.json
 rm -rf docs/robots.txt
 
