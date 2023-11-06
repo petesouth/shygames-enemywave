@@ -40,6 +40,8 @@ const config: Phaser.Types.Core.GameConfig = {
 
 
 export default class Game extends Phaser.Game {
+    private scaleManager: Phaser.Scale.ScaleManager;
+
     constructor() {
         super(config);
 
@@ -54,13 +56,36 @@ export default class Game extends Phaser.Game {
         this.input.addPointer();
         this.input.addPointer();
 
-        setInterval(() => {
-            if (this.scale.width < window.innerWidth ||
-                this.scale.height < window.innerHeight) {
-                this.handleWindowResize();
-            }
-        }, 500);
+        this.scaleManager = new Phaser.Scale.ScaleManager(this);
 
+        this.scaleManager.on( Phaser.Scale.Events.ENTER_FULLSCREEN, ()=>{
+            this.handleWindowResize();
+        })
+
+        
+        this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_FAILED, ()=>{
+            this.handleWindowResize();
+        })
+
+        this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_UNSUPPORTED, ()=>{
+            this.handleWindowResize();
+        })
+
+        this.scaleManager.on( Phaser.Scale.Events.LEAVE_FULLSCREEN, ()=>{
+            this.handleWindowResize();
+        })
+
+
+        this.scaleManager.on( Phaser.Scale.Events.ORIENTATION_CHANGE, ()=>{
+            this.handleWindowResize();
+        })
+
+        this.scaleManager.on( Phaser.Scale.Events.RESIZE, ()=>{
+            this.handleWindowResize(); 
+        })
+
+
+        
     }
 
     handleWindowResize() {
