@@ -454,9 +454,11 @@ export class BaseSpaceship extends BaseExplodable {
             const game = gGameStore.getState().game;
             this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
 
-            for (let i = 1; i <= game.currentLevel; ++i) {
+            if (game.currentLevel >= MainScene.LEVEL_BONUS) {
+                let end = Math.round(game.currentLevel / MainScene.LEVEL_BONUS)
 
-                if ((i % MainScene.LEVEL_MODULAS_MISSILES) === 0) {
+                for (let i = 1; i <= end; ++i) {
+
                     setTimeout(() => {
                         this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
                     }, this.fluryFireRate);
@@ -497,9 +499,11 @@ export class BaseSpaceship extends BaseExplodable {
             const game = gGameStore.getState().game;
             this.shootBullets();
 
-            for (let i = 1; i <= game.currentLevel; ++i) {
+            if (game.currentLevel >= MainScene.LEVEL_BONUS) {
+                let end = Math.round(game.currentLevel / MainScene.LEVEL_BONUS)
 
-                if ((i % MainScene.LEVEL_MODULAS_BULLETS) === 0) {
+                for (let i = 1; i <= end; ++i) {
+
                     setTimeout(() => {
                         this.shootBullets();
                     }, this.fluryFireRate);
@@ -532,16 +536,17 @@ export class BaseSpaceship extends BaseExplodable {
             const mine = new Mine(this.scene, x, y);
             this.mines.push(mine);
 
-            for (let i = 1; i <= game.currentLevel; ++i) {
+            if (game.currentLevel >= MainScene.LEVEL_BONUS) {
+                let end = Math.round(game.currentLevel / MainScene.LEVEL_BONUS)
 
-                if ((i % MainScene.LEVEL_MODULAS_MINES) === 0) {
+                for (let i = 1; i <= end; ++i) {
                     setTimeout(() => {
                         const mine = new Mine(this.scene, x, y);
-                        this.mines.push(mine);
+                        this.mines.push(mine);            
                     }, this.fluryFireRate);
                 }
             }
-
+            
             this.lastMinePlaced = currentTime;
         }
 
@@ -628,7 +633,7 @@ export class BaseSpaceship extends BaseExplodable {
 
                 let spaceshipTarget: BaseSpaceship = targetObjects[foundIndex] as BaseSpaceship;
                 if (spaceshipTarget.forceField.isVisible === false &&
-                    spaceshipTarget.state === BaseExplodableState.ALIVE ) {
+                    spaceshipTarget.state === BaseExplodableState.ALIVE) {
                     this.playImpactSound();
                     spaceshipTarget.hitpoints--;
                     if (spaceshipTarget.hitpoints < 1) {

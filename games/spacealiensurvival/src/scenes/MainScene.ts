@@ -13,10 +13,7 @@ import { BaseSpaceship } from '../gameobjects/basespaceship';
 export class MainScene extends Phaser.Scene {
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
-    public static LEVEL_MODULAS_BULLETS: number = 3;
-    public static LEVEL_MODULAS_MINES: number = 5;
-    public static LEVEL_MODULAS_MISSILES: number = 7;
-
+    public static LEVEL_BONUS = 5;
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
@@ -294,24 +291,15 @@ export class MainScene extends Phaser.Scene {
                     this.playLevelComplete();
                     let nextLevel = game.currentLevel + 1;
 
-                    if ((nextLevel % MainScene.LEVEL_MODULAS_BULLETS) === 0) {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Bullets Upgraded Next Round`);
+                    if ((nextLevel % MainScene.LEVEL_BONUS) === 0) {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} **CONTRATULATIONS** Weapons Upgrade next Round!!!`);
                         setTimeout(() => {
                             this.playLevelComplete();
-                        }, 200);
-
-                    } else if ((nextLevel % MainScene.LEVEL_MODULAS_MINES) === 0) {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Mines Upgraded Next Round`);
-                        setTimeout(() => {
-                            this.playLevelComplete();
-                        }, 200);
-                    } else if ((nextLevel % MainScene.LEVEL_MODULAS_MISSILES) === 0) {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Missiles Upgraded Next Round`);
-                        setTimeout(() => {
-                            this.playLevelComplete();
-                        }, 200);
-                    } else {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed`);
+                        }, 2000);
+                    }  else {
+                        let remainder = game.currentLevel % MainScene.LEVEL_BONUS;
+                        remainder = (remainder === 0) ? 0 : MainScene.LEVEL_BONUS - remainder;
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Next Upgrade in ${remainder} Levels!!`);
                     }
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
