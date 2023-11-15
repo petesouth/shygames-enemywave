@@ -111,7 +111,7 @@ export class MainSceneStartGameText {
 
 
         if (playerSpaceship?.state === BaseExplodableState.ALIVE) {
-            this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - HitPoints: ${playerSpaceship.hitpoints}`);
+            this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - HitPoints: ${Math.round(playerSpaceship.hitpoints)}`);
         } else {
             this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - Highest Level: ${game.highestLevel}`);
         }

@@ -301,12 +301,12 @@ export class MainScene extends Phaser.Scene {
                         }, 200);
 
                     } else if ((nextLevel % MainScene.LEVEL_MODULAS_MINES) === 0) {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Mine Upgraded Next Round`);
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Mines Upgraded Next Round`);
                         setTimeout(() => {
                             this.playLevelComplete();
                         }, 200);
                     } else if ((nextLevel % MainScene.LEVEL_MODULAS_MISSILES) === 0) {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Missile Upgraded Next Round`);
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Missiles Upgraded Next Round`);
                         setTimeout(() => {
                             this.playLevelComplete();
                         }, 200);
