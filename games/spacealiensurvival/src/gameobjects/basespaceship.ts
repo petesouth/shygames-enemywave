@@ -628,11 +628,10 @@ export class BaseSpaceship extends BaseExplodable {
 
                 let spaceshipTarget: BaseSpaceship = targetObjects[foundIndex] as BaseSpaceship;
                 if (spaceshipTarget.forceField.isVisible === false &&
-                    spaceshipTarget.state === BaseExplodableState.ALIVE &&
-                    spaceshipTarget.hitpoints > 0) {
+                    spaceshipTarget.state === BaseExplodableState.ALIVE ) {
                     this.playImpactSound();
                     spaceshipTarget.hitpoints--;
-                    if (spaceshipTarget.hitpoints === 0) {
+                    if (spaceshipTarget.hitpoints < 1) {
                         spaceshipTarget.explode();
                     }
                 }

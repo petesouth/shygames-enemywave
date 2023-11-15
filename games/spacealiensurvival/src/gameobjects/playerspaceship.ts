@@ -17,9 +17,9 @@ export class PlayerSpaceship extends BaseSpaceship {
         this.state = BaseExplodableState.DESTROYED;  // Starts off in destroed state.
 
         // Set up the event listener for mouse clicks
-        this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
-            this.handleMouseClick(pointer);
-        });
+        //this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+        //    this.handleMouseClick(pointer);
+        //});
     }
 
 
