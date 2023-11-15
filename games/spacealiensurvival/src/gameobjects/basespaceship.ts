@@ -44,6 +44,8 @@ export class BaseSpaceship extends BaseExplodable {
     protected damping: number = 0.98;
     protected lastFired: number = 0;
     protected fireRate: number = 200;  // 1000 ms = 1 second
+    protected fluryFireRate: number = 50;  // 1000 ms = 1 second
+
     protected missileLastFired: number = 0;
     protected missileFireRate: number = 500;  // 1000 ms = 1 second
     protected lastMinePlaced: number = 0;
@@ -333,19 +335,17 @@ export class BaseSpaceship extends BaseExplodable {
             return;
         }
 
-        if (this.navigationPoint) {
+        if (this.upKey?.isDown || this.turnOnForward === true) {
+            this.playThrustSound();
+            const angle = this.baseSpaceshipDisplay.getForwardAngle();
+            this.velocity.x += ratioThrust * Math.cos(angle);
+            this.velocity.y += ratioThrust * Math.sin(angle);
+            this.clearNavigationPoint();
+        } else if (this.navigationPoint) {
             this.navigateToPoint();
         } else {
-            if (this.upKey?.isDown || this.turnOnForward === true) {
-                this.playThrustSound();
-                const angle = this.baseSpaceshipDisplay.getForwardAngle();
-                this.velocity.x += ratioThrust * Math.cos(angle);
-                this.velocity.y += ratioThrust * Math.sin(angle);
-            } else {
-                this.stopThrustSound();
-            }
+            this.stopThrustSound();
         }
-
 
         this.velocity.x *= this.damping;
         this.velocity.y *= this.damping;
@@ -452,10 +452,14 @@ export class BaseSpaceship extends BaseExplodable {
             this.state === BaseExplodableState.ALIVE) {
 
             const game = gGameStore.getState().game;
+            this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
 
-            for (let i = 0; i <= game.currentLevel; ++i) {
+            for (let i = 1; i <= game.currentLevel; ++i) {
+
                 if ((i % MainScene.LEVEL_MODULAS_MISSILES) === 0) {
-                    this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
+                    setTimeout(() => {
+                        this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
+                    }, this.fluryFireRate);
                 }
             }
         }
@@ -491,12 +495,14 @@ export class BaseSpaceship extends BaseExplodable {
             this.state === BaseExplodableState.ALIVE) {
 
             const game = gGameStore.getState().game;
+            this.shootBullets();
 
-            for (let i = 0; i <= game.currentLevel; ++i) {
-                console.log(`=== ${(i % MainScene.LEVEL_MODULAS_BULLETS)}`);
+            for (let i = 1; i <= game.currentLevel; ++i) {
 
                 if ((i % MainScene.LEVEL_MODULAS_BULLETS) === 0) {
-                    this.shootBullets();
+                    setTimeout(() => {
+                        this.shootBullets();
+                    }, this.fluryFireRate);
                 }
             }
         }
@@ -522,10 +528,17 @@ export class BaseSpaceship extends BaseExplodable {
 
             const game = gGameStore.getState().game;
 
-            for (let i = 0; i <= game.currentLevel; ++i) {
+
+            const mine = new Mine(this.scene, x, y);
+            this.mines.push(mine);
+
+            for (let i = 1; i <= game.currentLevel; ++i) {
+
                 if ((i % MainScene.LEVEL_MODULAS_MINES) === 0) {
-                    const mine = new Mine(this.scene, x, y);
-                    this.mines.push(mine);
+                    setTimeout(() => {
+                        const mine = new Mine(this.scene, x, y);
+                        this.mines.push(mine);
+                    }, this.fluryFireRate);
                 }
             }
 

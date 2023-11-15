@@ -28,7 +28,7 @@ export class MainScene extends Phaser.Scene {
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     private buttons: Phaser.GameObjects.Text[] = [];
     private buttonLeftMargin = 50;
-    
+
     constructor() {
         super('MainScene');
     }
@@ -106,7 +106,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     private handleMouseClick(pointer: Phaser.Input.Pointer): void {
-        this.startPlayerGame();
+        this.startPlayerGame(pointer);
     }
 
 
@@ -133,7 +133,7 @@ export class MainScene extends Phaser.Scene {
     }
 
 
-    startPlayerGame() {
+    startPlayerGame(pointer: Phaser.Input.Pointer) {
         if (this.playerspaceship && this.playerspaceship.state === BaseExplodableState.DESTROYED) {
             gGameStore.dispatch(gameActions.startCurrentLevel({}));
             this.playerspaceship.spawn();
@@ -144,6 +144,7 @@ export class MainScene extends Phaser.Scene {
             });
             this.enemyspaceships = [];
             this.timerBetweenLevels = -1;
+            pointer.event.preventDefault();
         }
 
     }
@@ -163,7 +164,7 @@ export class MainScene extends Phaser.Scene {
                 .setInteractive({
                     hitArea: new Phaser.Geom.Rectangle(-buttonWidth / 2, -buttonWidth / 2, buttonWidth * 2, buttonWidth * 2),
                     hitAreaCallback: Phaser.Geom.Rectangle.Contains
-                })                
+                })
                 .setDepth(100)
                 .on('pointerover', () => {
                     this.handleButtonDown(label);
@@ -288,10 +289,30 @@ export class MainScene extends Phaser.Scene {
                 // In shit scenario all enemies have been destroyed or not yet created.
                 // So Ill start the timer.
                 this.timerBetweenLevels = Date.now();
-                this.playerspaceship.hitpoints = (game.currentLevel < 1 ) ? 10 : 10 + (10 * (game.currentLevel * .4));
+                this.playerspaceship.hitpoints = (game.currentLevel < 1) ? 10 : 10 + (10 * (game.currentLevel * .4));
                 if (game.currentLevel > 0) {
                     this.playLevelComplete();
-                    this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed !!!`)
+                    let nextLevel = game.currentLevel + 1;
+
+                    if ((nextLevel % MainScene.LEVEL_MODULAS_BULLETS) === 0) {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Bullets Upgraded Next Round`);
+                        setTimeout(() => {
+                            this.playLevelComplete();
+                        }, 200);
+
+                    } else if ((nextLevel % MainScene.LEVEL_MODULAS_MINES) === 0) {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Mine Upgraded Next Round`);
+                        setTimeout(() => {
+                            this.playLevelComplete();
+                        }, 200);
+                    } else if ((nextLevel % MainScene.LEVEL_MODULAS_MISSILES) === 0) {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed Missile Upgraded Next Round`);
+                        setTimeout(() => {
+                            this.playLevelComplete();
+                        }, 200);
+                    } else {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed`);
+                    }
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
 
@@ -375,6 +396,8 @@ export class MainScene extends Phaser.Scene {
             window.innerHeight / 2, backgroundName
         );
 
+
+        console.log("Loading background:", backgroundName);
 
         this.resizeStarBackground();
     }

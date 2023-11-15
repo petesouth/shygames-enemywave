@@ -80,8 +80,9 @@ export class SplashScreen extends Phaser.Scene {
 
         
 
-        this.input.on('pointerdown', () => {
+        this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.scene.start('MainScene');
+            pointer.event.preventDefault();
         });
 
         setInterval(() => {
