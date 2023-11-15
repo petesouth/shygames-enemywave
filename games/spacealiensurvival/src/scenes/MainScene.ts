@@ -13,6 +13,10 @@ import { BaseSpaceship } from '../gameobjects/basespaceship';
 export class MainScene extends Phaser.Scene {
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
+    public static LEVEL_MODULAS_BULLETS: number = 3;
+    public static LEVEL_MODULAS_MINES: number = 5;
+    public static LEVEL_MODULAS_MISSILES: number = 7;
+
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
@@ -24,6 +28,7 @@ export class MainScene extends Phaser.Scene {
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     private buttons: Phaser.GameObjects.Text[] = [];
     private buttonLeftMargin = 50;
+    
     constructor() {
         super('MainScene');
     }
@@ -283,15 +288,12 @@ export class MainScene extends Phaser.Scene {
                 // In shit scenario all enemies have been destroyed or not yet created.
                 // So Ill start the timer.
                 this.timerBetweenLevels = Date.now();
-                this.playerspaceship.hitpoints = 10;
+                this.playerspaceship.hitpoints = (game.currentLevel < 1 ) ? 10 : 10 + (10 * (game.currentLevel * .4));
                 if (game.currentLevel > 0) {
                     this.playLevelComplete();
                     this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed !!!`)
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
-
-
-
 
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&

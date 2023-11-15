@@ -10,6 +10,8 @@ import { BaseSpaceshipDisplay } from './basespaceshipdisplay';
 import { BaseSpaceshipDisplayTriangles } from './basespaceshipdisplaytriangles';
 import { BaseSpaceshipDisplayImage } from './basespaceshipdisplayimage';
 import { Utils } from '../utils/utils';
+import gGameStore from '../store/store';
+import { MainScene } from '../scenes/MainScene';
 
 
 export enum SpaceShipType {
@@ -27,7 +29,7 @@ interface TargetObject {
 export class BaseSpaceship extends BaseExplodable {
     public static halfBaseWidth = 10;
     public static halfHeight = 15;
-    
+
     public turnOnLeft: boolean = false;
     public turnOnRight: boolean = false;
     public turnOnForward: boolean = false;
@@ -35,8 +37,6 @@ export class BaseSpaceship extends BaseExplodable {
     public turnOnBullets: boolean = false;
     public turnOnMissiles: boolean = false;
     public turnOnMines: boolean = false;
-
-
     protected maxSpeed: number = 8;
 
     protected rotationRate: number = 10;
@@ -77,6 +77,9 @@ export class BaseSpaceship extends BaseExplodable {
     public velocity: Phaser.Math.Vector2 = new Phaser.Math.Vector2(0, 0);
     public hitpoints: number = 10;
     public forceField: ForceField;
+    public bulletColorsOverride: number[] = [];
+    public missileColorsOverride: number[] = [];
+
 
 
     constructor(scene: Phaser.Scene, spaceShipType: SpaceShipType, imageNameKey: string, flameColors: number[], initialPositionOffset: number = 400, squaresize: number = 50, spaceshipColor: number = 0xC0C0C0) {
@@ -104,12 +107,10 @@ export class BaseSpaceship extends BaseExplodable {
 
     }
 
-    private handleMouseClick(pointer: Phaser.Input.Pointer): void {
+    public handleMouseClick(pointer: Phaser.Input.Pointer): void {
         const point = new Phaser.Geom.Point(pointer.x, pointer.y);
         this.setNavigationPoint(point);
         this.playThrustSound();
-
-
     }
 
     public resizeFromScreenRatio() {
@@ -124,11 +125,11 @@ export class BaseSpaceship extends BaseExplodable {
         this.exhaustFlame.hide();
         this.forceField.hide();
         // Destroy bullets, missiles, and mines
-        this.bullets.forEach(bullet => { 
+        this.bullets.forEach(bullet => {
             bullet.destroy()
             bullet.drawExplosion();
         });
-        this.missiles.forEach(missile => { 
+        this.missiles.forEach(missile => {
             missile.destroy()
             missile.drawExplosion();
         });
@@ -429,7 +430,9 @@ export class BaseSpaceship extends BaseExplodable {
 
         const angle = this.baseSpaceshipDisplay.getForwardAngle();
         const centroid = this.baseSpaceshipDisplay.getCentroid();
-        const missile = new Missile(this.scene, centroid.x, centroid.y, angle);
+        const missile = (this.missileColorsOverride && this.missileColorsOverride.length > 0) ? new Missile(this.scene, centroid.x, centroid.y, angle, this.missileColorsOverride)
+            : new Missile(this.scene, centroid.x, centroid.y, angle);
+
         missile.setTarget(target as BaseSpaceship);
         this.missiles.push(missile);
         this.missileLastFired = this.scene.time.now;
@@ -447,7 +450,14 @@ export class BaseSpaceship extends BaseExplodable {
             (currentTime - this.missileLastFired > this.missileFireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
+
+            const game = gGameStore.getState().game;
+
+            for (let i = 0; i <= game.currentLevel; ++i) {
+                if ((i % MainScene.LEVEL_MODULAS_MISSILES) === 0) {
+                    this.shootMissile(spaceShips[Phaser.Math.Between(0, spaceShips.length - 1)]);
+                }
+            }
         }
 
         this.collisionExploadablesWithTargets(this.missiles, spaceShips);
@@ -461,7 +471,8 @@ export class BaseSpaceship extends BaseExplodable {
         }
         const angle = this.baseSpaceshipDisplay.getForwardAngle();
         const centroid = this.baseSpaceshipDisplay.getCentroid();
-        const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
+        const bullet = (this.bulletColorsOverride && this.bulletColorsOverride.length > 0) ? new Bullet(this.scene, centroid.x, centroid.y, angle, this.bulletColorsOverride)
+            : new Bullet(this.scene, centroid.x, centroid.y, angle);
         this.bullets.push(bullet);
         this.lastFired = this.scene.time.now;
         this.playBulletSound();
@@ -478,7 +489,16 @@ export class BaseSpaceship extends BaseExplodable {
             (currentTime - this.lastFired > this.fireRate) &&
             this.forceField.isVisible === false &&
             this.state === BaseExplodableState.ALIVE) {
-            this.shootBullets();
+
+            const game = gGameStore.getState().game;
+
+            for (let i = 0; i <= game.currentLevel; ++i) {
+                console.log(`=== ${(i % MainScene.LEVEL_MODULAS_BULLETS)}`);
+
+                if ((i % MainScene.LEVEL_MODULAS_BULLETS) === 0) {
+                    this.shootBullets();
+                }
+            }
         }
 
         this.collisionExploadablesWithTargets(this.bullets, spaceShips);
@@ -499,8 +519,16 @@ export class BaseSpaceship extends BaseExplodable {
             const centroid = this.baseSpaceshipDisplay.getCentroid();
             const x = centroid.x;
             const y = centroid.y;
-            const mine = new Mine(this.scene, x, y);
-            this.mines.push(mine);
+
+            const game = gGameStore.getState().game;
+
+            for (let i = 0; i <= game.currentLevel; ++i) {
+                if ((i % MainScene.LEVEL_MODULAS_MINES) === 0) {
+                    const mine = new Mine(this.scene, x, y);
+                    this.mines.push(mine);
+                }
+            }
+
             this.lastMinePlaced = currentTime;
         }
 

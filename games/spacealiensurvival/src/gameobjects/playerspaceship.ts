@@ -10,9 +10,16 @@ export class PlayerSpaceship extends BaseSpaceship {
     constructor(scene: Phaser.Scene) {
         super(scene, SpaceShipType.IMAGE, "playerspaceship", [ 0x96e0da, 0x937ef3 ], window.innerWidth / 2);
 
+        this.bulletColorsOverride = [0xFFFFFF];
+        this.missileColorsOverride = [0xffffff, 0x000FFF];
         this.explosionColors = [ 'blue', 'yellow', 'green', 'red' ]
         this.maxPopSize = 60;
         this.state = BaseExplodableState.DESTROYED;  // Starts off in destroed state.
+
+        // Set up the event listener for mouse clicks
+        this.scene.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+            this.handleMouseClick(pointer);
+        });
     }
 
 

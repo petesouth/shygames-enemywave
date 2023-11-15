@@ -7,10 +7,9 @@ export class Missile extends Bullet {
     private lifespan: number = 20 * 1000;
     private startTime: number;
 
-    constructor(scene: Phaser.Scene, startX: number, startY: number, angle: number) {
-        super(scene, startX, startY, angle);
+    constructor(scene: Phaser.Scene, startX: number, startY: number, angle: number, colors = [0xffffff, 0xff4500]) {
+        super(scene, startX, startY, angle, colors);
         this.startTime = scene.time.now;
-        this.colors = [0xffffff, 0xff4500];
         this.explosionColors = ["red", "white"]
         this.speed = 4;
     }

@@ -8,11 +8,12 @@ export class Bullet extends BaseExplodable {
     protected speed: number = 10;  // adjust for desired bullet speed
     protected distanceTraveled: number = 0;
     protected maxDistance: number;
-    protected colors: number[] = [0xffa500, 0xff4500];
+    protected colors: number[];
    
-    constructor(protected scene: Phaser.Scene, startX: number, startY: number, angle: number) {
+    constructor(protected scene: Phaser.Scene, startX: number, startY: number, angle: number,  colors: number[] = [0xffa500, 0xff4500]) {
         super(scene, scene.add.graphics(),[new Phaser.Geom.Point(startX, startY)]);
 
+        this.colors = colors;
         this.direction = new Phaser.Math.Vector2(Math.cos(angle), Math.sin(angle));
         this.maxDistance = .5 * ((scene.scale.width >= scene.scale.height) ? scene.scale.width : scene.scale.height);
     }
