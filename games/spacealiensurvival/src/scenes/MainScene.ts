@@ -14,6 +14,8 @@ export class MainScene extends Phaser.Scene {
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
+    static MAX_ENEMIES: number = 15;
+    
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
@@ -25,6 +27,7 @@ export class MainScene extends Phaser.Scene {
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     private buttons: Phaser.GameObjects.Text[] = [];
     private buttonLeftMargin = 50;
+    
 
     constructor() {
         super('MainScene');
@@ -294,13 +297,13 @@ export class MainScene extends Phaser.Scene {
                     if ((nextLevel % MainScene.LEVEL_BONUS) === 0) {
                         this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed!!`);
                         setTimeout(() => {
-                            this.mainSceneStartGameText.setLevelAnnounceText(`**CONGRATULATIONS** Weapons Upgrade this next Round!!!`);                    
+                            this.mainSceneStartGameText.setLevelAnnounceText(`**CONGRATULATIONS** Weapons Upgrade this next Round!!!`);
                             this.playLevelComplete();
                         }, 3000);
-                    }  else {
+                    } else {
                         let remainder = game.currentLevel % MainScene.LEVEL_BONUS;
                         remainder = (remainder === 0) ? MainScene.LEVEL_BONUS : MainScene.LEVEL_BONUS - remainder;
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Next Upgrade in ${remainder} Levels!!`);
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed, Next Upgrade in ${remainder} Levels!!`);
                     }
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
@@ -323,17 +326,22 @@ export class MainScene extends Phaser.Scene {
 
     spawnEnemy() {
 
+        if (this.enemyspaceships && this.enemyspaceships.length < MainScene.MAX_ENEMIES ) {
 
-        const enemySpaceshipConfig: EnemySpaceshipConfig = {
-            // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
-            thrust: Phaser.Math.Between(.5, .8),
-            hitpoints: Phaser.Math.Between(5, 20),
-            fireRate: Phaser.Math.Between(800, 2000),
-            missileFireRate: Phaser.Math.Between(3000, 8000),
-            imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
-        };
+            let hitpoints = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
+            gGameStore.getState().game.currentLevel * 1.5 : Phaser.Math.Between(5, 20);
 
-        this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + (this.enemyspaceships.length * 40), this.playerspaceship, enemySpaceshipConfig));
+            const enemySpaceshipConfig: EnemySpaceshipConfig = {
+                // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
+                thrust: Phaser.Math.Between(.5, .8),
+                hitpoints: hitpoints,
+                fireRate: Phaser.Math.Between(800, 2000),
+                missileFireRate: Phaser.Math.Between(3000, 8000),
+                imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
+            };
+
+            this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + (this.enemyspaceships.length * 40), this.playerspaceship, enemySpaceshipConfig));
+        }
     }
 
     public createAsteroidsBasedOnScreenSize() {
