@@ -292,10 +292,11 @@ export class MainScene extends Phaser.Scene {
                     let nextLevel = game.currentLevel + 1;
 
                     if ((nextLevel % MainScene.LEVEL_BONUS) === 0) {
-                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} **CONTRATULATIONS** Weapons Upgrade next Round!!!`);
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed!!`);
                         setTimeout(() => {
+                            this.mainSceneStartGameText.setLevelAnnounceText(`**CONGRATULATIONS** Weapons Upgrade this next Round!!!`);                    
                             this.playLevelComplete();
-                        }, 2000);
+                        }, 3000);
                     }  else {
                         let remainder = game.currentLevel % MainScene.LEVEL_BONUS;
                         remainder = (remainder === 0) ? MainScene.LEVEL_BONUS : MainScene.LEVEL_BONUS - remainder;
