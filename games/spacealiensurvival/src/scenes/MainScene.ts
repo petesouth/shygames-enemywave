@@ -14,7 +14,7 @@ export class MainScene extends Phaser.Scene {
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
-    static MAX_ENEMIES: number = 15;
+    static MAX_ENEMIES: number = 17;
     
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
@@ -329,14 +329,20 @@ export class MainScene extends Phaser.Scene {
         if (this.enemyspaceships && this.enemyspaceships.length < MainScene.MAX_ENEMIES ) {
 
             let hitpoints = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
-            gGameStore.getState().game.currentLevel * 1.5 : Phaser.Math.Between(5, 20);
+            gGameStore.getState().game.currentLevel * 2 : Phaser.Math.Between(5, 20);
+
+            let missileFireRate = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
+            Phaser.Math.Between(2000, 6000) : Phaser.Math.Between(3000, 8000);
+
+            let fireRate = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
+            Phaser.Math.Between(500, 2000) : Phaser.Math.Between(1000, 3000);
 
             const enemySpaceshipConfig: EnemySpaceshipConfig = {
                 // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
                 thrust: Phaser.Math.Between(.5, .8),
                 hitpoints: hitpoints,
-                fireRate: Phaser.Math.Between(800, 2000),
-                missileFireRate: Phaser.Math.Between(3000, 8000),
+                fireRate: fireRate,
+                missileFireRate: missileFireRate,
                 imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
             };
 
