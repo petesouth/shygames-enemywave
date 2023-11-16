@@ -298,7 +298,7 @@ export class MainScene extends Phaser.Scene {
                         }, 2000);
                     }  else {
                         let remainder = game.currentLevel % MainScene.LEVEL_BONUS;
-                        remainder = (remainder === 0) ? 0 : MainScene.LEVEL_BONUS - remainder;
+                        remainder = (remainder === 0) ? MainScene.LEVEL_BONUS : MainScene.LEVEL_BONUS - remainder;
                         this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Next Upgrade in ${remainder} Levels!!`);
                     }
                     this.mainSceneStartGameText.showLevelAnnounceText();
@@ -328,7 +328,7 @@ export class MainScene extends Phaser.Scene {
             thrust: Phaser.Math.Between(.5, .8),
             hitpoints: Phaser.Math.Between(5, 20),
             fireRate: Phaser.Math.Between(800, 2000),
-            missileFireRate: Phaser.Math.Between(1000, 7000),
+            missileFireRate: Phaser.Math.Between(3000, 8000),
             imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
         };
 
