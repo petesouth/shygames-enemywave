@@ -14,7 +14,7 @@ export class MainScene extends Phaser.Scene {
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
-    static MAX_ENEMIES: number = 17;
+    static MAX_ENEMIES: number = 14;
     
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
