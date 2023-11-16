@@ -331,11 +331,9 @@ export class MainScene extends Phaser.Scene {
             let hitpoints = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
             gGameStore.getState().game.currentLevel * 2 : Phaser.Math.Between(5, 20);
 
-            let missileFireRate = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
-            Phaser.Math.Between(2000, 6000) : Phaser.Math.Between(3000, 8000);
-
+            let missileFireRate = Phaser.Math.Between(3000, 8000);
             let fireRate = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
-            Phaser.Math.Between(500, 2000) : Phaser.Math.Between(1000, 3000);
+            2000 : Phaser.Math.Between(2000, 4000);
 
             const enemySpaceshipConfig: EnemySpaceshipConfig = {
                 // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
