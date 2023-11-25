@@ -1,6 +1,6 @@
-import { colors } from "@material-ui/core";
 import { Card, Container, Row, Image, Col, Button } from "react-bootstrap";
 import { getGlobalStyles } from '../../style';
+import * as colors from "../../colors/index";
 
 export interface GameFeedGamePanelProps {
     imageSrc: string,
@@ -10,49 +10,30 @@ export interface GameFeedGamePanelProps {
 }
 
 export const GameFeedGamePanel = ({ imageSrc, title, description, onPlay }: GameFeedGamePanelProps) => {
-    const classes = getGlobalStyles();
+    const classes = getGlobalStyles;
 
     return (
-        <Row>
-            <Col>
-                <div className="d-flex justify-content-center" style={{ marginTop: 20, paddingBottom: 20, width: "100%" }}>
-                    <Card className={classes.gameCard + " " + classes.content} style={{ width: "90%" }}>
-                        <Card.Body>
-                            <Row>
-                                <Col xs={12} md={10} lg={8} xl={6} className="mx-auto">
-                                    <h6 style={{ color: colors.grey[600] }}>{title}</h6>
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                        <Card.Body>
-                            <Row>
-                                <Col xs={12} md={10} lg={8} xl={6} className="mx-auto">
-                                    <Image style={{ width: "100%", padding: 20 }} src={imageSrc} />
-                                </Col>
-                            </Row>
-
-                        </Card.Body>
-                        <Card.Body>
-                            <Row>
-                                <Col xs={12} md={10} lg={8} xl={6} className="mx-auto">
-                                    <p style={{ padding: 20, fontSize: 12, textAlign: 'left' }}>
-                                        {description}
-                                    </p>
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                        <Card.Body>
-                            <Container>
-                                <Row>
-                                    <Col>
-                                        <Button onClick={() => onPlay()}>View Details</Button>
-                                    </Col>
-                                </Row>
-                            </Container>
-                        </Card.Body>
-                    </Card>
-                </div>
-            </Col>
-        </Row>
+        <Card style={{ ...classes.gameCard, ...classes.content, textAlign: "center", height: 600 }}>
+            <Card.Body>
+                    <Image style={{ width: "100%", height: 300 }} src={imageSrc} />
+            </Card.Body>
+            <Card.Body>
+                <h6 style={{ color: colors.grey[600] }}>{title}</h6>
+            </Card.Body>
+            <Card.Body>
+                <p style={{ fontSize: 12, textAlign: 'left' }}>
+                    {description}
+                </p>
+            </Card.Body>
+            <Card.Body>
+                <Container>
+                    <Row>
+                        <Col>
+                            <Button onClick={() => onPlay()}>View Details</Button>
+                        </Col>
+                    </Row>
+                </Container>
+            </Card.Body>
+        </Card>
     );
 };

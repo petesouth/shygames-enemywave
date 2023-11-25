@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client';
 import AppRouter from './App';
 import { Provider } from 'react-redux';
 import { store } from './redux/store';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 //import reportWebVitals from './reportWebVitals';
 
 const root = ReactDOM.createRoot(

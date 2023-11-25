@@ -1,5 +1,6 @@
-import { colors } from "@material-ui/core";
 import { Container, Row, Col, Card } from "react-bootstrap";
+import * as colors from "../colors";
+
 
 export function NotFound() {
   return (
