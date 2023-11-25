@@ -1,3 +1,4 @@
+import { createTheme } from '@material-ui/core/styles';
 
 import { makeStyles } from "@material-ui/core";
 
@@ -35,3 +36,10 @@ export const getGlobalStyles = makeStyles({
    // width: "90%"
   }
 });
+
+
+const theme = createTheme({
+  
+});
+
+export default theme;

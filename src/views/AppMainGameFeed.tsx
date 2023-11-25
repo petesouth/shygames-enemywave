@@ -10,7 +10,7 @@ import { AnyAction } from "redux";
 
 import { useNavigate } from "react-router-dom";
 
-const appName: string = "Shy Human Games";
+const appName: string = "ShyHumanGames Software";
 
 export interface AppMainGameFeedProps {
   content?: JSX.Element;
@@ -18,7 +18,7 @@ export interface AppMainGameFeedProps {
 
 export function AppMainGameFeed({ content }: AppMainGameFeedProps) {
   const classes = getGlobalStyles();
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
