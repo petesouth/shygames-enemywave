@@ -9,8 +9,8 @@ export class MainScene extends Phaser.Scene {
     public static LEVEL_BONUS = 5;
     static MAX_ENEMIES: number = 14;
     
-    private cloudTileSprite!: Phaser.GameObjects.TileSprite;
-    private housesTileSprite!: Phaser.GameObjects.TileSprite;
+    private bricksTileSprite!: Phaser.GameObjects.TileSprite | null;
+    private forestTileSprite!: Phaser.GameObjects.TileSprite | null;
     private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     
@@ -41,8 +41,14 @@ export class MainScene extends Phaser.Scene {
 
         this.mainSceneStartGameText.displayGameText();
 
-        this.cloudTileSprite.tilePositionX -= 1;
-        this.housesTileSprite.tilePositionX -= 4;
+        if( this.bricksTileSprite ) {
+            this.bricksTileSprite.tilePositionX += 1;
+        
+        }
+        
+        if( this.forestTileSprite ) {
+            this.forestTileSprite.tilePositionX += 4;
+        }
     }
 
 
@@ -84,35 +90,57 @@ export class MainScene extends Phaser.Scene {
 
     createBackgroundImage() {
         const currentLevel = gGameStore.getState().game.currentLevel;
-        if (this.cloudTileSprite) {
-            this.cloudTileSprite.destroy();
+        if (this.bricksTileSprite) {
+            this.bricksTileSprite.destroy();
+            this.bricksTileSprite = null;
         }
 
-        this.cloudTileSprite = this.add.tileSprite(0, 0, 512,
-            296, "background21"
+        if (this.forestTileSprite) {
+            this.forestTileSprite.destroy();
+            this.forestTileSprite = null;
+        }
+
+        
+        this.forestTileSprite = this.add.tileSprite(0, 0, 1420,
+             528, "background22"
         );
 
+        this.bricksTileSprite = this.add.tileSprite(0, 0, 280,
+            280, "bricks2"
+       );
 
+        const animConfig = {
+            key: 'herorun', // This is the key for the animation itself
+            frames: this.anims.generateFrameNames('herorun', { // This should match the atlas key from the preload
+                prefix: 'run/frame000', // Adjusted to match the frame names in the JSON
+                start: 0, // Starting frame index is 0
+                end: 8, // Ending at frame index 2 for a total of 3 frames
+                zeroPad: 1 // Adjust if your frame names have leading zeros
+            }),
+            frameRate: 10,
+            repeat: -1
+        };
+        
+        this.anims.create(animConfig);
+        
+        const sprite = this.add.sprite(window.innerWidth / 2, window.innerHeight - 190, 'herorun', 'run/frame0000'); // Adjust the initial frame name to match JSON
+        sprite.setDisplaySize(300, 300); // Set the display size of the sprite
+        sprite.play("herorun");
 
-        this.housesTileSprite = this.add.tileSprite(0, 0, 1420,
-            528, "background22"
-        );
-
-
-        this.resizeStarBackground();
+        
     }
 
 
     public resizeStarBackground() {
-        if (!this.cloudTileSprite) {
+        if (!this.bricksTileSprite || ! this.forestTileSprite) {
             return;
         }
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
         const screenAspectRatio = screenWidth / screenHeight;
 
-        const imageWidth = this.cloudTileSprite.width;
-        const imageHeight = this.cloudTileSprite.height;
+        const imageWidth = this.forestTileSprite.width;
+        const imageHeight = this.forestTileSprite.height;
         const imageAspectRatio = imageWidth / imageHeight;
 
         let newWidth, newHeight;
@@ -139,13 +167,13 @@ export class MainScene extends Phaser.Scene {
             }
         }
 
-        this.cloudTileSprite.setDisplaySize(newWidth, newHeight);
-        this.cloudTileSprite.setPosition(screenWidth / 2, 200);
-        this.cloudTileSprite.setDepth(-1);
+        this.forestTileSprite.setDisplaySize(newWidth, newHeight);
+        this.forestTileSprite.setPosition(screenWidth / 2,  ( screenHeight / 2 ) );
 
-        this.housesTileSprite.setDisplaySize(screenWidth + 100, screenHeight);
-        this.housesTileSprite.setPosition(screenWidth / 2,  ( screenHeight / 2 ) );
-        this.housesTileSprite.setDepth(0);
+        this.bricksTileSprite.setDisplaySize(screenWidth, 100);
+        this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight - 10);
+        
+        
     }
 
 }

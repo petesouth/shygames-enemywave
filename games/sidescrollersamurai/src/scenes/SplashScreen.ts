@@ -48,11 +48,16 @@ export class SplashScreen extends Phaser.Scene {
 
         this.load.atlas('flares', 'images/flares.png', 'images/flares.json');
         this.load.image('gamescreen', 'images/gamescreen.png');
-
+        this.load.image("bricks2", 'textures/bricks2.png');
+        
         
         for( let i = 21; i <= 22; ++ i ) {
             this.load.image("background" + i, 'backgrounds/background' + i + '.png');
         };
+
+        this.load.atlas('heroidle', 'images/herosamurai/IDLE.png', 'images/herosamurai/IDLE.json');
+        this.load.atlas('herorun', 'images/herosamurai/RUN.png', 'images/herosamurai/RUN.json');
+        
 
     }
 
