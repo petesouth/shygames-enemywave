@@ -16,14 +16,7 @@ export class SplashScreen extends Phaser.Scene {
         "rockwall",
         "metal"];
 
-    public static enemySpaceships = ["enemyspaceship4",
-        "enemyspaceship4B",
-        "bossenemyspaceship4",
-        "enemysaucer1",
-        "enemysaucer2",
-        "darthvader",
-        "enemyspacejet"];
-
+    
     constructor() {
         super('SplashScreen');
 
@@ -54,22 +47,13 @@ export class SplashScreen extends Phaser.Scene {
 
 
         this.load.atlas('flares', 'images/flares.png', 'images/flares.json');
-        this.load.image('playerspaceship', 'images/playerspaceship4.png');
-
         this.load.image('gamescreen', 'images/gamescreen.png');
 
-        SplashScreen.enemySpaceships.forEach((spaceship) => {
-            this.load.image(spaceship, 'images/' + spaceship + '.png');
-
-        });
-
-        for( let i = 1; i <= 20; ++ i ) {
+        
+        for( let i = 21; i <= 22; ++ i ) {
             this.load.image("background" + i, 'backgrounds/background' + i + '.png');
         };
 
-        SplashScreen.textureNames.forEach((texture) => {
-            this.load.image(texture, 'textures/' + texture + '.png');
-        });
     }
 
     create() {

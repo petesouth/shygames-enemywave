@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { BaseExplodableState } from '../gameobjects/baseExplodable';
+
 import gGameStore from '../store/store';
 
 export class MainSceneStartGameText {
@@ -50,7 +50,7 @@ export class MainSceneStartGameText {
         this.gameNameText = this.scene.add.text(
             (window.innerWidth / 2),
             offset,
-            'ShyHumanGames Software - Space Alien Survival',
+            'ShyHumanGames Software - Side Scroller Samurai',
             { font: '16px Arial', color: '#ffffff' }
         );
         this.gameNameText.setOrigin(0.5);
@@ -65,10 +65,8 @@ export class MainSceneStartGameText {
             '\u2191 - Thrust Forward', 
             '\u2190 - Rotate Left', 
             '\u2192 - Rotate Right',
-            'Space - Fire Cannon', 
-            'G - Guided Missiles', 
-            'M - Floating Mines', 
-            'S - Shields'
+            'Space - Attack', 
+            'B - Block'
         ];
 
         instructionTexts.forEach(instruction => {
@@ -98,23 +96,12 @@ export class MainSceneStartGameText {
         });
     }
 
-    displayGameText(playerSpaceship: any) {
-        if (playerSpaceship.state === BaseExplodableState.DESTROYED) {
-            this.gameNameText?.setVisible(true);
+    displayGameText() {
+           this.gameNameText?.setVisible(true);
             this.instructions.forEach(instruction => instruction.setVisible(true));
-        } else {
-            this.gameNameText?.setVisible(false);
-            this.instructions.forEach(instruction => instruction.setVisible(false));
-        }
-
+        
         const game = gGameStore.getState().game;
-
-
-        if (playerSpaceship?.state === BaseExplodableState.ALIVE) {
-            this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - HitPoints: ${Math.round(playerSpaceship.hitpoints)}`);
-        } else {
-            this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - Highest Level: ${game.highestLevel}`);
-        }
+        this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - Highest Level: ${game.highestLevel}`);
         this.scoreText?.setDepth(1);
     }
 }
