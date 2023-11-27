@@ -9,11 +9,11 @@ export class MainScene extends Phaser.Scene {
     public static LEVEL_BONUS = 5;
     static MAX_ENEMIES: number = 14;
     
-    private bricksTileSprite!: Phaser.GameObjects.TileSprite | null;
-    private forestTileSprite!: Phaser.GameObjects.TileSprite | null;
+    private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
+    private forestTileSprite?: Phaser.GameObjects.TileSprite | null;
     private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
-    
+    private sprite?:  Phaser.GameObjects.Sprite | null;
 
     constructor() {
         super('MainScene');
@@ -123,9 +123,9 @@ export class MainScene extends Phaser.Scene {
         
         this.anims.create(animConfig);
         
-        const sprite = this.add.sprite(window.innerWidth / 2, window.innerHeight - 190, 'herorun', 'run/frame0000'); // Adjust the initial frame name to match JSON
-        sprite.setDisplaySize(300, 300); // Set the display size of the sprite
-        sprite.play("herorun");
+        this.sprite = this.add.sprite(window.innerWidth / 2, window.innerHeight - 190, 'herorun', 'run/frame0000'); // Adjust the initial frame name to match JSON
+        this.sprite.setDisplaySize(300, 300); // Set the display size of the sprite
+        this.sprite.play("herorun");
 
         
     }
@@ -173,6 +173,7 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite.setDisplaySize(screenWidth, 100);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight - 10);
         
+        this.sprite?.setPosition(screenWidth / 2, screenHeight - 190);
         
     }
 
