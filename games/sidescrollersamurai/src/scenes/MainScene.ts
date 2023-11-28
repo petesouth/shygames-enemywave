@@ -13,14 +13,21 @@ export class MainScene extends Phaser.Scene {
     private forestTileSprite?: Phaser.GameObjects.TileSprite | null;
     private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
-    private sprite?:  Phaser.GameObjects.Sprite | null;
+    private spriteRunning?:  Phaser.GameObjects.Sprite | null;
+    private spriteIdle?:  Phaser.GameObjects.Sprite | null;
+    protected leftKey?: Phaser.Input.Keyboard.Key;
+    protected rightKey?: Phaser.Input.Keyboard.Key;
 
+    
     constructor() {
         super('MainScene');
     }
 
 
     create() {
+        this.leftKey = this.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+        this.rightKey = this.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+     
         this.gamesongSound = this.sound.add('gamesong', { loop: true, volume: 1 });
 
 
@@ -35,20 +42,48 @@ export class MainScene extends Phaser.Scene {
     }
 
     update() {
+        if( ! this.spriteRunning || ! this.forestTileSprite || ! this.bricksTileSprite ) {
+            return;
+        }
 
         const w = window.innerWidth;
         const h = window.innerHeight;
 
         this.mainSceneStartGameText.displayGameText();
 
-        if( this.bricksTileSprite ) {
+        if (this.leftKey?.isDown ) {
+            this.bricksTileSprite.tilePositionX -= 1;
+            this.forestTileSprite.tilePositionX -= 1;
+            
+            this.spriteIdle?.stop();
+            this.spriteIdle?.setFlipX(true);
+            this.spriteIdle?.setVisible(false);
+            
+            this.spriteRunning.setVisible(true);
+            this.spriteRunning?.setFlipX(true);
+            this.spriteRunning.play("herorun", true);
+
+        } else if (this.rightKey?.isDown ) {
             this.bricksTileSprite.tilePositionX += 1;
-        
+            this.forestTileSprite.tilePositionX += 1;
+            
+            this.spriteIdle?.stop();
+            this.spriteIdle?.setFlipX(false);
+            this.spriteIdle?.setVisible(false);
+            
+            this.spriteRunning.setVisible(true);
+            this.spriteRunning?.setFlipX(false);
+            this.spriteRunning.play("herorun", true);
+
+        } else {
+            this.spriteRunning.stop();
+            this.spriteRunning.setVisible(false);
+
+            this.spriteIdle?.play("heroidle", true);
+            this.spriteIdle?.setVisible(true);
         }
+
         
-        if( this.forestTileSprite ) {
-            this.forestTileSprite.tilePositionX += 4;
-        }
     }
 
 
@@ -84,7 +119,6 @@ export class MainScene extends Phaser.Scene {
         this.scale.setGameSize(w, h);
         this.resizeStarBackground();
         this.mainSceneStartGameText.repositionStartGameText(w);
-
      }
    
 
@@ -109,7 +143,7 @@ export class MainScene extends Phaser.Scene {
             280, "bricks2"
        );
 
-        const animConfig = {
+        const animConfigRunning = {
             key: 'herorun', // This is the key for the animation itself
             frames: this.anims.generateFrameNames('herorun', { // This should match the atlas key from the preload
                 prefix: 'run/frame000', // Adjusted to match the frame names in the JSON
@@ -121,12 +155,29 @@ export class MainScene extends Phaser.Scene {
             repeat: -1
         };
         
-        this.anims.create(animConfig);
+        this.anims.create(animConfigRunning);
         
-        this.sprite = this.add.sprite(window.innerWidth / 2, window.innerHeight - 190, 'herorun', 'run/frame0000'); // Adjust the initial frame name to match JSON
-        this.sprite.setDisplaySize(300, 300); // Set the display size of the sprite
-        this.sprite.play("herorun");
+        this.spriteRunning = this.add.sprite(window.innerWidth / 2, window.innerHeight - 190, 'herorun', 'run/frame0000'); // Adjust the initial frame name to match JSON
+        this.spriteRunning.setDisplaySize(300, 300); // Set the display size of the sprite
+        this.spriteRunning.setVisible(false);
 
+        const animConfigIdle = {
+            key: 'heroidle', // This is the key for the animation itself
+            frames: this.anims.generateFrameNames('heroidle', { // This should match the atlas key from the preload
+                prefix: 'idle/frame000', // Adjusted to match the frame names in the JSON
+                start: 0, // Starting frame index is 0
+                end: 2, // Ending at frame index 2 for a total of 3 frames
+                zeroPad: 1 // Adjust if your frame names have leading zeros
+            }),
+            frameRate: 10,
+            repeat: -1
+        };
+        
+        this.anims.create(animConfigIdle);
+        
+        this.spriteIdle = this.add.sprite(window.innerWidth / 2, window.innerHeight - 190, 'heroidle', 'idle/frame0000'); // Adjust the initial frame name to match JSON
+        this.spriteIdle.setDisplaySize(300, 300); // Set the display size of the sprite
+        this.spriteIdle.setVisible(true);
         
     }
 
@@ -173,7 +224,7 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite.setDisplaySize(screenWidth, 100);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight - 10);
         
-        this.sprite?.setPosition(screenWidth / 2, screenHeight - 190);
+        this.spriteRunning?.setPosition(screenWidth / 2, screenHeight - 190);
         
     }
 

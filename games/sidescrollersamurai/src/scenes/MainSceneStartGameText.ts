@@ -62,7 +62,7 @@ export class MainSceneStartGameText {
             'Widnows: F11 - Fullscreen',
             'Mac: Control-⌘-F - Fullscreen',
             'Click Screen - Start Game / Re-spawn', 
-            '\u2191 - Thrust Forward', 
+            '\u2191 - Jump', 
             '\u2190 - Rotate Left', 
             '\u2192 - Rotate Right',
             'Space - Attack', 
