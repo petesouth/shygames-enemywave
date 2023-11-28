@@ -225,6 +225,7 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight - 10);
         
         this.spriteRunning?.setPosition(screenWidth / 2, screenHeight - 190);
+        this.spriteIdle?.setPosition(screenWidth / 2, screenHeight - 190);
         
     }
 
