@@ -19,10 +19,21 @@ export const getGlobalStyles = {
         marginTop: "40px",
         maxWidth: "100%",
         width: "100%", 
-        paddingLeft: 10, 
-        paddingRight: 10
+        paddingLeft: 20, 
+        paddingRight: 20
     }, 
     gameCard: {
 
-    }
+    },
+    buttonStyle: {
+        padding: '6px 12px', // Reduced padding for less bulkiness
+        fontSize: '0.8rem', // Smaller font size for the text
+        border: 'none', // Remove border for a flat design
+        borderRadius: '15px', // Rounded corners, but not too pill-shaped
+        backgroundColor: '#1c1c1e', // Flat color, you can adjust as needed
+        color: 'white', // Text color for contrast
+        boxShadow: 'none', // No shadow for a flatter design
+        width: '100px', // Fixed width for uniformity
+        textAlign: 'center',
+      }
 };

@@ -9,8 +9,10 @@ export const PlayGamePanel = (props: { game: FeedGame, iframeRef: React.RefObjec
   const { game, iframeRef } = props;
   const classes = getGlobalStyles;
 
+
+
   return (
-    <div style={{ ...classes.content }}>
+    <div style={{ ...classes.content, paddingBottom: 20 }}>
 
       <Breadcrumb color="aliceblue" style={{ backgroundColor: 'aliceblue' }}>
         <Breadcrumb.Item style={{ backgroundColor: 'aliceblue' }} href="#" onClick={() => { props.onBack() }}>All Games</Breadcrumb.Item>
@@ -44,7 +46,7 @@ export const PlayGamePanel = (props: { game: FeedGame, iframeRef: React.RefObjec
             <Row>
               <Col>
                 <Button
-                  style={{ width: 120 }}
+                  style={{ ...classes.buttonStyle, textAlign: "center" }}
                   onClick={() => {
                     if (iframeRef != null && iframeRef.current != null) {
                       iframeRef.current.src += "";
@@ -57,7 +59,7 @@ export const PlayGamePanel = (props: { game: FeedGame, iframeRef: React.RefObjec
               <Col>
                 <Button
                   className="d-flex justify-content-center align-items-center"
-                  style={{ width: 120, textAlign: "center" }}
+                  style={{ ...classes.buttonStyle, textAlign: "center" }}
                   onClick={() => {
                     if (iframeRef.current) {
                       if ((iframeRef.current as any).requestFullscreen) {
