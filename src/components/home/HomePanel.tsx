@@ -1,6 +1,6 @@
 import React from "react";
 import { Game as FeedGame } from "../../redux/gameAPI";
-import { Button, Card, Col, Row, Breadcrumb, Container } from "react-bootstrap";
+import { Button, Card, Col, Row, Breadcrumb, Container, Image } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "./HomePanel.css";
 import { getGlobalStyles } from "../../style";
@@ -19,11 +19,14 @@ const LandingPageContent = () => {
   return (
     <Container style={{
       ...classes.darkBackgroundWhiteTextColor,
-      ... classes.textContainer
+      ...classes.textContainer
     }}>
+
+      
       <h1 style={{ ...textStyle, fontSize: '1.5rem', marginBottom: '0.5rem' }}>
         Welcome to ShyHumanGames
       </h1>
+
       <h2 style={{ ...textStyle, fontSize: '1.25rem' }}>
         Empowering Your Gaming Vision
       </h2>
@@ -31,6 +34,7 @@ const LandingPageContent = () => {
         At ShyHumanGames, we're not just passionate about games; we're revolutionizing them. As a leading provider in software consulting and custom game development, we specialize in bringing unique gaming experiences to life. Whether it's for web, mobile, or PC platforms, our expertise is your gateway to extraordinary gaming solutions.
       </p>
 
+      
       <h3 style={{ ...textStyle, fontSize: '1.1rem' }}>
         Our Expertise at Your Fingertips
       </h3>
@@ -57,12 +61,18 @@ const LandingPageContent = () => {
         At ShyHumanGames, we're more than just a company; we're a community of innovators. We're committed to supporting and enhancing the open-source gaming community. Partner with us, and let's create gaming experiences that captivate and inspire.
       </p>
 
+      
       <h3 style={{ ...textStyle, fontSize: '1.1rem' }}>
         Ready to Elevate Your Game?
       </h3>
       <p style={textStyle}>
         Connect with us to explore how we can transform your gaming ideas into reality.
       </p>
+
+      <div className="justify-content-center" style={{ textAlign: "center", paddingTop: 80, paddingBottom: 80 }}>
+        <Image rounded={true} roundedCircle={true} style={{ ...classes.liPadding }} src="./images/STYestEnterprise.jpg" />
+      </div>
+
     </Container>
   );
 };
@@ -83,6 +93,6 @@ export const HomePanel = () => {
     }}>
       <LandingPageContent />
     </div>
-    
+
   );
 };
