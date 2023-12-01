@@ -73,6 +73,9 @@ const AboutPanelContent = () => {
         At ShyHumanGames, we leverage a rich tapestry of technological expertise to provide a wide array of software solutions. Here's a glimpse of what we offer:
       </p>
 
+      <Image rounded={true} style={{ width: "100%" }} src="./images/aboutfunpage.png" />
+
+
       {/* List of services */}
       <p style={textStyle}>
         <ul>
