@@ -21,14 +21,14 @@ const AboutPanelContent = () => {
       <Image rounded={true} style={{ width: "100%" }} src="./images/aboutfunpage.png" />
 
       <h1 style={{ ...textStyle, paddingTop: 20, fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-        About ShyHumanGames Software
+        About ShyHumanGames
       </h1>
 
       <h2 style={{ ...textStyle, fontSize: '1.25rem' }}>
         Our Genesis:
       </h2>
       <p style={textStyle}>
-        ShyHumanGames Software began as a spark in the indie game development world, ignited by a passion for crafting interactive experiences that captivate and inspire. With roots planted firmly in Las Vegas, Nevada, our journey started in 2022, with a commitment to blend the thrill of gaming with the precision of software engineering. Today, we stand as a beacon of creativity and innovation in the software consulting arena, with a portfolio that spans across various industries and reaches a global clientele.
+        ShyHumanGames began as a spark in the indie game development world, ignited by a passion for crafting interactive experiences that captivate and inspire. With roots planted firmly in Las Vegas, Nevada, our journey started in 2022, with a commitment to blend the thrill of gaming with the precision of software engineering. Today, we stand as a beacon of creativity and innovation in the software consulting arena, with a portfolio that spans across various industries and reaches a global clientele.
       </p>
 
       <h2 style={{ ...textStyle, fontSize: '1.25rem' }}>
@@ -63,14 +63,14 @@ const AboutPanelContent = () => {
         Our Quest:
       </h2>
       <p style={textStyle}>
-        At ShyHumanGames Software, our mission is dual-faceted: to continue pioneering unforgettable gaming experiences and to architect software solutions that propel businesses forward. We are not just developers or consultants; we are storytellers, strategists, and allies in your digital narrative. When you partner with us, you're not just hiring a service; you're engaging with a team that is dedicated to elevating your vision with the latest in software innovation.
+        At ShyHumanGames, our mission is dual-faceted: to continue pioneering unforgettable gaming experiences and to architect software solutions that propel businesses forward. We are not just developers or consultants; we are storytellers, strategists, and allies in your digital narrative. When you partner with us, you're not just hiring a service; you're engaging with a team that is dedicated to elevating your vision with the latest in software innovation.
       </p>
 
       <h2 style={{ ...textStyle, fontSize: '1.25rem' }}>
         Service Portfolio
       </h2>
       <p style={textStyle}>
-        At ShyHumanGames Software, we leverage a rich tapestry of technological expertise to provide a wide array of software solutions. Here's a glimpse of what we offer:
+        At ShyHumanGames, we leverage a rich tapestry of technological expertise to provide a wide array of software solutions. Here's a glimpse of what we offer:
       </p>
 
       {/* List of services */}
@@ -97,7 +97,7 @@ const AboutPanelContent = () => {
         Connect with Us:
       </h2>
       <p style={textStyle}>
-        Embark on your next adventure in gaming or harness the power of custom software solutions with ShyHumanGames Software. Connect with us and let's build the future, one epic chapter at a time. Email us at: <a href="mailto:pete_south@yahoo.com">pete_south@yahoo.com</a> for more details!
+        Embark on your next adventure in gaming or harness the power of custom software solutions with ShyHumanGames. Connect with us and let's build the future, one epic chapter at a time. Email us at: <a href="mailto:pete_south@yahoo.com">pete_south@yahoo.com</a> for more details!
       </p>
 
 

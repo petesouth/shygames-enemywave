@@ -25,13 +25,13 @@ const LandingPageContent = () => {
       borderRadius: '15px',
     }}>
       <h1 style={{ ...textStyle, fontSize: '1.5rem', marginBottom: '0.5rem' }}>
-        Welcome to ShyHumanGames Software
+        Welcome to ShyHumanGames
       </h1>
       <h2 style={{ ...textStyle, fontSize: '1.25rem' }}>
         Empowering Your Gaming Vision
       </h2>
       <p style={textStyle}>
-        At ShyHumanGames Software, we're not just passionate about games; we're revolutionizing them. As a leading provider in software consulting and custom game development, we specialize in bringing unique gaming experiences to life. Whether it's for web, mobile, or PC platforms, our expertise is your gateway to extraordinary gaming solutions.
+        At ShyHumanGames, we're not just passionate about games; we're revolutionizing them. As a leading provider in software consulting and custom game development, we specialize in bringing unique gaming experiences to life. Whether it's for web, mobile, or PC platforms, our expertise is your gateway to extraordinary gaming solutions.
       </p>
 
       <h3 style={{ ...textStyle, fontSize: '1.1rem' }}>
@@ -57,7 +57,7 @@ const LandingPageContent = () => {
         Join Our Journey
       </h3>
       <p style={textStyle}>
-        At ShyHumanGames Software, we're more than just a company; we're a community of innovators. We're committed to supporting and enhancing the open-source gaming community. Partner with us, and let's create gaming experiences that captivate and inspire.
+        At ShyHumanGames, we're more than just a company; we're a community of innovators. We're committed to supporting and enhancing the open-source gaming community. Partner with us, and let's create gaming experiences that captivate and inspire.
       </p>
 
       <h3 style={{ ...textStyle, fontSize: '1.1rem' }}>
