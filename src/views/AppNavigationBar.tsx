@@ -10,7 +10,7 @@ export function AppNavigationBar({ ongamesclick, onhomeclick, onaboutclick: onab
             <Image width={30} height={30} src={"./images/ShyHumanGamesRobot.png"} />
           </NavItem>
           <NavItem>
-            <h5>ShyHumanGames&nbsp;Software</h5>
+            <h5>ShyHumanGames</h5>
           </NavItem>
         </Nav>
         <Nav> {/* This class pushes the Nav to the right */}
