@@ -10,12 +10,12 @@ export function AppNavigationBar({ ongamesclick, onhomeclick, oncontactsclick }:
             <Image width={30} height={30} src={"./images/ShyHumanGamesRobot.png"} />
           </NavItem>
           <NavItem>
-            ShyHumanGames Software
+            <h5>ShyHumanGames&nbsp;Software</h5>
           </NavItem>
         </Nav>
         <Nav> {/* This class pushes the Nav to the right */}
-        <Nav.Link href="" onClick={() => { onhomeclick(); }}>Home`</Nav.Link>
-          <Nav.Link href="" onClick={() => { ongamesclick(); }}>All Games</Nav.Link>
+        <Nav.Link href="" onClick={() => { onhomeclick(); }}>Home</Nav.Link>
+          <Nav.Link href="" onClick={() => { ongamesclick(); }}>Games</Nav.Link>
         </Nav>
       </Nav>
 
