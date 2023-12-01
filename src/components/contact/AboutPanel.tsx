@@ -75,7 +75,7 @@ const AboutPanelContent = () => {
 
 
       {/* List of services */}
-      <p style={classes.textStyle}>
+      <p style={{ ...classes.textStyle, ...classes.liPadding}}>
         <ul>
           <li style={{ ...classes.liPadding }}><strong>Custom Game Development:</strong> Developing engaging and innovative games for web, mobile, and PC platforms, including browser-based and downloadable games. Specializing in casual gaming and extending the realm of web games.   <a target="__blank" href="https://shyhumangames.itch.io/space-alien-survival">Space Alien Survival On Itch.io</a></li>
           <li style={{ ...classes.liPadding }}><strong>Educational Game Development:</strong> Developing Native Mobile or PWA (Progressive Web Application) browser games for eductional industries.</li>
