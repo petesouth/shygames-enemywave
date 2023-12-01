@@ -6,7 +6,7 @@ import "./HomePanel.css";
 import { getGlobalStyles } from "../../style";
 
 
-const LandingPageContent = () => {
+const LandingPageContent = ({onShipClicked}:{onShipClicked(): void}) => {
   const classes = getGlobalStyles;
 
   // Define a base style for text elements to avoid repetition
@@ -70,7 +70,9 @@ const LandingPageContent = () => {
       </p>
 
       <div className="justify-content-center" style={{ textAlign: "center", paddingTop: 80, paddingBottom: 80 }}>
-        <Image rounded={true} roundedCircle={true} style={{ ...classes.liPadding }} src="./images/STYestEnterprise.jpg" />
+        <Image rounded={true} onClick={()=>{
+          onShipClicked();
+        }}roundedCircle={true} style={{ ...classes.liPadding, cursor: "pointer" }} src="./images/STYestEnterprise.jpg" />
       </div>
 
     </Container>
@@ -78,7 +80,7 @@ const LandingPageContent = () => {
 };
 
 
-export const HomePanel = () => {
+export const HomePanel = ({onShipClicked}:{onShipClicked(): void}) => {
   const classes = getGlobalStyles;
 
   return (
@@ -91,7 +93,7 @@ export const HomePanel = () => {
       height: '100%', // This sets the height of the div to full height of its parent
       minHeight: '100vh' // This ensures the div stretches to at least the height of the viewport
     }}>
-      <LandingPageContent />
+      <LandingPageContent onShipClicked={onShipClicked} />
     </div>
 
   );

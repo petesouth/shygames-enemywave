@@ -41,9 +41,11 @@ export function AppMainGameFeed() {
     setGamePanel(gamePlayPanel);
   }} />;
 
-  const homePanel = <HomePanel />
+  const homePanel = <HomePanel onShipClicked={()=>{
+    setGamePanel(aboutPanel)
+  }}/>
 
-  const contactPanel = <AboutPanel />
+  const aboutPanel = <AboutPanel />
 
   
   return (
@@ -51,7 +53,7 @@ export function AppMainGameFeed() {
       <div style={{ ...classes.header }}>
         <AppNavigationBar ongamesclick={() => { setGamePanel(gameFeedList) }} 
                           onhomeclick={() => { setGamePanel(homePanel) }}
-                          onaboutclick={() => { setGamePanel(contactPanel) }} />
+                          onaboutclick={() => { setGamePanel(aboutPanel) }} />
       </div>
       {gamePanel}
     </div>
