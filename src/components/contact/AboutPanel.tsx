@@ -73,13 +73,15 @@ const AboutPanelContent = () => {
         At ShyHumanGames, we leverage a rich tapestry of technological expertise to provide a wide array of software solutions. Here's a glimpse of what we offer:
       </p>
 
-      <Image rounded={true} style={{ width: "100%" }} src="./images/aboutfunpage.png" />
+      <Image rounded={true} style={{ width: "100%", paddingBottom: 20 }} src="./images/examplescreen.png" />
 
 
       {/* List of services */}
       <p style={textStyle}>
         <ul>
           <li><strong>Custom Game Development:</strong> Developing engaging and innovative games for web, mobile, and PC platforms, including browser-based and downloadable games. Specializing in casual gaming and extending the realm of web games.</li>
+          <li><strong>Educational Game Development:</strong> Developing Native Mobile or PWA (Progressive Web Application) browser games for eductional industries.</li>
+          <li><strong>GPT API Based Action Bots:</strong> Developing Action Bots that automate GPT with business process or game logic.</li>
           <li><strong>Cloud Architecture and Management:</strong> Proficient in cloud deployment, migration, and management services. Expertise in AWS, Azure, and GCLOUD platforms, focusing on microservice and container architecture design, setup, and implementation.</li>
           <li><strong>Backend Development:</strong> Crafting robust event-driven applications, managing big data solutions, logging systems, and developing content management systems. Experience in server setup and backend architecture.</li>
           <li><strong>Database Design and Management:</strong> Deep knowledge in SQL and NoSQL database design, scaling, and management, ensuring efficient and optimized data operations.</li>
@@ -92,10 +94,16 @@ const AboutPanelContent = () => {
           <li><strong>Multiplayer Server Design/Hosting:</strong> Expertise in designing and hosting multiplayer servers for gaming, ensuring seamless and scalable gaming experiences.</li>
           <li><strong>Backend Languages and Frameworks:</strong> Proficient in Golang, C#/NET, Python, Java, and PHP. Expertise in server-side programming, API development, and application architecture.</li>
           <li><strong>Frontend Frameworks and Languages:</strong> Skilled in React, React Native, TypeScript, JavaScript, HTML5, and CSS. Experienced in crafting dynamic and responsive user interfaces.</li>
-          <li><strong>GPT Prompt Engineering Tutor:</strong> Allow me to teach your team the skill of prompt engineering.  The games you see on our site are examples of this.  Let AI tunr your developers into super versions of themselves.  Embrace the tomorrow of writing softawre.</li>
+          <li><strong>GPT Prompt Engineering Tutor:</strong> Allow me to teach your team the art of prompt engineering, a skill exemplified by the games on our site. Learn how AI can elevate your developers to their highest potential, revolutionizing the way you approach software development. Embrace the future of coding with AI.</li>
+          <li><strong>Non Profit and Social Justice Causes:</strong> Priority assistance for non-profit and social justice initiatives. If you're engaged in these causes and require technical expertise to build your tech stack, please reach out to us. We are committed to supporting meaningful projects and, under the right circumstances, our services may be offered at no cost.</li>
         </ul>
 
       </p>
+
+
+      <Image rounded={true} style={{ width: "100%", paddingBottom: 20 }} src="./images/ai_dalle_art_thoughtful_ai.png" />
+
+      
 
       <h2 style={{ ...textStyle, fontSize: '1.25rem' }}>
         Connect with Us:
