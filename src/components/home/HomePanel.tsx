@@ -7,6 +7,8 @@ import { getGlobalStyles } from "../../style";
 
 
 const LandingPageContent = () => {
+  const classes = getGlobalStyles;
+
   // Define a base style for text elements to avoid repetition
   const textStyle = {
     fontSize: '0.8rem', // Smaller base font size for text
@@ -16,13 +18,8 @@ const LandingPageContent = () => {
 
   return (
     <Container style={{
-      color: 'white',
-      textShadow: '0px 0px 8px rgba(0, 0, 0, 0.8)',
-      maxWidth: '600px',
-      margin: '0 auto',
-      padding: '20px 10px',
-      background: 'rgba(0, 0, 0, 0.5)',
-      borderRadius: '15px',
+      ...classes.darkBackgroundWhiteTextColor,
+      ... classes.textContainer
     }}>
       <h1 style={{ ...textStyle, fontSize: '1.5rem', marginBottom: '0.5rem' }}>
         Welcome to ShyHumanGames

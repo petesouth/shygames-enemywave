@@ -1,4 +1,4 @@
-type CSSProperty = string | number;
+
 
 export const getGlobalStyles = {
     root: {
@@ -6,7 +6,7 @@ export const getGlobalStyles = {
         zIndex: 0,
         minHeight: "100vh"
     },
-    
+
     header: {
         top: 0,
         zIndex: 1,
@@ -18,10 +18,10 @@ export const getGlobalStyles = {
     content: {
         marginTop: "40px",
         maxWidth: "100%",
-        width: "100%", 
-        paddingLeft: 20, 
+        width: "100%",
+        paddingLeft: 20,
         paddingRight: 20
-    }, 
+    },
     gameCard: {
 
     },
@@ -35,5 +35,32 @@ export const getGlobalStyles = {
         boxShadow: 'none', // No shadow for a flatter design
         width: '100px', // Fixed width for uniformity
         textAlign: 'center',
-      }
+    },
+    liPadding: {
+        paddingTop: 7,
+        paddingBottom: 7
+    },
+    textStyle: {
+        fontSize: '0.8rem',
+        lineHeight: '1.4',
+        marginBottom: '1rem',
+        textShadow: '0px 0px 2px rgba(0, 0, 0, 0.3)'
+    },
+    textContainer: {
+        width: '75%',
+        margin: '0 auto',
+        padding: '20px 10px',
+        borderRadius: '15px',
+        minWidth: 300,
+        maxWidth: 1024,
+        minHeight: "80%"
+    },
+    darkBackgroundWhiteTextColor: {
+        textShadow: '0px 0px 2px rgba(0, 0, 0, 0.2)',
+        background: 'rgba(0, 0, 0, 0.5)',
+        color: 'white'
+    },
+    textShadowMoreClear: {
+        textShadow: '0px 0px 8px rgba(0, 0, 0, 0.8)'
+    }
 };
