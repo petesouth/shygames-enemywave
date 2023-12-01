@@ -10,7 +10,7 @@ import { GetGameFeed } from "./GetGameFeed";
 import { PlayGamePanel } from "../components/gamefeed/PlayGamePanel";
 import { AppNavigationBar } from "./AppNavigationBar";
 import { HomePanel } from "../components/home/HomePanel";
-import { ContactPanel } from "../components/contact/ContactPanel";
+import { AboutPanel } from "../components/contact/AboutPanel";
 
 
 export function AppMainGameFeed() {
@@ -43,7 +43,7 @@ export function AppMainGameFeed() {
 
   const homePanel = <HomePanel />
 
-  const contactPanel = <ContactPanel />
+  const contactPanel = <AboutPanel />
 
   
   return (
@@ -51,7 +51,7 @@ export function AppMainGameFeed() {
       <div style={{ ...classes.header }}>
         <AppNavigationBar ongamesclick={() => { setGamePanel(gameFeedList) }} 
                           onhomeclick={() => { setGamePanel(homePanel) }}
-                          oncontactsclick={() => { setGamePanel(contactPanel) }} />
+                          onaboutclick={() => { setGamePanel(contactPanel) }} />
       </div>
       {gamePanel}
     </div>

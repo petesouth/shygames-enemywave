@@ -64,7 +64,7 @@ const LandingPageContent = () => {
         Ready to Elevate Your Game?
       </h3>
       <p style={textStyle}>
-        Connect with us to explore how we can transform your gaming ideas into reality. <a href="mailto:pete_south@yaoo.com">Email Us!</a>
+        Connect with us to explore how we can transform your gaming ideas into reality.
       </p>
     </Container>
   );
