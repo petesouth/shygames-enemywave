@@ -36,7 +36,7 @@ const hardcodedGameList = [
   },
   { id: 2,
     title: "Side Scroller Samurai",
-    description: "In the spirit of Double Dragon from 1987!!!  Navigate your Samurai through the back streats and stay alive.  Collect the Weapons you need to fight the ultimate Crime Boss. Defeat the Evil Dark Samurai Lord once and for all.",
+    description: "**Game In Progress - Daily Updates** In the spirit of Double Dragon from 1987!!!  Navigate your Samurai through the back streats and stay alive.  Collect the Weapons you need to fight the ultimate Crime Boss. Defeat the Evil Dark Samurai Lord once and for all.",
     gameImage: "https://petesouth.github.io/shyhumangames-gamefeed/sidescrollersamurai/images/gamescreen.png",
     url: "https://petesouth.github.io/shyhumangames-gamefeed/sidescrollersamurai/index.html",
     width: 800,

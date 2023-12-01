@@ -89,6 +89,7 @@ const AboutPanelContent = () => {
           <li><strong>Multiplayer Server Design/Hosting:</strong> Expertise in designing and hosting multiplayer servers for gaming, ensuring seamless and scalable gaming experiences.</li>
           <li><strong>Backend Languages and Frameworks:</strong> Proficient in Golang, C#/NET, Python, Java, and PHP. Expertise in server-side programming, API development, and application architecture.</li>
           <li><strong>Frontend Frameworks and Languages:</strong> Skilled in React, React Native, TypeScript, JavaScript, HTML5, and CSS. Experienced in crafting dynamic and responsive user interfaces.</li>
+          <li><strong>GPT Prompt Engineering Tutor:</strong> Allow me to teach your team the skill of prompt engineering.  The games you see on our site are examples of this.  Let AI tunr your developers into super versions of themselves.  Embrace the tomorrow of writing softawre.</li>
         </ul>
 
       </p>
