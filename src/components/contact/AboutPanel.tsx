@@ -97,7 +97,7 @@ const AboutPanelContent = () => {
         Connect with Us:
       </h2>
       <p style={textStyle}>
-        Embark on your next adventure in gaming or harness the power of bespoke software solutions with ShyHumanGames Software. Connect with us at [contact@example.com], and let's build the future, one epic chapter at a time. Email us at: <a href="mailto:pete_south@yahoo.com">pete_south@yahoo.com</a> for more details!
+        Embark on your next adventure in gaming or harness the power of custom software solutions with ShyHumanGames Software. Connect with us and let's build the future, one epic chapter at a time. Email us at: <a href="mailto:pete_south@yahoo.com">pete_south@yahoo.com</a> for more details!
       </p>
 
 
