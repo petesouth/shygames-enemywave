@@ -63,6 +63,8 @@ const AboutPanelContent = () => {
         At ShyHumanGames, our mission is dual-faceted: to continue pioneering unforgettable gaming experiences and to architect software solutions that propel businesses forward. We are not just developers or consultants; we are storytellers, strategists, and allies in your digital narrative. When you partner with us, you're not just hiring a service; you're engaging with a team that is dedicated to elevating your vision with the latest in software innovation.
       </p>
 
+      <Image rounded={true} style={{ width: "100%", ...classes.liPadding }} src="./images/examplescreen.png" />
+
       <h2 style={{ ...classes.textStyle, fontSize: '1.25rem' }}>
         Service Portfolio
       </h2>
@@ -70,9 +72,7 @@ const AboutPanelContent = () => {
         At ShyHumanGames, we leverage a rich tapestry of technological expertise to provide a wide array of software solutions. Here's a glimpse of what we offer:
       </p>
 
-
-      <Image rounded={true} style={{ width: "100%", ...classes.liPadding }} src="./images/examplescreen.png" />
-
+      
 
       {/* List of services */}
       <p style={{ ...classes.textStyle, ...classes.liPadding}}>
