@@ -78,16 +78,20 @@ export class SpriteHero {
             return;
         }
 
-        if (this.cursors.left.isDown && this.spriteIdle?.body?.touching.down) {
+        if (this.cursors.left.isDown) {
             this.applyToAllSprites((sprite): void => {
                 sprite.setFlipX(true);
             });
-            this.showSpriteFromState(SpriteHeroAnimationState.RUN);
-        } else if (this.cursors.right.isDown && this.spriteIdle?.body?.touching.down) {
+            if( this.spriteIdle?.body?.touching.down ) {
+                this.showSpriteFromState(SpriteHeroAnimationState.RUN);
+            }
+        } else if (this.cursors.right.isDown) {
             this.applyToAllSprites((sprite): void => {
                 sprite.setFlipX(false);
             });
-            this.showSpriteFromState(SpriteHeroAnimationState.RUN);
+            if( this.spriteIdle?.body?.touching.down ) {
+                this.showSpriteFromState(SpriteHeroAnimationState.RUN);
+            }
         } else if (this.cursors.up.isDown === false) {
             this.applyToAllSprites((sprite): void => {
                 sprite.setGravityY(300);
