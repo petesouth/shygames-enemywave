@@ -8,7 +8,8 @@ export interface Game {
   gameImage: string,
   url: string,
   width: string|number,
-  height: string|number
+  height: string|number,
+  fullscreen: boolean
 }
 
 export interface GamesPayload {
@@ -32,7 +33,8 @@ const hardcodedGameList = [
     gameImage: "https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/images/gamescreen.png",
     url: "https://petesouth.github.io/shyhumangames-gamefeed/spacealiensurvival/index.html",
     width: 800,
-    height: 600    
+    height: 600, 
+    fullscreen: true
   },
   { id: 2,
     title: "Side Scroller Samurai",
@@ -40,7 +42,8 @@ const hardcodedGameList = [
     gameImage: "https://petesouth.github.io/shyhumangames-gamefeed/sidescrollersamurai/images/gamescreen.png",
     url: "https://petesouth.github.io/shyhumangames-gamefeed/sidescrollersamurai/index.html",
     width: 800,
-    height: 600    
+    height: 600, 
+    fullscreen: false    
   }
 ];
 

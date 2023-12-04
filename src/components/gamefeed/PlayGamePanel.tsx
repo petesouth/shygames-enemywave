@@ -29,7 +29,8 @@ export const PlayGamePanel = (props: { game: FeedGame, iframeRef: React.RefObjec
                   iframeRef.current.src += "";
                 }
               }}>autorenew</span>
-              <span className="material-icons" title="Full Screen" style={{ cursor: "pointer" }} onClick={() => {
+
+              {(props.game.fullscreen) ? <span className="material-icons" title="Full Screen" style={{ cursor: "pointer" }} onClick={() => {
                 if (iframeRef.current) {
                   if ((iframeRef.current as any).requestFullscreen) {
                     (iframeRef.current as any).requestFullscreen();
@@ -44,18 +45,22 @@ export const PlayGamePanel = (props: { game: FeedGame, iframeRef: React.RefObjec
                     (iframeRef.current as any).msRequestFullscreen();
                   }
                 }
-              }}>fullscreen</span>
+              }}>fullscreen</span> : (null)}
             </div>
           </Card.Header>
           <Card.Body>
             <div className="d-flex justify-content-center">
-              <iframe
+              {(props.game.fullscreen === true) ? <iframe
                 ref={iframeRef}
                 src={props.game.url}
                 width={"100%"}
                 height={props.game.height}
                 allowFullScreen
-                allow="fullscreen" />
+                allow="fullscreen" /> : (<iframe
+                  ref={iframeRef}
+                  src={props.game.url}
+                  width={"100%"}
+                  height={props.game.height} />)}
             </div>
           </Card.Body>
           <Card.Body>
