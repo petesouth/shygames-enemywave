@@ -175,4 +175,21 @@ export class SpriteHero {
         });
     }
 
+    resizeEvent() {
+
+        const xPos = window.innerWidth / 2;
+        const yPos = 0; //window.innerHeight - MainScene.GROUND_HEIGHT;
+
+        this.applyToAllSprites((sprite) => {
+            sprite.setDisplaySize(300, 300); // Set the display size of the sprite
+            sprite.setVisible(false);
+            sprite.setPosition(xPos, yPos);
+            sprite.updateDisplayOrigin();
+            sprite.setDepth(10);
+            sprite.refreshBody();
+        });
+
+        this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
+    }
+
 }

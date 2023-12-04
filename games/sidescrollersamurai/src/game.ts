@@ -89,8 +89,8 @@ export default class Game extends Phaser.Game {
     }
 
     handleWindowResize() {
-        //const mainScene = this.scene.getScene("MainScene") as MainScene;
-       // mainScene.handleWindowResize();
+        const mainScene = this.scene.getScene("MainScene") as MainScene;
+        mainScene.handleWindowResize();
         const splashScreen = this.scene.getScene("SplashScreen") as SplashScreen;
         splashScreen.handleWindowResize();
 

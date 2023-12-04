@@ -7,6 +7,7 @@ import { SpriteHero } from '../gameobjects/SpriteHero';
 
 export class MainScene extends Phaser.Scene {
 
+
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
     public static MAX_ENEMIES: number = 14;
@@ -71,7 +72,7 @@ export class MainScene extends Phaser.Scene {
 
     public playGameSongSound(): void {
         if (this.gamesongSound && !this.gamesongSound.isPlaying) {
-            this.gamesongSound.play();
+        //    this.gamesongSound.play();
         }
     }
 
@@ -96,7 +97,7 @@ export class MainScene extends Phaser.Scene {
         const screenHeight = window.innerHeight;
         this.game.scale.resize(screenWidth, screenHeight);
         this.game.scale.refresh();
-        
+
         // Destroy existing tiles if they exist
         if (this.bricksTileSprite) {
             this.bricksTileSprite.destroy();
@@ -105,12 +106,6 @@ export class MainScene extends Phaser.Scene {
         if (this.forestTileSprite) {
             this.forestTileSprite.destroy();
         }
-
-        if (this.groundGroup) {
-            // Clear out the old ground group if it exists
-            this.groundGroup.clear(true, true);
-        }
-        this.groundGroup = this.physics.add.staticGroup();
 
         // Create the forest background, covering the entire screen
         this.forestTileSprite = this.add.tileSprite(0, 0, 1420, 528, "background22");
@@ -121,18 +116,32 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
 
-        // Create a physics body for the ground group that matches the bricksTileSprite
-        // We use an invisible sprite or a transparent image as the key if you don't want it to be visible.
-        if (this.groundGroup) {
-            this.groundGroup.clear(true, true);
-        }
-    
-       this.groupGroundBody = this.groundGroup.create(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260) / 2);
-       this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
-       this.groupGroundBody.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
-       this.groupGroundBody.setVisible(false);
-       this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
+        this.groundGroup = this.physics.add.staticGroup();
+        this.groupGroundBody = this.groundGroup.create(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260) / 2);
+        this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
+        this.groupGroundBody.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
+        this.groupGroundBody.setVisible(false);
+        this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
 
+    }
+
+    handleWindowResize() {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+        this.game.scale.resize(screenWidth, screenHeight);
+        this.game.scale.refresh();
+
+        this.forestTileSprite?.setDisplaySize(screenWidth, screenHeight);
+        this.forestTileSprite?.setPosition(screenWidth / 2, screenHeight / 2);
+
+        this.bricksTileSprite?.setDisplaySize( screenWidth, MainScene.GROUND_HEIGHT );
+        this.bricksTileSprite?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
+
+        this.groupGroundBody?.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
+        this.groupGroundBody?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
+        this.groupGroundBody?.refreshBody();
+        
+        this.spriteHero?.resizeEvent();
     }
 
 
