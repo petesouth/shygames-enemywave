@@ -85,7 +85,7 @@ export class SplashScreen extends Phaser.Scene {
     }
 
 
-    handleWindowResize() {
+    public handleWindowResize() {
         const w = window.innerWidth;
         const h = window.innerHeight;
 

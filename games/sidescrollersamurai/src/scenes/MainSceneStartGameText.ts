@@ -4,7 +4,7 @@ import gGameStore from '../store/store';
 
 export class MainSceneStartGameText {
     private levelAnnounceText: Phaser.GameObjects.Text | undefined;
-    
+
     private gameNameText: Phaser.GameObjects.Text | undefined;
     private instructions: Phaser.GameObjects.Text[] = [];
     private scoreText: Phaser.GameObjects.Text | undefined;
@@ -12,7 +12,7 @@ export class MainSceneStartGameText {
 
     constructor(private scene: Phaser.Scene) { }
 
-    setLevelAnnounceText(text:string) {
+    setLevelAnnounceText(text: string) {
         this.levelAnnounceText?.setText(text);
     }
 
@@ -44,7 +44,7 @@ export class MainSceneStartGameText {
         this.levelAnnounceText.setOrigin(0.5);
         this.levelAnnounceText.setVisible(false);
         this.levelAnnounceText.setDepth(1);
-        
+
         let offset = 80;
 
         this.gameNameText = this.scene.add.text(
@@ -58,14 +58,14 @@ export class MainSceneStartGameText {
         offset += 30;
 
         const instructionTexts = [
-            'Mobile: Add Game To Homescreen for Fullscreen', 
+            'Mobile: Add Game To Homescreen for Fullscreen',
             'Widnows: F11 - Fullscreen',
             'Mac: Control-⌘-F - Fullscreen',
-            'Click Screen - Start Game / Re-spawn', 
-            '\u2191 - Jump', 
-            '\u2190 - Rotate Left', 
+            'Click Screen - Start Game / Re-spawn',
+            '\u2191 - Jump',
+            '\u2190 - Rotate Left',
             '\u2192 - Rotate Right',
-            'Space - Attack', 
+            'Space - Attack',
             'B - Block'
         ];
 
@@ -97,9 +97,9 @@ export class MainSceneStartGameText {
     }
 
     displayGameText() {
-           this.gameNameText?.setVisible(true);
-            this.instructions.forEach(instruction => instruction.setVisible(true));
-        
+        this.gameNameText?.setVisible(true);
+        this.instructions.forEach(instruction => instruction.setVisible(true));
+
         const game = gGameStore.getState().game;
         this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - Highest Level: ${game.highestLevel}`);
         this.scoreText?.setDepth(1);
