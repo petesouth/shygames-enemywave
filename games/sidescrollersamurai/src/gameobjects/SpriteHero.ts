@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { MainScene } from '../scenes/MainScene';
 
 
 
@@ -170,13 +171,14 @@ export class SpriteHero {
             sprite.setBounce(0.1);
             sprite.setCollideWorldBounds(true);
             this.scene.physics.add.collider(sprite, this.groundGroup);
-            this.scene.physics.add.overlap(sprite, this.groundGroup);
 
         });
     }
-
+/* 
     resizeEvent() {
 
+        this.scene.physics.world.removeAllListeners();
+            
         const xPos = window.innerWidth / 2;
         const yPos = 0; //window.innerHeight - MainScene.GROUND_HEIGHT;
 
@@ -184,12 +186,36 @@ export class SpriteHero {
             sprite.setDisplaySize(300, 300); // Set the display size of the sprite
             sprite.setVisible(false);
             sprite.setPosition(xPos, yPos);
-            sprite.updateDisplayOrigin();
             sprite.setDepth(10);
             sprite.refreshBody();
+            this.scene.physics.add.collider(sprite, this.groundGroup);
         });
 
         this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
+    } */
+
+    resizeEvent() {
+        // Get the current game dimensions instead of window dimensions
+        const gameWidth = this.scene.game.scale.width;
+        const gameHeight = this.scene.game.scale.height;
+    
+        // Calculate the yPos based on the game height and ground height
+        const yPos = gameHeight - MainScene.GROUND_HEIGHT;
+    
+        this.applyToAllSprites((sprite) => {
+            sprite.setPosition(gameWidth / 2, yPos);
+            sprite.setDisplaySize(300, 300); // Adjust the display size of the sprite
+            sprite.setVisible(true);
+            sprite.setDepth(10);
+            sprite.refreshBody();
+            this.scene.physics.add.collider(sprite, this.groundGroup);
+        });
+    
+        // Resetting the animation state to ensure correct display
+        this.showSpriteFromState(this.animationState);
     }
+    
+
+    
 
 }

@@ -58,12 +58,12 @@ export class MainScene extends Phaser.Scene {
         this.mainSceneStartGameText.displayGameText();
 
         if (this.cursorKeys?.left.isDown) {
-            this.bricksTileSprite.tilePositionX -= 1;
-            this.forestTileSprite.tilePositionX -= 1;
+            this.bricksTileSprite.tilePositionX -= 2;
+            this.forestTileSprite.tilePositionX -= 2;
         } else if (this.cursorKeys?.right.isDown) {
-            this.bricksTileSprite.tilePositionX += 1;
+            this.bricksTileSprite.tilePositionX += 2;
             this.groupGroundBody.refreshBody();
-            this.forestTileSprite.tilePositionX += 1;
+            this.forestTileSprite.tilePositionX += 2;
         }
 
         this.spriteHero?.drawHeroSprite();
@@ -126,21 +126,19 @@ export class MainScene extends Phaser.Scene {
     }
 
     handleWindowResize() {
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        this.game.scale.resize(screenWidth, screenHeight);
-        this.game.scale.refresh();
-
+        const screenWidth = this.scale.width;
+        const screenHeight = this.scale.height;
+        
         this.forestTileSprite?.setDisplaySize(screenWidth, screenHeight);
         this.forestTileSprite?.setPosition(screenWidth / 2, screenHeight / 2);
 
         this.bricksTileSprite?.setDisplaySize( screenWidth, MainScene.GROUND_HEIGHT );
         this.bricksTileSprite?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
 
+        this.groundGroup?.shiftPosition(0,  screenHeight - (MainScene.GROUND_HEIGHT - 260));
         this.groupGroundBody?.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
         this.groupGroundBody?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
         this.groupGroundBody?.refreshBody();
-        
         this.spriteHero?.resizeEvent();
     }
 

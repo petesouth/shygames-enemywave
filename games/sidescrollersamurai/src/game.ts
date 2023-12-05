@@ -49,12 +49,6 @@ export default class Game extends Phaser.Game {
         window.addEventListener("resize", this.handleWindowResize.bind(this));
         document.getElementById("game")?.focus();
         this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
 
         this.scaleManager = new Phaser.Scale.ScaleManager(this);
 
@@ -62,7 +56,10 @@ export default class Game extends Phaser.Game {
             this.handleWindowResize();
         })
 
-        
+        this.scaleManager.on( Phaser.Scale.Events.RESIZE, ()=>{
+            this.handleWindowResize();
+        })
+
         this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_FAILED, ()=>{
             this.handleWindowResize();
         })
@@ -89,6 +86,8 @@ export default class Game extends Phaser.Game {
     }
 
     handleWindowResize() {
+        this.scale.resize(window.innerWidth, window.innerHeight);
+        this.scale.refresh();        
         const mainScene = this.scene.getScene("MainScene") as MainScene;
         mainScene.handleWindowResize();
         const splashScreen = this.scene.getScene("SplashScreen") as SplashScreen;
