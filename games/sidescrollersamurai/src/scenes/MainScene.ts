@@ -72,7 +72,7 @@ export class MainScene extends Phaser.Scene {
 
     public playGameSongSound(): void {
         if (this.gamesongSound && !this.gamesongSound.isPlaying) {
-        //    this.gamesongSound.play();
+            this.gamesongSound.play();
         }
     }
 
@@ -125,9 +125,7 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    handleWindowResize() {
-        const screenWidth = this.scale.width;
-        const screenHeight = this.scale.height;
+    handleWindowResize(screenWidth: number, screenHeight: number) {
         
         this.forestTileSprite?.setDisplaySize(screenWidth, screenHeight);
         this.forestTileSprite?.setPosition(screenWidth / 2, screenHeight / 2);
@@ -135,12 +133,24 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite?.setDisplaySize( screenWidth, MainScene.GROUND_HEIGHT );
         this.bricksTileSprite?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
 
-        this.groundGroup?.shiftPosition(0,  screenHeight - (MainScene.GROUND_HEIGHT - 260));
-        this.groupGroundBody?.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
-        this.groupGroundBody?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
-        this.groupGroundBody?.refreshBody();
-        this.spriteHero?.resizeEvent();
+        if( this.groupGroundBody && this.spriteHero && this.bricksTileSprite) {
+            this.groundGroup?.removeCollidesWith(1);
+            this.groundGroup?.removeAllListeners();
+            this.groundGroup?.destroy();
+            this.groupGroundBody?.destroy();
+
+            this.groundGroup = this.physics.add.staticGroup();
+            this.groupGroundBody = this.groundGroup.create(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260) / 2);
+            this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
+            this.groupGroundBody.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
+            this.groupGroundBody.setVisible(false);
+            this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
+        
+            this.spriteHero.resizeEvent(this.groundGroup, screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
+        }
     }
+
+
 
 
 }

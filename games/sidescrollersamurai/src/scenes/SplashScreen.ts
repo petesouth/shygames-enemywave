@@ -75,26 +75,14 @@ export class SplashScreen extends Phaser.Scene {
             pointer.event.preventDefault();
         });
 
-        setInterval(() => {
-            if (this.scale.width < window.innerWidth ||
-                this.scale.height < window.innerHeight) {
-                this.handleWindowResize();
-            }
-        }, 500);
-
     }
 
 
-    public handleWindowResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
+    public handleWindowResize(w: number, h:number) {
+        
 
-
-        this.scale.setGameSize(w, h);
         this.splashText?.setPosition(w / 2, SplashScreen.TEXT_TOP_PADDING);
         this.splashText?.setDepth(1);
-
-
         this.resizeStarBackground();
     }
 

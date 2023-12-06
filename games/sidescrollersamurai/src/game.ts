@@ -6,8 +6,8 @@ import { MainScene } from './scenes/MainScene';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: "100%",
+    height: "100%",
     parent: 'game',
     fps: {
         limit: 40,  // This will limit the game to 60 frames per second
@@ -40,8 +40,7 @@ const config: Phaser.Types.Core.GameConfig = {
 
 
 export default class Game extends Phaser.Game {
-    private scaleManager: Phaser.Scale.ScaleManager;
-
+    
     constructor() {
         super(config);
 
@@ -50,53 +49,48 @@ export default class Game extends Phaser.Game {
         document.getElementById("game")?.focus();
         this.input.addPointer();
 
-        this.scaleManager = new Phaser.Scale.ScaleManager(this);
-
-        this.scaleManager.on( Phaser.Scale.Events.ENTER_FULLSCREEN, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.RESIZE, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_FAILED, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_UNSUPPORTED, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.LEAVE_FULLSCREEN, ()=>{
-            this.handleWindowResize();
-        })
-
-
-        this.scaleManager.on( Phaser.Scale.Events.ORIENTATION_CHANGE, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.RESIZE, ()=>{
-            this.handleWindowResize(); 
-        })
-
-
         
+        this.scale.on(Phaser.Scale.Events.ENTER_FULLSCREEN, () => {
+            this.handleWindowResize();
+        })
+
+        this.scale.on(Phaser.Scale.Events.FULLSCREEN_FAILED, () => {
+            this.handleWindowResize();
+        })
+
+        this.scale.on(Phaser.Scale.Events.FULLSCREEN_UNSUPPORTED, () => {
+            this.handleWindowResize();
+        })
+
+        this.scale.on(Phaser.Scale.Events.LEAVE_FULLSCREEN, () => {
+            this.handleWindowResize();
+        })
+
+
+        this.scale.on(Phaser.Scale.Events.ORIENTATION_CHANGE, () => {
+            this.handleWindowResize();
+        })
+
+       
+
     }
 
     handleWindowResize() {
-        this.scale.resize(window.innerWidth, window.innerHeight);
-        this.scale.refresh();        
+        this.scale.setGameSize(window.innerWidth, window.innerHeight);
+        this.scale.setParentSize(window.innerWidth, window.innerHeight);
+        //this.scale.resize(window.innerWidth, window.innerHeight);
+        this.scale.updateScale();
+        this.scale.refresh();
+
         const mainScene = this.scene.getScene("MainScene") as MainScene;
-        mainScene.handleWindowResize();
+        mainScene.handleWindowResize(window.innerWidth, window.innerHeight);
         const splashScreen = this.scene.getScene("SplashScreen") as SplashScreen;
-        splashScreen.handleWindowResize();
+        splashScreen.handleWindowResize(window.innerWidth, window.innerHeight);
 
     }
 
-    
 
-   
-    
+
+
+
 }

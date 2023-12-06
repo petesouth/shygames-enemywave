@@ -85,12 +85,7 @@ export class SplashScreen extends Phaser.Scene {
             pointer.event.preventDefault();
         });
 
-        setInterval(() => {
-            if (this.scale.width < window.innerWidth ||
-                this.scale.height < window.innerHeight) {
-                this.handleWindowResize();
-            }
-        }, 500);
+       
 
     }
 

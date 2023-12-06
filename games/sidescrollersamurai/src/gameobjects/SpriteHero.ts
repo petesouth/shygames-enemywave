@@ -22,6 +22,7 @@ export class SpriteHero {
     protected groundGroup: Phaser.Physics.Arcade.StaticGroup;
     protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     protected scene: Phaser.Scene;
+    protected colliders: Phaser.Physics.Arcade.Collider[] = [];
 
     protected animationState: SpriteHeroAnimationState = SpriteHeroAnimationState.IDLE;
 
@@ -174,41 +175,23 @@ export class SpriteHero {
 
         });
     }
-/* 
-    resizeEvent() {
 
-        this.scene.physics.world.removeAllListeners();
-            
-        const xPos = window.innerWidth / 2;
-        const yPos = 0; //window.innerHeight - MainScene.GROUND_HEIGHT;
 
-        this.applyToAllSprites((sprite) => {
-            sprite.setDisplaySize(300, 300); // Set the display size of the sprite
-            sprite.setVisible(false);
-            sprite.setPosition(xPos, yPos);
-            sprite.setDepth(10);
-            sprite.refreshBody();
-            this.scene.physics.add.collider(sprite, this.groundGroup);
+    resizeEvent( group: Phaser.Physics.Arcade.StaticGroup, x:number, y:number) {
+        this.groundGroup = group;
+        this.colliders.forEach((collider)=>{
+            collider.destroy();
         });
+        this.colliders = [];
 
-        this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
-    } */
-
-    resizeEvent() {
-        // Get the current game dimensions instead of window dimensions
-        const gameWidth = this.scene.game.scale.width;
-        const gameHeight = this.scene.game.scale.height;
-    
-        // Calculate the yPos based on the game height and ground height
-        const yPos = gameHeight - MainScene.GROUND_HEIGHT;
-    
         this.applyToAllSprites((sprite) => {
-            sprite.setPosition(gameWidth / 2, yPos);
-            sprite.setDisplaySize(300, 300); // Adjust the display size of the sprite
-            sprite.setVisible(true);
+            sprite.setPosition(x + 300, y - 300);
+            sprite.setVisible(false);
             sprite.setDepth(10);
-            sprite.refreshBody();
-            this.scene.physics.add.collider(sprite, this.groundGroup);
+            sprite.setGravityY(300);
+            this.colliders.push(this.scene.physics.add.collider(sprite, this.groundGroup));
+            sprite.update();
+            sprite.updateDisplayOrigin();
         });
     
         // Resetting the animation state to ensure correct display

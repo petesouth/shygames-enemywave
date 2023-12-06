@@ -43,7 +43,7 @@ const hardcodedGameList = [
     url: "https://petesouth.github.io/shyhumangames-gamefeed/sidescrollersamurai/index.html",
     width: 800,
     height: 600, 
-    fullscreen: true    
+    fullscreen: false    
   }
 ];
 

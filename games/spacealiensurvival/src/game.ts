@@ -84,7 +84,12 @@ export default class Game extends Phaser.Game {
             this.handleWindowResize(); 
         })
 
-
+        setInterval(() => {
+            if (this.scale.width < window.innerWidth ||
+                this.scale.height < window.innerHeight) {
+                this.handleWindowResize();
+            }
+        }, 500);
         
     }
 
