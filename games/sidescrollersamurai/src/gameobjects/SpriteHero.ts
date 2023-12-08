@@ -19,19 +19,15 @@ export class SpriteHero {
     protected spriteIdle?: Phaser.Physics.Arcade.Sprite | null;
     protected spriteJump?: Phaser.Physics.Arcade.Sprite | null;
 
-    protected groundGroup: Phaser.Physics.Arcade.StaticGroup;
     protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     protected scene: Phaser.Scene;
-    protected colliders: Phaser.Physics.Arcade.Collider[] = [];
-
+    
     protected animationState: SpriteHeroAnimationState = SpriteHeroAnimationState.IDLE;
 
     constructor(scene: Phaser.Scene,
-        cursors: Phaser.Types.Input.Keyboard.CursorKeys,
-        groundGroup: Phaser.Physics.Arcade.StaticGroup) {
+        cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
         this.scene = scene;
         this.cursors = cursors;
-        this.groundGroup = groundGroup;
     }
 
     applyToAllSprites(applyHandler: (sprite: Phaser.Physics.Arcade.Sprite) => void) {
@@ -171,25 +167,16 @@ export class SpriteHero {
             sprite.setVisible(false);
             sprite.setBounce(0.1);
             sprite.setCollideWorldBounds(true);
-            this.scene.physics.add.collider(sprite, this.groundGroup);
-
         });
     }
 
 
-    resizeEvent( group: Phaser.Physics.Arcade.StaticGroup, x:number, y:number) {
-        this.groundGroup = group;
-        this.colliders.forEach((collider)=>{
-            collider.destroy();
-        });
-        this.colliders = [];
-
-        this.applyToAllSprites((sprite) => {
-            sprite.setPosition(x + 300, y - 300);
+    resizeEvent( x:number, y:number) {
+     this.applyToAllSprites((sprite) => {
+            sprite.setPosition(x, y);
             sprite.setVisible(false);
             sprite.setDepth(10);
             sprite.setGravityY(300);
-            this.colliders.push(this.scene.physics.add.collider(sprite, this.groundGroup));
             sprite.update();
             sprite.updateDisplayOrigin();
         });

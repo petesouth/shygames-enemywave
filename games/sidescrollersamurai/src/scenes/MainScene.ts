@@ -2,25 +2,28 @@ import Phaser, { Physics } from 'phaser';
 import gGameStore from '../store/store';
 import { MainSceneStartGameText } from './MainSceneStartGameText';
 import { Utils } from '../utils/utils';
-import { SpriteHero } from '../gameobjects/SpriteHero';
+import { SpriteHero, SpriteHeroAnimationState } from '../gameobjects/SpriteHero';
+import { SoundPlayer } from './SoundPlayer';
 
 
 export class MainScene extends Phaser.Scene {
-
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
     public static MAX_ENEMIES: number = 14;
     public static GROUND_HEIGHT = 200;
+    public static GROUND_BODY_ExTRA = 30;
+
 
     private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
     private forestTileSprite?: Phaser.GameObjects.TileSprite | null;
-    private gamesongSound?: Phaser.Sound.NoAudioSound | Phaser.Sound.HTML5AudioSound | Phaser.Sound.WebAudioSound;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     protected spriteHero?: SpriteHero
-    protected cursorKeys?: Phaser.Types.Input.Keyboard.CursorKeys;
+    protected cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys;
     protected groundGroup?: Phaser.Physics.Arcade.StaticGroup;
     protected groupGroundBody: any;
+    protected colliders: Physics.Arcade.Collider[] = [];
+    protected soundPlayer!: SoundPlayer;
 
     constructor() {
         super('MainScene');
@@ -28,23 +31,12 @@ export class MainScene extends Phaser.Scene {
 
 
     create() {
-
-        this.cursorKeys = this.input?.keyboard?.createCursorKeys();
-
-        this.gamesongSound = this.sound.add('gamesong', { loop: true, volume: 1 });
-
-
+        this.cursorKeys = (this.input?.keyboard?.createCursorKeys() as Phaser.Types.Input.Keyboard.CursorKeys);
+        this.soundPlayer = new SoundPlayer(this);
+    
+        this.soundPlayer.playGameSongSound();
         this.createBackgroundImage();
         this.mainSceneStartGameText.createStartGameText();
-
-        if (this.cursorKeys && this.groundGroup) {
-            this.spriteHero = new SpriteHero(this, this.cursorKeys, this.groundGroup);
-            this.spriteHero.createHeroSprite();
-        }
-
-
-        this.playGameSongSound();
-
     }
 
     update() {
@@ -70,28 +62,6 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    public playGameSongSound(): void {
-        if (this.gamesongSound && !this.gamesongSound.isPlaying) {
-            this.gamesongSound.play();
-        }
-    }
-
-    public stopGameSongSound(): void {
-        if (this.gamesongSound && this.gamesongSound.isPlaying) {
-            this.gamesongSound.stop();
-        }
-    }
-
-    public playSuccessSound(): void {
-        let sound = this.sound.add('levelcomplete', { loop: false });
-        sound.play();
-    }
-
-    public playLevelComplete(): void {
-        let sound = this.sound.add('success', { loop: false });
-        sound.play();
-    }
-
     createBackgroundImage() {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
@@ -109,48 +79,60 @@ export class MainScene extends Phaser.Scene {
 
         // Create the forest background, covering the entire screen
         this.forestTileSprite = this.add.tileSprite(0, 0, 1420, 528, "background22");
-        this.forestTileSprite.setDisplaySize(screenWidth, screenHeight);
-        this.forestTileSprite.setPosition(screenWidth / 2, screenHeight / 2);
-
-
         this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
-        this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
+        this.spriteHero = new SpriteHero(this, this.cursorKeys);
+        this.spriteHero.createHeroSprite();
+        
+        this.handleWindowResize(screenWidth, screenHeight);
 
-        this.groundGroup = this.physics.add.staticGroup();
-        this.groupGroundBody = this.groundGroup.create(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260) / 2);
-        this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
-        this.groupGroundBody.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
-        this.groupGroundBody.setVisible(false);
-        this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
+    }
 
+    removeGroupBodies()  {
+        if (this.groupGroundBody) {
+            this.groundGroup?.remove(this.groupGroundBody);
+            this.groupGroundBody.destroy();
+            this.groundGroup?.destroy();
+
+            this.colliders.forEach((collider) => {
+                this.physics.world.removeCollider(collider);
+                collider.destroy();
+            });
+            this.colliders = [];
+        }
+        
     }
 
     handleWindowResize(screenWidth: number, screenHeight: number) {
-        
-        this.forestTileSprite?.setDisplaySize(screenWidth, screenHeight);
-        this.forestTileSprite?.setPosition(screenWidth / 2, screenHeight / 2);
-
-        this.bricksTileSprite?.setDisplaySize( screenWidth, MainScene.GROUND_HEIGHT );
-        this.bricksTileSprite?.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
-
-        if( this.groupGroundBody && this.spriteHero && this.bricksTileSprite) {
-            this.groundGroup?.removeCollidesWith(1);
-            this.groundGroup?.removeAllListeners();
-            this.groundGroup?.destroy();
-            this.groupGroundBody?.destroy();
-
-            this.groundGroup = this.physics.add.staticGroup();
-            this.groupGroundBody = this.groundGroup.create(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260) / 2);
-            this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT); // Make the physics body match the size of the bricksTileSprite
-            this.groupGroundBody.setPosition(screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 260));
-            this.groupGroundBody.setVisible(false);
-            this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
-        
-            this.spriteHero.resizeEvent(this.groundGroup, screenWidth / 2, screenHeight - (MainScene.GROUND_HEIGHT - 228));
+        if (!this.forestTileSprite || !this.bricksTileSprite || !this.spriteHero) {
+            return;
         }
+
+        this.removeGroupBodies();
+
+        this.physics.world.setBounds(0, 0, screenWidth, screenHeight);
+        this.physics.world.setBoundsCollision(true, true, false, true);
+        this.physics.world.update(0,0);
+
+        this.forestTileSprite.setDisplaySize(screenWidth, screenHeight);
+        this.forestTileSprite.setPosition(screenWidth / 2, screenHeight / 2);
+        
+        this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
+        this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight );
+
+        this.groundGroup = this.physics.add.staticGroup();
+        this.groupGroundBody = this.groundGroup.create(0, screenHeight);
+        this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
+        this.groupGroundBody.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
+        this.groupGroundBody.setVisible(false);
+        this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
+
+        this.spriteHero.resizeEvent(screenWidth / 2, 0);
+        this.spriteHero.applyToAllSprites((sprite) => {
+            if (this.groundGroup) {
+                this.colliders.push(this.physics.add.collider(sprite, this.groundGroup));
+            }
+        });
     }
-
-
 
 
 }
