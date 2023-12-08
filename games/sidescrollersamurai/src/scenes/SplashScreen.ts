@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Utils } from '../utils/utils';
 
 
 
@@ -16,7 +17,7 @@ export class SplashScreen extends Phaser.Scene {
         "rockwall",
         "metal"];
 
-    
+
     constructor() {
         super('SplashScreen');
 
@@ -49,9 +50,9 @@ export class SplashScreen extends Phaser.Scene {
         this.load.atlas('flares', 'images/flares.png', 'images/flares.json');
         this.load.image('gamescreen', 'images/gamescreen.png');
         this.load.image("bricks2", 'textures/bricks2.png');
-        
-        
-        for( let i = 21; i <= 22; ++ i ) {
+
+
+        for (let i = 21; i <= 23; ++i) {
             this.load.image("background" + i, 'backgrounds/background' + i + '.png');
         };
 
@@ -60,7 +61,7 @@ export class SplashScreen extends Phaser.Scene {
         this.load.atlas('herojump', 'images/herosamurai/JUMP.png', 'images/herosamurai/JUMP.json');
         this.load.atlas('heroattack', 'images/herosamurai/BASICATTACK.png', 'images/herosamurai/BASICATTACK.json');
         this.load.atlas('herospecialattack', 'images/herosamurai/SPECIALATTACK.png', 'images/herosamurai/SPECIALATTACK.json');
-        
+
 
     }
 
@@ -70,7 +71,7 @@ export class SplashScreen extends Phaser.Scene {
         this.splashText?.setOrigin(0.5);
         this.splashText?.setDepth(1);
 
-        
+
 
         this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
             this.scene.start('MainScene');
@@ -80,12 +81,13 @@ export class SplashScreen extends Phaser.Scene {
     }
 
 
-    public handleWindowResize(w: number, h:number) {
-        
-
+    public handleWindowResize(w: number, h: number) {
         this.splashText?.setPosition(w / 2, SplashScreen.TEXT_TOP_PADDING);
         this.splashText?.setDepth(1);
-        this.resizeStarBackground();
+
+        if (this.gamescreenBackgroundImage) {
+            Utils.resizeStarBackground(this.gamescreenBackgroundImage, window.innerWidth, window.innerHeight);
+        }
     }
 
 
@@ -95,36 +97,9 @@ export class SplashScreen extends Phaser.Scene {
             window.innerHeight / 2, "gamescreen"
         );
 
-        this.resizeStarBackground();
+        Utils.resizeStarBackground(this.gamescreenBackgroundImage, window.innerWidth, window.innerHeight);
     }
 
 
-    public resizeStarBackground() {
-        if (!this.gamescreenBackgroundImage) {
-            return;
-        }
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        
-        const imageWidth = this.gamescreenBackgroundImage.width;
-        const imageHeight = this.gamescreenBackgroundImage.height;
-        const imageAspectRatio = imageWidth / imageHeight;
 
-        let newWidth, newHeight;
-
-        // The image is wider relative to the screen, set the image width to match the screen width
-        newWidth = screenWidth;
-        newHeight = newWidth / imageAspectRatio;  // Adjust height proportionally
-
-        // Check if the new height is less than the screen height, if so adjust the dimensions
-        if (newHeight < screenHeight) {
-            newHeight = screenHeight;
-            newWidth = newHeight * imageAspectRatio;  // Adjust width proportionally
-        }
-        this.gamescreenBackgroundImage.setDisplaySize(newWidth, newHeight);
-
-        // Ensure the image is positioned in the center of the screen
-        this.gamescreenBackgroundImage.setPosition(screenWidth / 2, screenHeight / 2);
-
-    }
 }

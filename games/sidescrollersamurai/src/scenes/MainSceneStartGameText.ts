@@ -27,11 +27,13 @@ export class MainSceneStartGameText {
 
 
     createStartGameText() {
+        const fontString = 'bold 16px Aria';
+        const fontColor = 'cyan';
         this.scoreText = this.scene.add.text(
             100,
             10,
             'Player Kills: 0 - Level: 0',
-            { font: '16px Arial', color: '#0f0' }
+            { font: fontString, color: fontColor }
         );
         this.scoreText.setDepth(1);
 
@@ -39,19 +41,19 @@ export class MainSceneStartGameText {
             (window.innerWidth / 2),
             80,
             'Starting level 1',
-            { font: '16px Arial', color: '#0f0' }
+            { font: fontString, color: fontColor }
         );
         this.levelAnnounceText.setOrigin(0.5);
         this.levelAnnounceText.setVisible(false);
         this.levelAnnounceText.setDepth(1);
 
-        let offset = 80;
+        let offset = 90;
 
         this.gameNameText = this.scene.add.text(
             (window.innerWidth / 2),
             offset,
             'ShyHumanGames Software - Side Scroller Samurai',
-            { font: '16px Arial', color: '#0f0' }
+            { font: fontString,color: fontColor }
         );
         this.gameNameText.setOrigin(0.5);
         this.gameNameText.setDepth(1);
@@ -65,6 +67,7 @@ export class MainSceneStartGameText {
             '\u2191 - Jump',
             '\u2190 - Rotate Left',
             '\u2192 - Rotate Right',
+            '\u2193 - Special Attack', 
             'Space - Attack'
         ];
 
@@ -73,7 +76,7 @@ export class MainSceneStartGameText {
                 (window.innerWidth / 2),
                 offset,
                 instruction,
-                { font: '12px Arial', color: '#0f0' }
+                { font: fontString, color: fontColor }
             );
             text.setOrigin(0.5);
             text.setDepth(1);

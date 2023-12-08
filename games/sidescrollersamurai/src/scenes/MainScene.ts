@@ -11,7 +11,7 @@ export class MainScene extends Phaser.Scene {
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
     public static MAX_ENEMIES: number = 14;
-    public static GROUND_HEIGHT = 200;
+    public static GROUND_HEIGHT = 100;
     public static GROUND_BODY_ExTRA = 30;
 
 
@@ -78,7 +78,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         // Create the forest background, covering the entire screen
-        this.forestTileSprite = this.add.tileSprite(0, 0, 1420, 528, "background22");
+        this.forestTileSprite = this.add.tileSprite(0, 0, 1792, 948, "background23");
         this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
         this.spriteHero = new SpriteHero(this, this.cursorKeys);
         this.spriteHero.createHeroSprite();
@@ -114,8 +114,7 @@ export class MainScene extends Phaser.Scene {
         this.physics.world.setBoundsCollision(true, true, false, true);
         this.physics.world.update(0,0);
 
-        this.forestTileSprite.setDisplaySize(screenWidth, screenHeight);
-        this.forestTileSprite.setPosition(screenWidth / 2, screenHeight / 2);
+        Utils.resizeStarBackground(this.forestTileSprite, screenWidth, screenHeight );
         
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight );
@@ -127,7 +126,7 @@ export class MainScene extends Phaser.Scene {
         this.groupGroundBody.setVisible(false);
         this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
 
-        this.spriteHero.resizeEvent(screenWidth / 2, 0);
+        this.spriteHero.resizeEvent(screenWidth / 4, 0);
         this.spriteHero.applyToAllSprites((sprite) => {
             if (this.groundGroup) {
                 this.colliders.push(this.physics.add.collider(sprite, this.groundGroup));

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { MainScene } from '../scenes/MainScene';
+
 
 
 
@@ -88,13 +88,7 @@ export class SpriteHero {
                 this.spriteSpecialAttack?.setVisible(true);
                 this.spriteSpecialAttack?.play("herospecialattack", true);
                 break;
-
         }
-
-        // Essentially just refreshes them all.
-        this.applyToAllSprites((sprite) => { 
-            sprite.refreshBody();
-        });
 
     }
 
@@ -138,9 +132,9 @@ export class SpriteHero {
             this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
         }
 
-
-        if (this.cursors.down.isDown && this.spriteIdle?.body?.touching.down) {
+        if (this.cursors.down.isDown) {
             this.showSpriteFromState(SpriteHeroAnimationState.SPECIAL_ATTACK);
+            return;
         } else if (this.cursors.space.isDown) {
             this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
             return;
@@ -210,7 +204,7 @@ export class SpriteHero {
 
         this.loadAnimationConfiguration();
 
-        const xPos = window.innerWidth / 2;
+        const xPos = (window.innerWidth / 4);
         const yPos = 0; //window.innerHeight - MainScene.GROUND_HEIGHT;
 
 
@@ -218,7 +212,7 @@ export class SpriteHero {
         this.spriteJump = this.scene.physics.add.sprite(xPos, yPos, 'herojump', 'jump/frame0000'); // Adjust the initial frame name to match SON
         this.spriteIdle = this.scene.physics.add.sprite(xPos, yPos, 'heroidle', 'idle/frame0000'); // Adjust the initial frame name to match JSON
         this.spriteAttack = this.scene.physics.add.sprite(xPos, yPos, 'heroattack', 'basicattack/frame0000'); // Adjust the initial frame name to match JSON
-        this.spriteSpecialAttack = this.scene.physics.add.sprite(xPos, yPos, 'herospecialattack', 'specialattack/frame0000'); // Adjust the initial frame name to match JSON
+        this.spriteSpecialAttack = this.scene.physics.add.sprite(xPos, yPos, 'herospecialattack', 'basicattack/frame0000'); // Adjust the initial frame name to match JSON
 
         this.applyToAllSprites((sprite) => {
             sprite.setDisplaySize(300, 300); // Set the display size of the sprite
