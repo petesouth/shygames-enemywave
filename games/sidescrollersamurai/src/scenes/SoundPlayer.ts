@@ -15,7 +15,7 @@ export class SoundPlayer {
 
     public playGameSongSound(): void {
         if (this.gamesongSound && !this.gamesongSound.isPlaying) {
-            //  this.gamesongSound.play();
+            this.gamesongSound.play();
         }
     }
 

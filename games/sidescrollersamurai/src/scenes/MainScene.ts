@@ -108,6 +108,7 @@ export class MainScene extends Phaser.Scene {
         }
 
         this.removeGroupBodies();
+        this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
         this.physics.world.setBounds(0, 0, screenWidth, screenHeight);
         this.physics.world.setBoundsCollision(true, true, false, true);

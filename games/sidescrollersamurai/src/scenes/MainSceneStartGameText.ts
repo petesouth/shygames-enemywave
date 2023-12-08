@@ -31,7 +31,7 @@ export class MainSceneStartGameText {
             100,
             10,
             'Player Kills: 0 - Level: 0',
-            { font: '16px Arial', color: '#ffffff' }
+            { font: '16px Arial', color: '#0f0' }
         );
         this.scoreText.setDepth(1);
 
@@ -39,7 +39,7 @@ export class MainSceneStartGameText {
             (window.innerWidth / 2),
             80,
             'Starting level 1',
-            { font: '16px Arial', color: '#ffffff' }
+            { font: '16px Arial', color: '#0f0' }
         );
         this.levelAnnounceText.setOrigin(0.5);
         this.levelAnnounceText.setVisible(false);
@@ -51,7 +51,7 @@ export class MainSceneStartGameText {
             (window.innerWidth / 2),
             offset,
             'ShyHumanGames Software - Side Scroller Samurai',
-            { font: '16px Arial', color: '#ffffff' }
+            { font: '16px Arial', color: '#0f0' }
         );
         this.gameNameText.setOrigin(0.5);
         this.gameNameText.setDepth(1);
@@ -65,8 +65,7 @@ export class MainSceneStartGameText {
             '\u2191 - Jump',
             '\u2190 - Rotate Left',
             '\u2192 - Rotate Right',
-            'Space - Attack',
-            'B - Block'
+            'Space - Attack'
         ];
 
         instructionTexts.forEach(instruction => {
@@ -74,7 +73,7 @@ export class MainSceneStartGameText {
                 (window.innerWidth / 2),
                 offset,
                 instruction,
-                { font: '12px Arial', color: '#ffffff' }
+                { font: '12px Arial', color: '#0f0' }
             );
             text.setOrigin(0.5);
             text.setDepth(1);
@@ -98,10 +97,14 @@ export class MainSceneStartGameText {
 
     displayGameText() {
         this.gameNameText?.setVisible(true);
-        this.instructions.forEach(instruction => instruction.setVisible(true));
+        
+        this.instructions.forEach((instruction)=> {
+            instruction.setVisible(true);
+            instruction.setDepth(100);
+        });
 
         const game = gGameStore.getState().game;
         this.scoreText?.setText(`Level: ${game.currentLevel} - Player Kills: ${game.playerSpaceShipKilled} - Highest Level: ${game.highestLevel}`);
-        this.scoreText?.setDepth(1);
+        this.scoreText?.setDepth(100);
     }
 }
