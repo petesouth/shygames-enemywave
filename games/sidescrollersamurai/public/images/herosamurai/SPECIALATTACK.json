@@ -1,0 +1,314 @@
+{
+    "textures": [
+        {
+            "image": "SPECIALATTACK.png",
+            "format": "RGBA8888",
+            "size": {
+                "w": 2212,
+                "h": 125
+            },
+            "scale": 1,
+            "frames": [
+                {
+                    "filename": "specialattack/frame0000",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0001",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 158,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0002",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 316,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0003",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 474,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0004",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 632,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0005",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 790,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0006",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 948,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0007",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 1106,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0008",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 1264,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0009",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 1422,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0010",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 1580,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0011",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 1738,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0012",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 1896,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                },
+                {
+                    "filename": "specialattack/frame0013",
+                    "rotated": false,
+                    "trimmed": true,
+                    "sourceSize": {
+                        "w": 158,
+                        "h": 125
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    },
+                    "frame": {
+                        "x": 2054,
+                        "y": 0,
+                        "w": 158,
+                        "h": 125
+                    }
+                }
+            ]
+        }
+    ],
+    "meta": {
+        "app": "https://www.codeandweb.com/texturepacker",
+        "version": "3.0",
+        "smartupdate": "$TexturePacker:SmartUpdate:364ce6f953f53fcfe04b0fe86782d746:4370714f16b2ba55b8c1f4063b08e300:775abec68cea152a8c833d779d2191cb$"
+    }
+}
