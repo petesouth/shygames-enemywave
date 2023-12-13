@@ -2,8 +2,8 @@ import Phaser, { Physics } from 'phaser';
 import gGameStore from '../store/store';
 import { MainSceneStartGameText } from './MainSceneStartGameText';
 import { Utils } from '../utils/utils';
-import { SpriteHero, SpriteHeroAnimationState } from '../gameobjects/SpriteHero';
-import { SoundPlayer } from './SoundPlayer';
+import { SpriteHero } from '../gameobjects/SpriteHero';
+import { SoundPlayer } from '../gameobjects/SoundPlayer';
 
 
 export class MainScene extends Phaser.Scene {
@@ -21,19 +21,50 @@ export class MainScene extends Phaser.Scene {
     protected spriteHero?: SpriteHero
     protected cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys;
     protected groundGroup?: Phaser.Physics.Arcade.StaticGroup;
-    protected groupGroundBody: any;
+    protected groupGroundBody: any[] = [];
     protected colliders: Physics.Arcade.Collider[] = [];
     protected soundPlayer!: SoundPlayer;
+    protected distanceLeft: number = 0;
+    protected distanceRight: number = 0;
 
     constructor() {
         super('MainScene');
     }
 
+    generatePlatforms() {
+        if( ! this.groundGroup ) return;
+
+        const { screenWidth, screenHeight } = { screenWidth: window.innerWidth, screenHeight: window.innerHeight };
+
+
+        if( this.distanceLeft > 0 && (this.distanceLeft % screenWidth) !== 0 ) {
+            return;   
+        }
+
+        
+        const randomPlatforms = Phaser.Math.Between( 1, 6 );
+
+        for( let i = 0; i < randomPlatforms; i ++ ) {
+            this.groupGroundBody.push(this.groundGroup.create(0, screenHeight));
+        }
+        
+        this.groupGroundBody.forEach((body) => {
+            const randomWidth = Phaser.Math.Between( screenWidth / 6, screenWidth / 2 );
+            const randomYPos = Phaser.Math.Between( screenHeight / 6, screenHeight / 2 );
+                
+            body.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT);
+            body.setPosition(screenWidth + 100, randomYPos);
+            body.setVisible(true);
+            body.refreshBody(); // Refresh the physics body to apply the size change
+        });
+
+
+    }
 
     create() {
         this.cursorKeys = (this.input?.keyboard?.createCursorKeys() as Phaser.Types.Input.Keyboard.CursorKeys);
         this.soundPlayer = new SoundPlayer(this);
-    
+
         this.soundPlayer.playGameSongSound();
         this.createBackgroundImage();
         this.mainSceneStartGameText.createStartGameText();
@@ -47,14 +78,29 @@ export class MainScene extends Phaser.Scene {
         const w = window.innerWidth;
         const h = window.innerHeight;
 
+        this.generatePlatforms();
+
+
         this.mainSceneStartGameText.displayGameText();
 
         if (this.cursorKeys?.left.isDown) {
             this.bricksTileSprite.tilePositionX -= 2;
             this.forestTileSprite.tilePositionX -= 2;
+            this.distanceLeft += 2;
+            this.distanceRight -= 2;
+            this.groupGroundBody.forEach((gameObject)=>{
+                let tGameObject = (gameObject as Phaser.Physics.Arcade.Body);
+                tGameObject.position.x =- 2;
+            });
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += 2;
-            this.groupGroundBody.refreshBody();
+            this.forestTileSprite.tilePositionX += 2;
+            this.distanceRight += 2;
+            this.distanceLeft -= 2;
+            this.groupGroundBody.forEach((gameObject)=>{
+                let tGameObject = (gameObject as Phaser.Physics.Arcade.Body);
+                tGameObject.position.x =+ 2;
+            });
             this.forestTileSprite.tilePositionX += 2;
         }
 
@@ -82,16 +128,20 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
         this.spriteHero = new SpriteHero(this, this.cursorKeys);
         this.spriteHero.createHeroSprite();
-        
+
         this.handleWindowResize(screenWidth, screenHeight);
 
     }
 
-    removeGroupBodies()  {
+    removeGroupBodies() {
         if (this.groupGroundBody) {
-            this.groundGroup?.remove(this.groupGroundBody);
-            this.groupGroundBody.destroy();
-            this.groundGroup?.destroy();
+
+            this.groupGroundBody.forEach((body) => {
+                this.groundGroup?.remove(body);
+                body.destroy();
+            });
+
+            this.groupGroundBody = [];
 
             this.colliders.forEach((collider) => {
                 this.physics.world.removeCollider(collider);
@@ -99,7 +149,7 @@ export class MainScene extends Phaser.Scene {
             });
             this.colliders = [];
         }
-        
+
     }
 
     handleWindowResize(screenWidth: number, screenHeight: number) {
@@ -107,24 +157,30 @@ export class MainScene extends Phaser.Scene {
             return;
         }
 
-        this.removeGroupBodies();
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
         this.physics.world.setBounds(0, 0, screenWidth, screenHeight);
         this.physics.world.setBoundsCollision(true, true, false, true);
-        this.physics.world.update(0,0);
+        this.physics.world.update(0, 0);
 
-        Utils.resizeStarBackground(this.forestTileSprite, screenWidth, screenHeight );
-        
+        Utils.resizeStarBackground(this.forestTileSprite, screenWidth, screenHeight);
+
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
-        this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight );
+        this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight);
 
+        this.removeGroupBodies();
         this.groundGroup = this.physics.add.staticGroup();
-        this.groupGroundBody = this.groundGroup.create(0, screenHeight);
-        this.groupGroundBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
-        this.groupGroundBody.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
-        this.groupGroundBody.setVisible(false);
-        this.groupGroundBody.refreshBody(); // Refresh the physics body to apply the size change
+
+        this.groupGroundBody.push(this.groundGroup.create(0, screenHeight));
+
+        this.groupGroundBody.forEach((body) => {
+            body.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
+            body.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
+            body.setVisible(false);
+            body.refreshBody(); // Refresh the physics body to apply the size change
+        });
+
+
 
         this.spriteHero.resizeEvent(screenWidth / 4, 0);
         this.spriteHero.applyToAllSprites((sprite) => {

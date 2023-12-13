@@ -200,6 +200,10 @@ export class SpriteHero {
 
     }
 
+    getStaticXPosition() {
+        return (window.innerWidth / 4);
+    }
+
     createHeroSprite() {
 
         this.loadAnimationConfiguration();
