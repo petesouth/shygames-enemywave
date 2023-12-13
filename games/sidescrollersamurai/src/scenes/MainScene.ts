@@ -32,26 +32,25 @@ export class MainScene extends Phaser.Scene {
     }
 
     generatePlatforms() {
-        if( ! this.groundGroup ) return;
+        if (!this.groundGroup || !this.groupGroundBody || this.distanceRight < 1 || this.groupGroundBody.length > 2) return;
 
-        const { screenWidth, screenHeight } = { screenWidth: window.innerWidth, screenHeight: window.innerHeight };
+        const { screenWidth, screenHeight } = {
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight
+        };
 
+        const howManyPerScreen = 5;
+        const screenDiv = (this.distanceRight / screenWidth);
 
-        if( this.distanceLeft > 0 && (this.distanceLeft % screenWidth) !== 0 ) {
-            return;   
-        }
+        const randomPlatforms = Phaser.Math.Between(1, 6);
 
-        
-        const randomPlatforms = Phaser.Math.Between( 1, 6 );
-
-        for( let i = 0; i < randomPlatforms; i ++ ) {
+        for (let i = 0; i < randomPlatforms; i++) {
             this.groupGroundBody.push(this.groundGroup.create(0, screenHeight));
         }
-        
+
         this.groupGroundBody.forEach((body) => {
-            const randomWidth = Phaser.Math.Between( screenWidth / 6, screenWidth / 2 );
-            const randomYPos = Phaser.Math.Between( screenHeight / 6, screenHeight / 2 );
-                
+            const randomWidth = Phaser.Math.Between(screenWidth / 6, screenWidth / 2);
+            const randomYPos = screenHeight - (screenHeight * .20);
             body.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT);
             body.setPosition(screenWidth + 100, randomYPos);
             body.setVisible(true);
@@ -86,22 +85,29 @@ export class MainScene extends Phaser.Scene {
         if (this.cursorKeys?.left.isDown) {
             this.bricksTileSprite.tilePositionX -= 2;
             this.forestTileSprite.tilePositionX -= 2;
-            this.distanceLeft += 2;
-            this.distanceRight -= 2;
-            this.groupGroundBody.forEach((gameObject)=>{
-                let tGameObject = (gameObject as Phaser.Physics.Arcade.Body);
-                tGameObject.position.x =- 2;
-            });
+            this.distanceLeft += 4;
+            this.distanceRight -= 4;
+            for( let i = 1; i < this.groupGroundBody.length; ++ i ){
+                let gameObject = this.groupGroundBody[i];
+                if ((gameObject instanceof Phaser.Physics.Arcade.Sprite) === false) {
+                    return;
+                }
+                let tGameObject = (gameObject as Phaser.Physics.Arcade.Sprite);
+                tGameObject.x += 4;
+            };
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += 2;
             this.forestTileSprite.tilePositionX += 2;
-            this.distanceRight += 2;
-            this.distanceLeft -= 2;
-            this.groupGroundBody.forEach((gameObject)=>{
-                let tGameObject = (gameObject as Phaser.Physics.Arcade.Body);
-                tGameObject.position.x =+ 2;
-            });
-            this.forestTileSprite.tilePositionX += 2;
+            this.distanceRight += 4;
+            this.distanceLeft -= 4;
+            for( let i = 1; i < this.groupGroundBody.length; ++ i ){
+                let gameObject = this.groupGroundBody[i];
+                if ((gameObject instanceof Phaser.Physics.Arcade.Sprite) === false) {
+                    return;
+                }
+                let tGameObject = (gameObject as Phaser.Physics.Arcade.Sprite);
+                tGameObject.x -= 4;
+            };
         }
 
         this.spriteHero?.drawHeroSprite();
@@ -176,7 +182,7 @@ export class MainScene extends Phaser.Scene {
         this.groupGroundBody.forEach((body) => {
             body.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
             body.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
-            body.setVisible(false);
+            body.setVisible(true);
             body.refreshBody(); // Refresh the physics body to apply the size change
         });
 
