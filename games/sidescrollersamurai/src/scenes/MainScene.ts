@@ -21,44 +21,114 @@ export class MainScene extends Phaser.Scene {
     protected spriteHero?: SpriteHero
     protected cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys;
     protected groundGroup?: Phaser.Physics.Arcade.StaticGroup;
-    protected groupGroundBody: any[] = [];
+    protected groundGroupBody?: Phaser.Physics.Arcade.Sprite;
+    protected floatingPlatformBodies: Phaser.GameObjects.Image[] = [];
     protected colliders: Physics.Arcade.Collider[] = [];
     protected soundPlayer!: SoundPlayer;
     protected distanceLeft: number = 0;
     protected distanceRight: number = 0;
-
+   
+        
     constructor() {
         super('MainScene');
     }
 
+
+    /*
     generatePlatforms() {
-        if (!this.groundGroup || !this.groupGroundBody || this.distanceRight < 1 || this.groupGroundBody.length > 2) return;
+        if (!this.spriteHero ||
+            !this.groundGroup ||
+            !this.floatingPlatformBodies ||
+            this.floatingPlatformBodies.length > 0) {
+            return;
+        }
 
         const { screenWidth, screenHeight } = {
             screenWidth: window.innerWidth,
             screenHeight: window.innerHeight
         };
 
-        const howManyPerScreen = 5;
-        const screenDiv = (this.distanceRight / screenWidth);
-
-        const randomPlatforms = Phaser.Math.Between(1, 6);
-
-        for (let i = 0; i < randomPlatforms; i++) {
-            this.groupGroundBody.push(this.groundGroup.create(0, screenHeight));
+        let lastPlatformRightEdge = 0;
+        const horizontalGapMin = 50; // Minimum horizontal gap between platforms
+        const horizontalGapMax = 150; // Maximum horizontal gap
+        
+        // Define vertical range for platform placement
+        const minYPosition = screenHeight - (screenHeight * 0.60); // 60% height from the bottom
+        const maxYPosition = screenHeight - 400; // 100 pixels off the ground
+        
+        for (let i = 0; i < 100; i++) {
+            const randomWidth = Phaser.Math.Between(100, 700); // Platform width between 100 and 700
+            const randomYPos = Phaser.Math.Between(minYPosition, maxYPosition); // Random Y position within the defined range
+        
+            // Calculate a random horizontal gap
+            const horizontalGap = Phaser.Math.Between(horizontalGapMin, horizontalGapMax);
+            
+            // Calculate the new platform's left edge
+            const newPlatformLeftEdge = lastPlatformRightEdge + horizontalGap;
+        
+            let platform = this.add.tileSprite(0, 0, randomWidth, MainScene.GROUND_HEIGHT / 2, "bricks2");
+            platform.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT / 2);
+            platform.setPosition(newPlatformLeftEdge, randomYPos);
+            platform.setVisible(true);
+        
+            this.floatingPlatformBodies.push(platform);
+        
+            // Update the right edge for the next iteration
+            lastPlatformRightEdge = newPlatformLeftEdge + randomWidth;
+        }        
+       
+    }
+*/
+    generatePlatforms() {
+        if (!this.spriteHero || !this.groundGroup) {
+            return;
         }
 
-        this.groupGroundBody.forEach((body) => {
-            const randomWidth = Phaser.Math.Between(screenWidth / 6, screenWidth / 2);
-            const randomYPos = screenHeight - (screenHeight * .20);
-            body.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT);
-            body.setPosition(screenWidth + 100, randomYPos);
-            body.setVisible(true);
-            body.refreshBody(); // Refresh the physics body to apply the size change
-        });
+        const { screenWidth, screenHeight } = {
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight
+        };
 
+        const horizontalGapMin = 100; // Minimum horizontal gap
+        const verticalGapMin = 50; // Minimum vertical gap to prevent touching
+        const verticalJumpHeight = 300; // Maximum jump height
 
+        let lastPlatformEndX = 0; // End X position of the last platform
+
+        for (let i = 0; i < 100; i++) {
+            let randomWidth = Phaser.Math.Between(100, 700);
+            // Platforms can overlap horizontally
+            let randomXPos = Phaser.Math.Between(lastPlatformEndX, lastPlatformEndX + horizontalGapMin);
+
+            // Ensure platforms are spaced vertically to prevent touching
+            let minY = screenHeight - verticalJumpHeight - verticalGapMin;
+            let maxY = screenHeight - MainScene.GROUND_HEIGHT;
+            let randomYPos = Phaser.Math.Between(minY, maxY);
+
+            let platform = this.add.image(randomXPos, randomYPos, "bricks2");
+            platform.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT / 2);
+            platform.setVisible(true);
+
+            this.floatingPlatformBodies.push(platform);
+            lastPlatformEndX = randomXPos + randomWidth; // Update lastPlatformEndX for the next platform, allowing overlap
+        }
     }
+
+
+    resizePlatformsFromWindowSize() {
+        // Destroy all platforms and clear the array
+        this.floatingPlatformBodies.forEach(platform => {
+                platform.destroy(); // Destroy the platform
+        });
+        this.floatingPlatformBodies.length = 0; // Clear the array
+        this.floatingPlatformBodies = [];
+        // Regenerate platforms
+        this.generatePlatforms();
+    }
+    
+
+
+
 
     create() {
         this.cursorKeys = (this.input?.keyboard?.createCursorKeys() as Phaser.Types.Input.Keyboard.CursorKeys);
@@ -70,6 +140,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     update() {
+        
         if (!this.forestTileSprite || !this.bricksTileSprite) {
             return;
         }
@@ -77,37 +148,24 @@ export class MainScene extends Phaser.Scene {
         const w = window.innerWidth;
         const h = window.innerHeight;
 
-        this.generatePlatforms();
-
-
         this.mainSceneStartGameText.displayGameText();
 
         if (this.cursorKeys?.left.isDown) {
-            this.bricksTileSprite.tilePositionX -= 2;
+            this.bricksTileSprite.tilePositionX -= 4;
             this.forestTileSprite.tilePositionX -= 2;
             this.distanceLeft += 4;
             this.distanceRight -= 4;
-            for( let i = 1; i < this.groupGroundBody.length; ++ i ){
-                let gameObject = this.groupGroundBody[i];
-                if ((gameObject instanceof Phaser.Physics.Arcade.Sprite) === false) {
-                    return;
-                }
-                let tGameObject = (gameObject as Phaser.Physics.Arcade.Sprite);
-                tGameObject.x += 4;
-            };
+            this.floatingPlatformBodies.forEach((gameObject) => {
+                gameObject.x += 4;
+            });
         } else if (this.cursorKeys?.right.isDown) {
-            this.bricksTileSprite.tilePositionX += 2;
+            this.bricksTileSprite.tilePositionX += 4;
             this.forestTileSprite.tilePositionX += 2;
             this.distanceRight += 4;
             this.distanceLeft -= 4;
-            for( let i = 1; i < this.groupGroundBody.length; ++ i ){
-                let gameObject = this.groupGroundBody[i];
-                if ((gameObject instanceof Phaser.Physics.Arcade.Sprite) === false) {
-                    return;
-                }
-                let tGameObject = (gameObject as Phaser.Physics.Arcade.Sprite);
-                tGameObject.x -= 4;
-            };
+            this.floatingPlatformBodies.forEach((gameObject) => {
+                gameObject.x -= 4;
+            });
         }
 
         this.spriteHero?.drawHeroSprite();
@@ -140,14 +198,10 @@ export class MainScene extends Phaser.Scene {
     }
 
     removeGroupBodies() {
-        if (this.groupGroundBody) {
 
-            this.groupGroundBody.forEach((body) => {
-                this.groundGroup?.remove(body);
-                body.destroy();
-            });
+        if (this.groundGroupBody) {
 
-            this.groupGroundBody = [];
+            this.groundGroup?.remove(this.groundGroupBody);
 
             this.colliders.forEach((collider) => {
                 this.physics.world.removeCollider(collider);
@@ -155,7 +209,6 @@ export class MainScene extends Phaser.Scene {
             });
             this.colliders = [];
         }
-
     }
 
     handleWindowResize(screenWidth: number, screenHeight: number) {
@@ -169,7 +222,7 @@ export class MainScene extends Phaser.Scene {
         this.physics.world.setBoundsCollision(true, true, false, true);
         this.physics.world.update(0, 0);
 
-        Utils.resizeStarBackground(this.forestTileSprite, screenWidth, screenHeight);
+        Utils.resizeImateToRatio(this.forestTileSprite, screenWidth, screenHeight);
 
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight);
@@ -177,15 +230,13 @@ export class MainScene extends Phaser.Scene {
         this.removeGroupBodies();
         this.groundGroup = this.physics.add.staticGroup();
 
-        this.groupGroundBody.push(this.groundGroup.create(0, screenHeight));
+        this.groundGroupBody = this.groundGroup.create(0, screenHeight) as Phaser.Physics.Arcade.Sprite;
+        this.groundGroupBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
+        this.groundGroupBody.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
+        this.groundGroupBody.setVisible(false);
+        this.groundGroupBody.refreshBody(); // Refresh the physics body to apply the size change
 
-        this.groupGroundBody.forEach((body) => {
-            body.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
-            body.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
-            body.setVisible(true);
-            body.refreshBody(); // Refresh the physics body to apply the size change
-        });
-
+        this.generatePlatforms();
 
 
         this.spriteHero.resizeEvent(screenWidth / 4, 0);
@@ -194,6 +245,8 @@ export class MainScene extends Phaser.Scene {
                 this.colliders.push(this.physics.add.collider(sprite, this.groundGroup));
             }
         });
+
+        this.resizePlatformsFromWindowSize();
     }
 
 

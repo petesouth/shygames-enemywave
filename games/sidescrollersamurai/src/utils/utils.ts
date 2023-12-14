@@ -6,7 +6,7 @@ import { MainScene } from "../scenes/MainScene";
 
 export class Utils {
 
-    public static resizeStarBackground(image: Phaser.GameObjects.Image | Phaser.Physics.Arcade.Sprite | Phaser.GameObjects.TileSprite,
+    public static resizeImateToRatio(image: Phaser.GameObjects.Image | Phaser.Physics.Arcade.Sprite | Phaser.GameObjects.TileSprite,
         screenWidth: number, screenHeight: number) {
         if (!image) {
             return;

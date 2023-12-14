@@ -86,7 +86,7 @@ export class SplashScreen extends Phaser.Scene {
         this.splashText?.setDepth(1);
 
         if (this.gamescreenBackgroundImage) {
-            Utils.resizeStarBackground(this.gamescreenBackgroundImage, window.innerWidth, window.innerHeight);
+            Utils.resizeImateToRatio(this.gamescreenBackgroundImage, window.innerWidth, window.innerHeight);
         }
     }
 
@@ -97,7 +97,7 @@ export class SplashScreen extends Phaser.Scene {
             window.innerHeight / 2, "gamescreen"
         );
 
-        Utils.resizeStarBackground(this.gamescreenBackgroundImage, window.innerWidth, window.innerHeight);
+        Utils.resizeImateToRatio(this.gamescreenBackgroundImage, window.innerWidth, window.innerHeight);
     }
 
 
