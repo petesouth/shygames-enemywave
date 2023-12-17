@@ -12,7 +12,6 @@ export class MainScene extends Phaser.Scene {
     public static LEVEL_BONUS = 5;
     public static MAX_ENEMIES: number = 14;
     public static GROUND_HEIGHT = 100;
-    public static GROUND_BODY_ExTRA = 30;
 
 
     private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
@@ -22,13 +21,13 @@ export class MainScene extends Phaser.Scene {
     protected cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys;
     protected groundGroup?: Phaser.Physics.Arcade.StaticGroup;
     protected groundGroupBody?: Phaser.Physics.Arcade.Sprite;
-    protected floatingPlatformBodies: Phaser.GameObjects.Image[] = [];
+    protected floatingPlatformBodies: Phaser.Physics.Arcade.Image[] = [];
     protected colliders: Physics.Arcade.Collider[] = [];
     protected soundPlayer!: SoundPlayer;
     protected distanceLeft: number = 0;
     protected distanceRight: number = 0;
-   
-        
+
+
     constructor() {
         super('MainScene');
     }
@@ -80,53 +79,65 @@ export class MainScene extends Phaser.Scene {
     }
 */
     generatePlatforms() {
-        if (!this.spriteHero || !this.groundGroup) {
+        if (!this.groundGroup) {
             return;
         }
 
         const { screenWidth, screenHeight } = {
             screenWidth: window.innerWidth,
-            screenHeight: window.innerHeight
+            screenHeight: window.innerHeight,
         };
 
-        const horizontalGapMin = 100; // Minimum horizontal gap
-        const verticalGapMin = 50; // Minimum vertical gap to prevent touching
-        const verticalJumpHeight = 300; // Maximum jump height
+        const horizontalGapMin = 100;
+        const minYPosition = screenHeight / 1.7
+        const maxYPosition = screenHeight - 200;
 
-        let lastPlatformEndX = 0; // End X position of the last platform
+        let lastPlatformEndX = 0;
 
-        for (let i = 0; i < 100; i++) {
-            let randomWidth = Phaser.Math.Between(100, 700);
-            // Platforms can overlap horizontally
-            let randomXPos = Phaser.Math.Between(lastPlatformEndX, lastPlatformEndX + horizontalGapMin);
+        const displayPlatformHeight = Utils.computeRatioValue(MainScene.GROUND_HEIGHT / 2);
 
-            // Ensure platforms are spaced vertically to prevent touching
-            let minY = screenHeight - verticalJumpHeight - verticalGapMin;
-            let maxY = screenHeight - MainScene.GROUND_HEIGHT;
-            let randomYPos = Phaser.Math.Between(minY, maxY);
 
-            let platform = this.add.image(randomXPos, randomYPos, "bricks2");
-            platform.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT / 2);
+        let isCreated:boolean = (this.floatingPlatformBodies && this.floatingPlatformBodies.length > 0);
+
+
+        for (let i = 0; 
+            ((isCreated === false && i < 300) || 
+            (isCreated === true && i < this.floatingPlatformBodies.length) ); i++) {
+
+            let randomWidth = Phaser.Math.Between(screenWidth * .1, screenWidth * .30);
+            const randomYPos = Phaser.Math.Between(minYPosition, maxYPosition);
+            let randomXPos = Phaser.Math.Between(lastPlatformEndX + horizontalGapMin, lastPlatformEndX + horizontalGapMin + 200);
+
+            // Create platform, set its position, and anchor point to the center
+            let platform = (isCreated ) ? this.floatingPlatformBodies[i] : this.groundGroup.create(randomXPos, randomYPos, "bricks4") as Phaser.Physics.Arcade.Sprite;
+
+            platform.setDisplaySize(randomWidth, displayPlatformHeight);
+            platform.setPosition(randomXPos, randomYPos);
             platform.setVisible(true);
+            platform.refreshBody();
 
-            this.floatingPlatformBodies.push(platform);
-            lastPlatformEndX = randomXPos + randomWidth; // Update lastPlatformEndX for the next platform, allowing overlap
+            if( isCreated === false ) {
+                this.floatingPlatformBodies.push(platform);
+            }
+
+            // Update for next platform
+            lastPlatformEndX = platform.x + platform.displayWidth / 2;
         }
-    }
 
-
-    resizePlatformsFromWindowSize() {
-        // Destroy all platforms and clear the array
-        this.floatingPlatformBodies.forEach(platform => {
-                platform.destroy(); // Destroy the platform
+        // Collider for the hero sprite with the platform
+        this.spriteHero?.applyToAllSprites((sprite) => {
+            if (this.groundGroup) {
+                this.physics.add.collider(sprite, this.groundGroup);
+            }
         });
-        this.floatingPlatformBodies.length = 0; // Clear the array
-        this.floatingPlatformBodies = [];
-        // Regenerate platforms
-        this.generatePlatforms();
-    }
-    
 
+
+
+
+
+        // Create Debug Graphics if needed to visualize the bodies
+        //this.physics.world.createDebugGraphic();
+    }
 
 
 
@@ -140,7 +151,7 @@ export class MainScene extends Phaser.Scene {
     }
 
     update() {
-        
+
         if (!this.forestTileSprite || !this.bricksTileSprite) {
             return;
         }
@@ -157,6 +168,7 @@ export class MainScene extends Phaser.Scene {
             this.distanceRight -= 4;
             this.floatingPlatformBodies.forEach((gameObject) => {
                 gameObject.x += 4;
+                gameObject.refreshBody();
             });
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += 4;
@@ -165,6 +177,7 @@ export class MainScene extends Phaser.Scene {
             this.distanceLeft -= 4;
             this.floatingPlatformBodies.forEach((gameObject) => {
                 gameObject.x -= 4;
+                gameObject.refreshBody();
             });
         }
 
@@ -216,27 +229,31 @@ export class MainScene extends Phaser.Scene {
             return;
         }
 
+
+
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
         this.physics.world.setBounds(0, 0, screenWidth, screenHeight);
         this.physics.world.setBoundsCollision(true, true, false, true);
-        this.physics.world.update(0, 0);
 
         Utils.resizeImateToRatio(this.forestTileSprite, screenWidth, screenHeight);
 
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight);
 
-        this.removeGroupBodies();
-        this.groundGroup = this.physics.add.staticGroup();
+        if (!this.groundGroup || !this.groundGroupBody) {
+            // this.removeGroupBodies();
+            this.groundGroup = this.physics.add.staticGroup();
+            this.groundGroupBody = this.groundGroup.create(0, screenHeight) as Phaser.Physics.Arcade.Sprite;
 
-        this.groundGroupBody = this.groundGroup.create(0, screenHeight) as Phaser.Physics.Arcade.Sprite;
+        }
+
+
         this.groundGroupBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
-        this.groundGroupBody.setPosition(screenWidth / 2, screenHeight + MainScene.GROUND_BODY_ExTRA);
+        this.groundGroupBody.setPosition(screenWidth / 2, screenHeight);
         this.groundGroupBody.setVisible(false);
         this.groundGroupBody.refreshBody(); // Refresh the physics body to apply the size change
 
-        this.generatePlatforms();
 
 
         this.spriteHero.resizeEvent(screenWidth / 4, 0);
@@ -246,7 +263,8 @@ export class MainScene extends Phaser.Scene {
             }
         });
 
-        this.resizePlatformsFromWindowSize();
+        this.generatePlatforms();
+
     }
 
 

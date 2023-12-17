@@ -6,8 +6,8 @@ import { MainScene } from './scenes/MainScene';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
-    width: "100%",
-    height: "100%",
+    width: window.innerWidth,
+    height: window.innerHeight,
     parent: 'game',
     fps: {
         limit: 40,  // This will limit the game to 60 frames per second
@@ -77,11 +77,11 @@ export default class Game extends Phaser.Game {
 
     handleWindowResize() {
         const { width, height } : { width:number, height: number } = { width: window.innerWidth, height: window.innerHeight };
-        this.scale.setGameSize(width, height);
-        this.scale.setParentSize(width, height);
-        this.scale.resize(width, height);
-        this.scale.updateScale();
-        this.scale.refresh();
+        // this.scale.setGameSize(width, height);
+        // this.scale.setParentSize(width, height);
+        // this.scale.resize(width, height);
+        // this.scale.updateScale();
+        // this.scale.refresh();
 
         const mainScene = this.scene.getScene("MainScene") as MainScene;
         mainScene.handleWindowResize(width, height);

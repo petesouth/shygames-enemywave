@@ -4,7 +4,6 @@ import Phaser from 'phaser';
 
 
 
-
 export enum SpriteHeroAnimationState {
     IDLE = 0,
     RUN = 1,
@@ -92,54 +91,54 @@ export class SpriteHero {
 
     }
 
+
     drawHeroSprite() {
-        if (!this.spriteRun) {
+        if (!this.spriteRun || !this.spriteIdle || !this.spriteIdle.body) {
             return;
         }
-
+    
+        // Check if the sprite is touching a platform
+    
+        // Handle left and right movements
         if (this.cursors.left.isDown) {
-            this.applyToAllSprites((sprite): void => {
-                sprite.setFlipX(true);
-            });
-            if (this.spriteIdle?.body?.touching.down) {
+            this.applyToAllSprites(sprite => sprite.setFlipX(true));
+            if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.RUN);
+                this.applyToAllSprites(sprite => sprite.setVelocityX(-160)); // Move left
             }
         } else if (this.cursors.right.isDown) {
-            this.applyToAllSprites((sprite): void => {
-                sprite.setFlipX(false);
-            });
-            if (this.spriteIdle?.body?.touching.down) {
+            this.applyToAllSprites(sprite => sprite.setFlipX(false));
+            if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.RUN);
+                this.applyToAllSprites(sprite => sprite.setVelocityX(160)); // Move right
             }
-        } else if (this.cursors.up.isDown === false) {
-            this.applyToAllSprites((sprite): void => {
-                sprite.setGravityY(300);
-                sprite.setVelocityX(0);
-            });
-
-            if (this.spriteIdle?.body?.touching.down) {
+        } else {
+            // Idle state
+            this.applyToAllSprites(sprite => sprite.setVelocityX(0));
+            if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.IDLE);
             } else {
                 this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
             }
         }
-
-        if (this.cursors.up.isDown && this.spriteIdle?.body?.touching.down) {
-
-            this.applyToAllSprites((sprite): void => {
-                sprite.setVelocityY(-330);
-            });
+    
+        // Handle jumping
+        if (this.cursors.up.isDown && (this.spriteIdle.body.touching.down)) {
+            this.applyToAllSprites(sprite => sprite.setVelocityY(-480));
             this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
         }
-
+    
+        
+        // Handle other actions (down and space)
         if (this.cursors.down.isDown) {
             this.showSpriteFromState(SpriteHeroAnimationState.SPECIAL_ATTACK);
-            return;
         } else if (this.cursors.space.isDown) {
             this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
-            return;
         }
     }
+    
+    
+    
 
     protected loadAnimationConfiguration() {
         this.scene.anims.create({
@@ -205,41 +204,40 @@ export class SpriteHero {
     }
 
     createHeroSprite() {
-
         this.loadAnimationConfiguration();
-
-        const xPos = (window.innerWidth / 4);
-        const yPos = 0; //window.innerHeight - MainScene.GROUND_HEIGHT;
-
-
-        this.spriteRun = this.scene.physics.add.sprite(xPos, yPos, 'herorun', 'run/frame0000'); // Adjust the initial frame name to match JSON
-        this.spriteJump = this.scene.physics.add.sprite(xPos, yPos, 'herojump', 'jump/frame0000'); // Adjust the initial frame name to match SON
-        this.spriteIdle = this.scene.physics.add.sprite(xPos, yPos, 'heroidle', 'idle/frame0000'); // Adjust the initial frame name to match JSON
-        this.spriteAttack = this.scene.physics.add.sprite(xPos, yPos, 'heroattack', 'basicattack/frame0000'); // Adjust the initial frame name to match JSON
-        this.spriteSpecialAttack = this.scene.physics.add.sprite(xPos, yPos, 'herospecialattack', 'basicattack/frame0000'); // Adjust the initial frame name to match JSON
-
+    
+        const xPos = window.innerWidth / 4;
+        const yPos = 0; // Modify as needed, perhaps to `window.innerHeight - MainScene.GROUND_HEIGHT`
+    
+        // Create sprites and set common properties
+        this.spriteRun = this.scene.physics.add.sprite(xPos, yPos, 'herorun');
+        this.spriteJump = this.scene.physics.add.sprite(xPos, yPos, 'herojump');
+        this.spriteIdle = this.scene.physics.add.sprite(xPos, yPos, 'heroidle');
+        this.spriteAttack = this.scene.physics.add.sprite(xPos, yPos, 'heroattack');
+        this.spriteSpecialAttack = this.scene.physics.add.sprite(xPos, yPos, 'herospecialattack');
+    
         this.applyToAllSprites((sprite) => {
             sprite.setDisplaySize(300, 300); // Set the display size of the sprite
+            sprite.setBodySize(50,40);
+            sprite.setOffset(66,76); // Offset to move the body up so it aligns with the character's feet
             sprite.setVisible(false);
             sprite.setBounce(0.1);
             sprite.setCollideWorldBounds(true);
         });
     }
-
-
+    
     resizeEvent(x: number, y: number) {
         this.applyToAllSprites((sprite) => {
             sprite.setPosition(x, y);
-            sprite.setVisible(false);
             sprite.setDepth(10);
             sprite.setGravityY(300);
-            sprite.update();
-            sprite.updateDisplayOrigin();
+            sprite.refreshBody();
         });
-
+    
         // Resetting the animation state to ensure correct display
         this.showSpriteFromState(this.animationState);
     }
+    
 
 
 
