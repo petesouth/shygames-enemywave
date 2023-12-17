@@ -14,7 +14,7 @@ const config: Phaser.Types.Core.GameConfig = {
     },
     scene: [SplashScreen, MainScene],
     scale: {
-        mode: Phaser.Scale.RESIZE,
+        mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     input: {
@@ -74,14 +74,17 @@ export default class Game extends Phaser.Game {
         })
 
         this.scale.on( Phaser.Scale.Events.RESIZE, ()=>{
-            this.handleWindowResize(); 
+            this.handleWindowResize();
         })
 
+        
         setInterval(() => {
-            if (this.scale.width < window.innerWidth ||
-                this.scale.height < window.innerHeight) {
-                this.scale.setGameSize(window.innerWidth, window.innerHeight);
-                this.handleWindowResize();
+            if (this.scale.width !== window.innerWidth ||
+                this.scale.height !==  window.innerHeight) {
+                    this.scale.setGameSize(window.innerWidth, window.innerHeight);
+                    this.scale.resize(window.innerWidth, window.innerHeight);
+                    
+                    this.handleWindowResize(); 
             }
         }, 500);
 
@@ -89,19 +92,15 @@ export default class Game extends Phaser.Game {
 
     }
 
-    handleWindowResize() {
+    handleWindowResize() {        
+        
         const { width, height } : { width:number, height: number } = { width: window.innerWidth, height: window.innerHeight };
-        // this.scale.setGameSize(width, height);
-        // this.scale.setParentSize(width, height);
-        // this.scale.resize(width, height);
-        // this.scale.updateScale();
-        // this.scale.refresh();
-
         const mainScene = this.scene.getScene("MainScene") as MainScene;
         mainScene.handleWindowResize(width, height);
+        
         const splashScreen = this.scene.getScene("SplashScreen") as SplashScreen;
         splashScreen.handleWindowResize(width, height);
-
+        
     }
 
 

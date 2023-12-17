@@ -10,7 +10,12 @@ export class MainSceneStartGameText {
     private scoreText: Phaser.GameObjects.Text | undefined;
 
 
-    constructor(private scene: Phaser.Scene) { }
+    constructor(private scene: Phaser.Scene) { 
+
+
+      
+
+    }
 
     setLevelAnnounceText(text: string) {
         this.levelAnnounceText?.setText(text);
@@ -25,10 +30,25 @@ export class MainSceneStartGameText {
         this.levelAnnounceText?.setVisible(false);
     }
 
+    showLevelInstructionsText() {
+        this.gameNameText?.setVisible(true);
+        this.instructions?.forEach((instruction)=>{
+            instruction.setVisible(true);
+        });
+    }
+
+
+    hideLevelInstructionsText() {
+        this.gameNameText?.setVisible(false);
+        this.instructions?.forEach((instruction)=>{
+            instruction.setVisible(false);
+        });
+    }
+
 
     createStartGameText() {
         const fontString = 'bold 16px Aria';
-        const fontColor = 'cyan';
+        const fontColor = 'white';
         this.scoreText = this.scene.add.text(
             100,
             10,
@@ -57,7 +77,7 @@ export class MainSceneStartGameText {
         );
         this.gameNameText.setOrigin(0.5);
         this.gameNameText.setDepth(1);
-        offset += 30;
+        offset += 40;
 
         const instructionTexts = [
             'Mobile: Add Game To Homescreen for Fullscreen',
@@ -81,7 +101,7 @@ export class MainSceneStartGameText {
             text.setOrigin(0.5);
             text.setDepth(1);
             this.instructions.push(text);
-            offset += 15;
+            offset += 20;
         });
     }
 
@@ -94,15 +114,12 @@ export class MainSceneStartGameText {
         this.instructions.forEach(instruction => {
             instruction.setPosition(w / 2, offset);
             instruction.setDepth(1);
-            offset += 15;
+            offset += 20;
         });
     }
 
     displayGameText() {
-        this.gameNameText?.setVisible(true);
-        
         this.instructions.forEach((instruction)=> {
-            instruction.setVisible(true);
             instruction.setDepth(100);
         });
 

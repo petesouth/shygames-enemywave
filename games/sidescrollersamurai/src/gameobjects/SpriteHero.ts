@@ -218,8 +218,8 @@ export class SpriteHero {
     
         this.applyToAllSprites((sprite) => {
             sprite.setDisplaySize(300, 300); // Set the display size of the sprite
-            sprite.setBodySize(50,40);
-            sprite.setOffset(66,76); // Offset to move the body up so it aligns with the character's feet
+            sprite.setBodySize(25,36);
+            sprite.setOffset(66,80); // Offset to move the body up so it aligns with the character's feet
             sprite.setVisible(false);
             sprite.setBounce(0.1);
             sprite.setCollideWorldBounds(true);

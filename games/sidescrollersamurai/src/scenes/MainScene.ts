@@ -33,51 +33,7 @@ export class MainScene extends Phaser.Scene {
     }
 
 
-    /*
-    generatePlatforms() {
-        if (!this.spriteHero ||
-            !this.groundGroup ||
-            !this.floatingPlatformBodies ||
-            this.floatingPlatformBodies.length > 0) {
-            return;
-        }
-
-        const { screenWidth, screenHeight } = {
-            screenWidth: window.innerWidth,
-            screenHeight: window.innerHeight
-        };
-
-        let lastPlatformRightEdge = 0;
-        const horizontalGapMin = 50; // Minimum horizontal gap between platforms
-        const horizontalGapMax = 150; // Maximum horizontal gap
-        
-        // Define vertical range for platform placement
-        const minYPosition = screenHeight - (screenHeight * 0.60); // 60% height from the bottom
-        const maxYPosition = screenHeight - 400; // 100 pixels off the ground
-        
-        for (let i = 0; i < 100; i++) {
-            const randomWidth = Phaser.Math.Between(100, 700); // Platform width between 100 and 700
-            const randomYPos = Phaser.Math.Between(minYPosition, maxYPosition); // Random Y position within the defined range
-        
-            // Calculate a random horizontal gap
-            const horizontalGap = Phaser.Math.Between(horizontalGapMin, horizontalGapMax);
-            
-            // Calculate the new platform's left edge
-            const newPlatformLeftEdge = lastPlatformRightEdge + horizontalGap;
-        
-            let platform = this.add.tileSprite(0, 0, randomWidth, MainScene.GROUND_HEIGHT / 2, "bricks2");
-            platform.setDisplaySize(randomWidth, MainScene.GROUND_HEIGHT / 2);
-            platform.setPosition(newPlatformLeftEdge, randomYPos);
-            platform.setVisible(true);
-        
-            this.floatingPlatformBodies.push(platform);
-        
-            // Update the right edge for the next iteration
-            lastPlatformRightEdge = newPlatformLeftEdge + randomWidth;
-        }        
-       
-    }
-*/
+   
     generatePlatforms() {
         if (!this.groundGroup) {
             return;
@@ -89,8 +45,8 @@ export class MainScene extends Phaser.Scene {
         };
 
         const horizontalGapMin = 100;
-        const minYPosition = screenHeight / 1.7
-        const maxYPosition = screenHeight - 200;
+        const minYPosition = 220;
+        const maxYPosition = screenHeight - (MainScene.GROUND_HEIGHT + 40);
 
         let lastPlatformEndX = 0;
 
@@ -130,13 +86,8 @@ export class MainScene extends Phaser.Scene {
                 this.physics.add.collider(sprite, this.groundGroup);
             }
         });
+        
 
-
-
-
-
-        // Create Debug Graphics if needed to visualize the bodies
-        //this.physics.world.createDebugGraphic();
     }
 
 
@@ -148,6 +99,14 @@ export class MainScene extends Phaser.Scene {
         this.soundPlayer.playGameSongSound();
         this.createBackgroundImage();
         this.mainSceneStartGameText.createStartGameText();
+
+
+        setTimeout(()=>{
+            this.mainSceneStartGameText.hideLevelInstructionsText();
+        }, 10000);
+            // Create Debug Graphics if needed to visualize the bodies
+        //this.physics.world.createDebugGraphic();
+    
     }
 
     update() {
@@ -233,8 +192,9 @@ export class MainScene extends Phaser.Scene {
 
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
-        this.physics.world.setBounds(0, 0, screenWidth, screenHeight);
-        this.physics.world.setBoundsCollision(true, true, false, true);
+        const ThirtyPercent = screenWidth * .3;
+        this.physics.world.setBounds(ThirtyPercent, 0, screenWidth - (2*ThirtyPercent), screenHeight);
+        this.physics.world.setBoundsCollision(true, true, true, true);
 
         Utils.resizeImateToRatio(this.forestTileSprite, screenWidth, screenHeight);
 
