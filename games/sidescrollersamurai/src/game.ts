@@ -6,8 +6,8 @@ import { MainScene } from './scenes/MainScene';
 
 const config: Phaser.Types.Core.GameConfig = {
     type: Phaser.WEBGL,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: "100%",
+    height: "100%",
     parent: 'game',
     fps: {
         limit: 40,  // This will limit the game to 60 frames per second
@@ -47,9 +47,7 @@ export default class Game extends Phaser.Game {
         window.addEventListener("resize", this.handleWindowResize.bind(this));
         document.getElementById("game")?.focus();
         this.input.addPointer();
-
-
-
+        
         
         this.scale.on(Phaser.Scale.Events.ENTER_FULLSCREEN, () => {
             this.handleWindowResize();
@@ -69,33 +67,17 @@ export default class Game extends Phaser.Game {
         })
 
 
-        this.scale.on(Phaser.Scale.Events.ORIENTATION_CHANGE, () => {
-            this.handleWindowResize();
-        })
-
-        this.scale.on(Phaser.Scale.Events.RESIZE, () => {
-            this.handleWindowResize();
-        })
-
-        setInterval(() => {
-            if (this.scale.width !== window.innerWidth ||
-                this.scale.height !== window.innerHeight) {
-                this.scale.setGameSize(window.innerWidth, window.innerHeight);
-                this.handleWindowResize();
-            }
-        }, 500);
-
-
-
     }
 
     handleWindowResize() {
 
         const { width, height }: { width: number, height: number } = { width: window.innerWidth, height: window.innerHeight };
         const mainScene = this.scene.getScene("MainScene") as MainScene;
+        mainScene.scale.setGameSize(width, height);
         mainScene.handleWindowResize(width, height);
 
         const splashScreen = this.scene.getScene("SplashScreen") as SplashScreen;
+        splashScreen.scale.setGameSize(width, height);
         splashScreen.handleWindowResize(width, height);
 
     }

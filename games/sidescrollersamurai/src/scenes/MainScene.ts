@@ -11,7 +11,7 @@ export class MainScene extends Phaser.Scene {
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
     public static MAX_ENEMIES: number = 14;
-    public static GROUND_HEIGHT = 100;
+    public static GROUND_HEIGHT = 50;
 
 
     private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
@@ -50,7 +50,7 @@ export class MainScene extends Phaser.Scene {
 
         let lastPlatformEndX = 0;
 
-        const displayPlatformHeight = Utils.computeRatioValue(MainScene.GROUND_HEIGHT / 2);
+        const displayPlatformHeight = MainScene.GROUND_HEIGHT / 2;
 
 
         let isCreated:boolean = (this.floatingPlatformBodies && this.floatingPlatformBodies.length > 0);
@@ -119,23 +119,24 @@ export class MainScene extends Phaser.Scene {
         const h = window.innerHeight;
 
         this.mainSceneStartGameText.displayGameText();
+        const distanceIncrement = Utils.computeRatioValue( 4 );
 
         if (this.cursorKeys?.left.isDown) {
-            this.bricksTileSprite.tilePositionX -= 4;
-            this.forestTileSprite.tilePositionX -= 2;
-            this.distanceLeft += 4;
-            this.distanceRight -= 4;
+            this.bricksTileSprite.tilePositionX -= distanceIncrement;
+            this.forestTileSprite.tilePositionX -= distanceIncrement;
+            this.distanceLeft += distanceIncrement;
+            this.distanceRight -= distanceIncrement;
             this.floatingPlatformBodies.forEach((gameObject) => {
-                gameObject.x += 4;
+                gameObject.x += distanceIncrement;
                 gameObject.refreshBody();
             });
         } else if (this.cursorKeys?.right.isDown) {
-            this.bricksTileSprite.tilePositionX += 4;
-            this.forestTileSprite.tilePositionX += 2;
-            this.distanceRight += 4;
-            this.distanceLeft -= 4;
+            this.bricksTileSprite.tilePositionX += distanceIncrement;
+            this.forestTileSprite.tilePositionX += distanceIncrement;
+            this.distanceRight += distanceIncrement;
+            this.distanceLeft -= distanceIncrement;
             this.floatingPlatformBodies.forEach((gameObject) => {
-                gameObject.x -= 4;
+                gameObject.x -= distanceIncrement;
                 gameObject.refreshBody();
             });
         }

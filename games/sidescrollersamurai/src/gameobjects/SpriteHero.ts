@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { Utils } from '../utils/utils';
 
 
 
@@ -217,7 +218,7 @@ export class SpriteHero {
         this.spriteSpecialAttack = this.scene.physics.add.sprite(xPos, yPos, 'herospecialattack');
     
         this.applyToAllSprites((sprite) => {
-            sprite.setDisplaySize(300, 300); // Set the display size of the sprite
+            sprite.setDisplaySize(200, 200); // Set the display size of the sprite
             sprite.setBodySize(25,36);
             sprite.setOffset(66,80); // Offset to move the body up so it aligns with the character's feet
             sprite.setVisible(false);
