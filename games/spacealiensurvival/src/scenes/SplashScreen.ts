@@ -90,12 +90,9 @@ export class SplashScreen extends Phaser.Scene {
     }
 
 
-    handleWindowResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
+    handleWindowResize(w:number,h:number) {
+    
 
-
-        this.scale.setGameSize(w, h);
         this.splashText?.setPosition(w / 2, SplashScreen.TEXT_TOP_PADDING);
         this.splashText?.setDepth(1);
 

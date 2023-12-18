@@ -40,8 +40,6 @@ const config: Phaser.Types.Core.GameConfig = {
 
 
 export default class Game extends Phaser.Game {
-    private scaleManager: Phaser.Scale.ScaleManager;
-
     constructor() {
         super(config);
 
@@ -49,60 +47,61 @@ export default class Game extends Phaser.Game {
         window.addEventListener("resize", this.handleWindowResize.bind(this));
         document.getElementById("game")?.focus();
         this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
-        this.input.addPointer();
 
-        this.scaleManager = new Phaser.Scale.ScaleManager(this);
 
-        this.scaleManager.on( Phaser.Scale.Events.ENTER_FULLSCREEN, ()=>{
-            this.handleWindowResize();
-        })
 
         
-        this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_FAILED, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.FULLSCREEN_UNSUPPORTED, ()=>{
-            this.handleWindowResize();
-        })
-
-        this.scaleManager.on( Phaser.Scale.Events.LEAVE_FULLSCREEN, ()=>{
+        this.scale.on(Phaser.Scale.Events.ENTER_FULLSCREEN, () => {
             this.handleWindowResize();
         })
 
 
-        this.scaleManager.on( Phaser.Scale.Events.ORIENTATION_CHANGE, ()=>{
+        this.scale.on(Phaser.Scale.Events.FULLSCREEN_FAILED, () => {
             this.handleWindowResize();
         })
 
-        this.scaleManager.on( Phaser.Scale.Events.RESIZE, ()=>{
-            this.handleWindowResize(); 
+        this.scale.on(Phaser.Scale.Events.FULLSCREEN_UNSUPPORTED, () => {
+            this.handleWindowResize();
+        })
+
+        this.scale.on(Phaser.Scale.Events.LEAVE_FULLSCREEN, () => {
+            this.handleWindowResize();
+        })
+
+
+        this.scale.on(Phaser.Scale.Events.ORIENTATION_CHANGE, () => {
+            this.handleWindowResize();
+        })
+
+        this.scale.on(Phaser.Scale.Events.RESIZE, () => {
+            this.handleWindowResize();
         })
 
         setInterval(() => {
             if (this.scale.width !== window.innerWidth ||
                 this.scale.height !== window.innerHeight) {
+                this.scale.setGameSize(window.innerWidth, window.innerHeight);
                 this.handleWindowResize();
             }
         }, 500);
-        
+
+
+
     }
 
     handleWindowResize() {
+
+        const { width, height }: { width: number, height: number } = { width: window.innerWidth, height: window.innerHeight };
         const mainScene = this.scene.getScene("MainScene") as MainScene;
-        mainScene.handleWindowResize();
-        const splashScreen = this.scene.getScene("SplashScreen") as MainScene;
-        splashScreen.handleWindowResize();
+        mainScene.handleWindowResize(width, height);
+
+        const splashScreen = this.scene.getScene("SplashScreen") as SplashScreen;
+        splashScreen.handleWindowResize(width, height);
 
     }
 
-    
 
-   
-    
+
+
+
 }

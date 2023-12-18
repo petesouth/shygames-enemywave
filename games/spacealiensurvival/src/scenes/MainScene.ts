@@ -14,7 +14,7 @@ export class MainScene extends Phaser.Scene {
 
     public static GOLDEN_RATIO = { width: 2065, height: 1047 };
     public static LEVEL_BONUS = 5;
-    static MAX_ENEMIES: number = 14;
+    static MAX_ENEMIES: number = 10;
     
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
@@ -248,10 +248,7 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    handleWindowResize() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        this.scale.setGameSize(w, h);
+    handleWindowResize(w:number,h:number) {
         this.resizeStarBackground();
         this.createAsteroidsBasedOnScreenSize();
         this.mainSceneStartGameText.repositionStartGameText(w);
@@ -329,7 +326,7 @@ export class MainScene extends Phaser.Scene {
         if (this.enemyspaceships && this.enemyspaceships.length < MainScene.MAX_ENEMIES ) {
 
             let hitpoints = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
-            gGameStore.getState().game.currentLevel * 2 : Phaser.Math.Between(5, 20);
+            gGameStore.getState().game.currentLevel * 2 : Phaser.Math.Between(5, 30);
 
             let missileFireRate = Phaser.Math.Between(3000, 8000);
             let fireRate = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?

@@ -16,11 +16,11 @@ export default class App extends Component {
     this.game = new Game();
 
     window.onresize = () => {
-      const w = window.innerWidth;
-      const h = window.innerHeight;
-
+      
       // Update game size
       if( this.game ) {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
         this.game.scale.setGameSize(w, h);
       }
 
