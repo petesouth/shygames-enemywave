@@ -65,10 +65,12 @@ export class MainScene extends Phaser.Scene {
             let randomXPos = Phaser.Math.Between(lastPlatformEndX + horizontalGapMin, lastPlatformEndX + horizontalGapMin + 200);
 
             // Create platform, set its position, and anchor point to the center
-            let platform = (isCreated ) ? this.floatingPlatformBodies[i] : this.groundGroup.create(randomXPos, randomYPos, "bricks4") as Phaser.Physics.Arcade.Sprite;
+            let platform = (isCreated ) ? this.floatingPlatformBodies[i] : this.groundGroup.create(randomXPos, randomYPos, "bricks2") as Phaser.Physics.Arcade.Sprite;
 
             platform.setDisplaySize(randomWidth, displayPlatformHeight);
             platform.setPosition(randomXPos, randomYPos);
+            platform.x = randomXPos;
+            platform.y = randomYPos;
             platform.setVisible(true);
             platform.refreshBody();
 
@@ -119,16 +121,16 @@ export class MainScene extends Phaser.Scene {
         const h = window.innerHeight;
 
         this.mainSceneStartGameText.displayGameText();
-        const distanceIncrement = Utils.computeRatioValue( 4 );
+        const distanceIncrement = 4;
 
         if (this.cursorKeys?.left.isDown) {
             this.bricksTileSprite.tilePositionX -= distanceIncrement;
             this.forestTileSprite.tilePositionX -= distanceIncrement;
+            
             this.distanceLeft += distanceIncrement;
             this.distanceRight -= distanceIncrement;
             this.floatingPlatformBodies.forEach((gameObject) => {
                 gameObject.x += distanceIncrement;
-                gameObject.refreshBody();
             });
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += distanceIncrement;
@@ -137,9 +139,10 @@ export class MainScene extends Phaser.Scene {
             this.distanceLeft -= distanceIncrement;
             this.floatingPlatformBodies.forEach((gameObject) => {
                 gameObject.x -= distanceIncrement;
-                gameObject.refreshBody();
             });
         }
+
+        this.groundGroup?.refresh();
 
         this.spriteHero?.drawHeroSprite();
 
@@ -190,7 +193,6 @@ export class MainScene extends Phaser.Scene {
         }
 
 
-
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
         const ThirtyPercent = screenWidth * .3;
@@ -201,7 +203,9 @@ export class MainScene extends Phaser.Scene {
 
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight);
-
+        this.bricksTileSprite.updateDisplayOrigin();
+        this.bricksTileSprite.update();
+        
         if (!this.groundGroup || !this.groundGroupBody) {
             // this.removeGroupBodies();
             this.groundGroup = this.physics.add.staticGroup();
@@ -225,7 +229,6 @@ export class MainScene extends Phaser.Scene {
         });
 
         this.generatePlatforms();
-
     }
 
 
