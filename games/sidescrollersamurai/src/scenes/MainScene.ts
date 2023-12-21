@@ -132,6 +132,7 @@ export class MainScene extends Phaser.Scene {
             this.floatingPlatformBodies.forEach((gameObject) => {
                 gameObject.x += distanceIncrement;
             });
+            this.spriteHero?.drawMines(distanceIncrement);
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += distanceIncrement;
             this.forestTileSprite.tilePositionX += distanceIncrement;
@@ -140,6 +141,10 @@ export class MainScene extends Phaser.Scene {
             this.floatingPlatformBodies.forEach((gameObject) => {
                 gameObject.x -= distanceIncrement;
             });
+            this.spriteHero?.drawMines(-distanceIncrement);
+        } else {
+            this.spriteHero?.drawMines();
+
         }
 
         this.groundGroup?.refresh();
@@ -198,7 +203,7 @@ export class MainScene extends Phaser.Scene {
         const ThirtyPercent = screenWidth * .3;
         this.physics.world.setBounds(ThirtyPercent, 0, screenWidth - (2 * ThirtyPercent), screenHeight);
         this.physics.world.setBoundsCollision(true, true, true, true);
-        this.physics.world.update(0,0);
+        this.physics.world.update(0, 0);
 
         Utils.resizeImateToRatio(this.forestTileSprite, screenWidth, screenHeight);
 

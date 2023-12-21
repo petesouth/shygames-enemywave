@@ -87,8 +87,10 @@ export class MainSceneStartGameText {
             '\u2191 - Jump',
             '\u2190 - Rotate Left',
             '\u2192 - Rotate Right',
+            'M - Ninja Land Mine',
+            'Space - Attack', 
             '\u2193 - Special Attack', 
-            'Space - Attack'
+            
         ];
 
         instructionTexts.forEach(instruction => {

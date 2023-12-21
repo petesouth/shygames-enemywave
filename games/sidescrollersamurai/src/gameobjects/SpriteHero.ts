@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { Utils } from '../utils/utils';
+import { Mine } from './mine';
+import { BaseExplodableState } from './baseExplodable';
 
 
 
@@ -22,16 +24,23 @@ export class SpriteHero {
     protected spriteJump?: Phaser.Physics.Arcade.Sprite | null;
     protected spriteAttack?: Phaser.Physics.Arcade.Sprite | null;
     protected spriteSpecialAttack?: Phaser.Physics.Arcade.Sprite | null;
-
+    
     protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
+    protected mineKey?: Phaser.Input.Keyboard.Key;
+    
     protected scene: Phaser.Scene;
 
     protected animationState: SpriteHeroAnimationState = SpriteHeroAnimationState.IDLE;
+    
+    protected lastMinePlaced: number = 0;
+    protected mineRate: number = 500;  // 1000 ms = 1 second
+    protected mines: Mine[] = [];
 
     constructor(scene: Phaser.Scene,
         cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
         this.scene = scene;
         this.cursors = cursors;
+        this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     }
 
     applyToAllSprites(applyHandler: (sprite: Phaser.Physics.Arcade.Sprite) => void) {
@@ -127,6 +136,8 @@ export class SpriteHero {
         if (this.cursors.up.isDown && (this.spriteIdle.body.touching.down)) {
             this.applyToAllSprites(sprite => sprite.setVelocityY(-480));
             this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
+        } else if( this.spriteIdle.body.touching.down ) {
+            this.handleMines();    
         }
     
         
@@ -136,6 +147,25 @@ export class SpriteHero {
         } else if (this.cursors.space.isDown) {
             this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
         }
+
+        
+
+    }
+
+    public drawMines(x?:number) {
+
+        const minesLeft: Mine[] = [];
+        this.mines.forEach((mine)=>{
+            if(mine.state !== BaseExplodableState.DESTROYED ) {
+                minesLeft.push(mine);
+            }
+            if( x !== undefined ) {
+                mine.inrementX(x);
+            }
+            mine.render();
+        });
+
+        this.mines = minesLeft;
     }
     
     
@@ -240,7 +270,23 @@ export class SpriteHero {
     }
     
 
+    
+    public handleMines() {
+        if( ! this.spriteIdle ) {
+            return;
+        }
+        const currentTime = this.scene.time.now;
 
+        if ((this.mineKey?.isDown) &&
+            (currentTime - this.lastMinePlaced > this.mineRate)) {
+            const centroid = { x: this.spriteIdle.x, y: this.spriteIdle.getBounds().bottom };
+            const x = centroid.x;
+            const y = centroid.y;
+            const mine = new Mine(this.scene, x, y - 20);
+            this.mines.push(mine);
+            this.lastMinePlaced = currentTime;
+        }
+    }
 
 
 }
