@@ -136,10 +136,9 @@ export class SpriteHero {
         if (this.cursors.up.isDown && (this.spriteIdle.body.touching.down)) {
             this.applyToAllSprites(sprite => sprite.setVelocityY(-480));
             this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
-        } else if( this.spriteIdle.body.touching.down ) {
-            this.handleMines();    
-        }
-    
+        } 
+        
+        
         
         // Handle other actions (down and space)
         if (this.cursors.down.isDown) {
@@ -148,6 +147,7 @@ export class SpriteHero {
             this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
         }
 
+        this.handleMines();    
         
 
     }
