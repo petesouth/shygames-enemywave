@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Utils } from '../utils/utils';
 import { Mine } from './mine';
 import { BaseExplodableState } from './baseExplodable';
+import { SoundPlayer } from './SoundPlayer';
 
 
 
@@ -24,22 +25,25 @@ export class SpriteHero {
     protected spriteJump?: Phaser.Physics.Arcade.Sprite | null;
     protected spriteAttack?: Phaser.Physics.Arcade.Sprite | null;
     protected spriteSpecialAttack?: Phaser.Physics.Arcade.Sprite | null;
-    
+    public soundPlayer: SoundPlayer;
+
+
     protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     protected mineKey?: Phaser.Input.Keyboard.Key;
-    
+
     protected scene: Phaser.Scene;
 
     protected animationState: SpriteHeroAnimationState = SpriteHeroAnimationState.IDLE;
-    
+
     protected lastMinePlaced: number = 0;
     protected mineRate: number = 500;  // 1000 ms = 1 second
     protected mines: Mine[] = [];
 
     constructor(scene: Phaser.Scene,
-        cursors: Phaser.Types.Input.Keyboard.CursorKeys) {
+        cursors: Phaser.Types.Input.Keyboard.CursorKeys, soundPlayer: SoundPlayer) {
         this.scene = scene;
         this.cursors = cursors;
+        this.soundPlayer = soundPlayer;
         this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
     }
 
@@ -64,7 +68,9 @@ export class SpriteHero {
                 this.spriteSpecialAttack?.setVisible(false);
                 this.spriteIdle?.setVisible(true);
                 this.spriteIdle?.play("heroidle", true);
-                break;
+                this.soundPlayer?.stopRunningSound();
+                this.soundPlayer?.stopFlyingSound();
+            break;
             case SpriteHeroAnimationState.RUN:
                 this.spriteAttack?.setVisible(false);
                 this.spriteIdle?.setVisible(false);
@@ -72,6 +78,8 @@ export class SpriteHero {
                 this.spriteSpecialAttack?.setVisible(false);
                 this.spriteRun?.setVisible(true);
                 this.spriteRun?.play("herorun", true);
+                this.soundPlayer?.stopFlyingSound();
+                this.soundPlayer?.playRunningSound();
                 break;
             case SpriteHeroAnimationState.JUMPING:
                 this.spriteAttack?.setVisible(false);
@@ -80,6 +88,8 @@ export class SpriteHero {
                 this.spriteSpecialAttack?.setVisible(false);
                 this.spriteJump?.setVisible(true);
                 this.spriteJump?.play("herojump", true);
+                this.soundPlayer?.stopRunningSound();
+                this.soundPlayer?.playFlyingSound();
                 break;
             case SpriteHeroAnimationState.ATTACK:
                 this.spriteRun?.setVisible(false);
@@ -88,6 +98,8 @@ export class SpriteHero {
                 this.spriteSpecialAttack?.setVisible(false);
                 this.spriteAttack?.setVisible(true);
                 this.spriteAttack?.play("heroattack", true);
+                this.soundPlayer?.stopRunningSound();
+                this.soundPlayer?.playSwordSound();
                 break;
             case SpriteHeroAnimationState.SPECIAL_ATTACK:
                 this.spriteRun?.setVisible(false);
@@ -96,6 +108,8 @@ export class SpriteHero {
                 this.spriteAttack?.setVisible(false);
                 this.spriteSpecialAttack?.setVisible(true);
                 this.spriteSpecialAttack?.play("herospecialattack", true);
+                this.soundPlayer?.stopRunningSound();
+                this.soundPlayer?.playSword2Sound();
                 break;
         }
 
@@ -106,22 +120,22 @@ export class SpriteHero {
         if (!this.spriteRun || !this.spriteIdle || !this.spriteIdle.body) {
             return;
         }
-    
+
         // Check if the sprite is touching a platform
-    
+
         // Handle left and right movements
         if (this.cursors.left.isDown) {
             this.applyToAllSprites(sprite => sprite.setFlipX(true));
             if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.RUN);
                 this.applyToAllSprites(sprite => sprite.setVelocityX(-160)); // Move left
-            }
+            } 
         } else if (this.cursors.right.isDown) {
             this.applyToAllSprites(sprite => sprite.setFlipX(false));
             if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.RUN);
                 this.applyToAllSprites(sprite => sprite.setVelocityX(160)); // Move right
-            }
+            } 
         } else {
             // Idle state
             this.applyToAllSprites(sprite => sprite.setVelocityX(0));
@@ -131,15 +145,16 @@ export class SpriteHero {
                 this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
             }
         }
-    
+
         // Handle jumping
         if (this.cursors.up.isDown && (this.spriteIdle.body.touching.down)) {
             this.applyToAllSprites(sprite => sprite.setVelocityY(-480));
             this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
-        } 
-        
-        
-        
+        }
+
+
+
+
         // Handle other actions (down and space)
         if (this.cursors.down.isDown) {
             this.showSpriteFromState(SpriteHeroAnimationState.SPECIAL_ATTACK);
@@ -147,19 +162,19 @@ export class SpriteHero {
             this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
         }
 
-        this.handleMines();    
-        
+        this.handleMines();
+
 
     }
 
-    public drawMines(x?:number) {
+    public drawMines(x?: number) {
 
         const minesLeft: Mine[] = [];
-        this.mines.forEach((mine)=>{
-            if(mine.state !== BaseExplodableState.DESTROYED ) {
+        this.mines.forEach((mine) => {
+            if (mine.state !== BaseExplodableState.DESTROYED) {
                 minesLeft.push(mine);
             }
-            if( x !== undefined ) {
+            if (x !== undefined) {
                 mine.inrementX(x);
             }
             mine.render();
@@ -167,9 +182,9 @@ export class SpriteHero {
 
         this.mines = minesLeft;
     }
-    
-    
-    
+
+
+
 
     protected loadAnimationConfiguration() {
         this.scene.anims.create({
@@ -236,27 +251,27 @@ export class SpriteHero {
 
     createHeroSprite() {
         this.loadAnimationConfiguration();
-    
+
         const xPos = window.innerWidth / 4;
         const yPos = 0; // Modify as needed, perhaps to `window.innerHeight - MainScene.GROUND_HEIGHT`
-    
+
         // Create sprites and set common properties
         this.spriteRun = this.scene.physics.add.sprite(xPos, yPos, 'herorun');
         this.spriteJump = this.scene.physics.add.sprite(xPos, yPos, 'herojump');
         this.spriteIdle = this.scene.physics.add.sprite(xPos, yPos, 'heroidle');
         this.spriteAttack = this.scene.physics.add.sprite(xPos, yPos, 'heroattack');
         this.spriteSpecialAttack = this.scene.physics.add.sprite(xPos, yPos, 'herospecialattack');
-    
+
         this.applyToAllSprites((sprite) => {
             sprite.setDisplaySize(200, 200); // Set the display size of the sprite
-            sprite.setBodySize(25,36);
-            sprite.setOffset(66,80); // Offset to move the body up so it aligns with the character's feet
+            sprite.setBodySize(25, 36);
+            sprite.setOffset(66, 80); // Offset to move the body up so it aligns with the character's feet
             sprite.setVisible(false);
             sprite.setBounce(0.1);
             sprite.setCollideWorldBounds(true);
         });
     }
-    
+
     resizeEvent(x: number, y: number) {
         this.applyToAllSprites((sprite) => {
             sprite.setPosition(x, y);
@@ -264,15 +279,15 @@ export class SpriteHero {
             sprite.setGravityY(300);
             sprite.refreshBody();
         });
-    
+
         // Resetting the animation state to ensure correct display
         this.showSpriteFromState(this.animationState);
     }
-    
 
-    
+
+
     public handleMines() {
-        if( ! this.spriteIdle ) {
+        if (!this.spriteIdle) {
             return;
         }
         const currentTime = this.scene.time.now;
@@ -285,6 +300,7 @@ export class SpriteHero {
             const mine = new Mine(this.scene, x, y - 20);
             this.mines.push(mine);
             this.lastMinePlaced = currentTime;
+            this.soundPlayer.playMissileSound();
         }
     }
 

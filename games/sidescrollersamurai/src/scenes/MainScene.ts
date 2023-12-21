@@ -95,11 +95,18 @@ export class MainScene extends Phaser.Scene {
 
 
     create() {
+        const screenWidth = window.innerWidth;
+        const screenHeight = window.innerHeight;
+   
+        this.game.scale.resize(screenWidth, screenHeight);
+        this.game.scale.refresh();
+
         this.cursorKeys = (this.input?.keyboard?.createCursorKeys() as Phaser.Types.Input.Keyboard.CursorKeys);
         this.soundPlayer = new SoundPlayer(this);
 
         this.soundPlayer.playGameSongSound();
-        this.createBackgroundImage();
+        this.handleWindowResize(screenWidth, screenHeight);
+
         this.mainSceneStartGameText.createStartGameText();
 
 
@@ -153,31 +160,6 @@ export class MainScene extends Phaser.Scene {
 
     }
 
-    createBackgroundImage() {
-        const screenWidth = window.innerWidth;
-        const screenHeight = window.innerHeight;
-        this.game.scale.resize(screenWidth, screenHeight);
-        this.game.scale.refresh();
-
-        // Destroy existing tiles if they exist
-        if (this.bricksTileSprite) {
-            this.bricksTileSprite.destroy();
-        }
-
-        if (this.forestTileSprite) {
-            this.forestTileSprite.destroy();
-        }
-
-        // Create the forest background, covering the entire screen
-        this.forestTileSprite = this.add.tileSprite(0, 0, 1792, 948, "background23");
-        this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
-        this.spriteHero = new SpriteHero(this, this.cursorKeys);
-        this.spriteHero.createHeroSprite();
-
-        this.handleWindowResize(screenWidth, screenHeight);
-
-    }
-
     removeGroupBodies() {
 
         if (this.groundGroupBody) {
@@ -193,10 +175,22 @@ export class MainScene extends Phaser.Scene {
     }
 
     handleWindowResize(screenWidth: number, screenHeight: number) {
-        if (!this.forestTileSprite || !this.bricksTileSprite || !this.spriteHero) {
-            return;
+        
+
+        // Destroy existing tiles if they exist
+        if (this.bricksTileSprite) {
+            this.bricksTileSprite.destroy();
         }
 
+        if (this.forestTileSprite) {
+            this.forestTileSprite.destroy();
+        }
+        this.forestTileSprite = this.add.tileSprite(0, 0, 1792, 948, "background23");
+        this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
+        this.forestTileSprite.setDepth( -10 );
+        this.bricksTileSprite.setDepth( 1 );
+        this.game.scale.resize(screenWidth, screenHeight);
+        this.game.scale.refresh();
 
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
@@ -227,6 +221,13 @@ export class MainScene extends Phaser.Scene {
         this.groundGroupBody.refreshBody(); // Refresh the physics body to apply the size change
 
 
+          
+        if( ! this.spriteHero ) {
+            this.spriteHero = new SpriteHero(this, this.cursorKeys, this.soundPlayer);
+            this.spriteHero.createHeroSprite();
+        } else {
+            this.spriteHero.soundPlayer = this.soundPlayer;
+        }
 
         this.spriteHero.resizeEvent(screenWidth / 4, 0);
         this.spriteHero.applyToAllSprites((sprite) => {
