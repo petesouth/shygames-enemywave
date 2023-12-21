@@ -27,6 +27,9 @@ export class SpriteHero {
     protected spriteSpecialAttack?: Phaser.Physics.Arcade.Sprite | null;
     public soundPlayer: SoundPlayer;
 
+    protected attackRate: number = 200;  // 1000 ms = 1 second
+
+
 
     protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     protected mineKey?: Phaser.Input.Keyboard.Key;
@@ -34,6 +37,13 @@ export class SpriteHero {
     protected scene: Phaser.Scene;
 
     protected animationState: SpriteHeroAnimationState = SpriteHeroAnimationState.IDLE;
+
+    protected swingingSwordSpecial: boolean = false;
+    protected swordAttackRateSpecial: number = 1200;  // 1000 ms = 1 second
+
+    protected swingingSword: boolean = false;
+    protected swordAttackRate: number = 800;  // 1000 ms = 1 second
+
 
     protected lastMinePlaced: number = 0;
     protected mineRate: number = 500;  // 1000 ms = 1 second
@@ -70,7 +80,7 @@ export class SpriteHero {
                 this.spriteIdle?.play("heroidle", true);
                 this.soundPlayer?.stopRunningSound();
                 this.soundPlayer?.stopFlyingSound();
-            break;
+                break;
             case SpriteHeroAnimationState.RUN:
                 this.spriteAttack?.setVisible(false);
                 this.spriteIdle?.setVisible(false);
@@ -117,25 +127,31 @@ export class SpriteHero {
 
 
     drawHeroSprite() {
-        if (!this.spriteRun || !this.spriteIdle || !this.spriteIdle.body) {
+        this.handleSpriteMovement();
+        this.handleMines();
+        this.handleSwordAttacksSpecial();
+        this.handleSwordAttacks();
+
+    }
+
+    private handleSpriteMovement() {
+        if (!this.spriteIdle || !this.spriteIdle.body || this.swingingSwordSpecial === true) {
             return;
         }
 
-        // Check if the sprite is touching a platform
 
-        // Handle left and right movements
         if (this.cursors.left.isDown) {
             this.applyToAllSprites(sprite => sprite.setFlipX(true));
             if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.RUN);
                 this.applyToAllSprites(sprite => sprite.setVelocityX(-160)); // Move left
-            } 
+            }
         } else if (this.cursors.right.isDown) {
             this.applyToAllSprites(sprite => sprite.setFlipX(false));
             if (this.spriteIdle.body.touching.down) {
                 this.showSpriteFromState(SpriteHeroAnimationState.RUN);
                 this.applyToAllSprites(sprite => sprite.setVelocityX(160)); // Move right
-            } 
+            }
         } else {
             // Idle state
             this.applyToAllSprites(sprite => sprite.setVelocityX(0));
@@ -151,18 +167,6 @@ export class SpriteHero {
             this.applyToAllSprites(sprite => sprite.setVelocityY(-480));
             this.showSpriteFromState(SpriteHeroAnimationState.JUMPING);
         }
-
-
-
-
-        // Handle other actions (down and space)
-        if (this.cursors.down.isDown) {
-            this.showSpriteFromState(SpriteHeroAnimationState.SPECIAL_ATTACK);
-        } else if (this.cursors.space.isDown) {
-            this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
-        }
-
-        this.handleMines();
 
 
     }
@@ -303,6 +307,49 @@ export class SpriteHero {
             this.soundPlayer.playMissileSound();
         }
     }
+
+
+
+    public handleSwordAttacksSpecial() {
+        if (!this.spriteIdle || this.swingingSword === true) {
+            return;
+        }
+
+        if ((this.cursors.down.isDown && this.swingingSwordSpecial === false) || this.swingingSwordSpecial === true) {
+            this.showSpriteFromState(SpriteHeroAnimationState.SPECIAL_ATTACK);
+
+            if (!this.swingingSwordSpecial) {
+                this.swingingSwordSpecial = true;
+
+                setTimeout(() => {
+                    this.swingingSwordSpecial = false;
+                }, this.swordAttackRateSpecial);
+            }
+        }
+
+    }
+
+
+    public handleSwordAttacks() {
+        if (!this.spriteIdle || this.swingingSwordSpecial === true) {
+            return;
+        }
+
+        if ((this.cursors.space.isDown && this.swingingSword === false) || this.swingingSword === true) {
+            this.showSpriteFromState(SpriteHeroAnimationState.ATTACK);
+
+            if (!this.swingingSword) {
+                this.swingingSword = true;
+
+                setTimeout(() => {
+                    this.swingingSword = false;
+                }, this.swordAttackRateSpecial);
+            }
+        }
+
+    }
+
+
 
 
 }
