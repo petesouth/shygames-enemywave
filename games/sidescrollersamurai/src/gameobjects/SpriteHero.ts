@@ -40,7 +40,7 @@ export class SpriteHero {
     protected animationState: SpriteHeroAnimationState = SpriteHeroAnimationState.IDLE;
 
     protected swingingSwordSpecial: boolean = false;
-    protected swordAttackRateSpecial: number = 1200;  // 1000 ms = 1 second
+    protected swordAttackRateSpecial: number = 800;  // 1000 ms = 1 second
 
     protected swingingSword: boolean = false;
     protected swordAttackRate: number = 800;  // 1000 ms = 1 second
@@ -343,7 +343,7 @@ export class SpriteHero {
 
 
     public handleSwordAttacksSpecial() {
-        if (!this.spriteIdle || this.swingingSword === true) {
+        if ( !this.cursors || !this.spriteIdle || this.swingingSword === true) {
             return;
         }
 
@@ -363,7 +363,7 @@ export class SpriteHero {
 
 
     public handleSwordAttacks() {
-        if (!this.spriteIdle || this.swingingSwordSpecial === true) {
+        if ( !this.spriteIdle || this.swingingSwordSpecial === true) {
             return;
         }
 

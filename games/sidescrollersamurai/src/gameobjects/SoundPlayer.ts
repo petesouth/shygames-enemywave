@@ -17,12 +17,12 @@ export class SoundPlayer {
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
 
-        this.gamesongSound = this.scene.sound.add('gamesong', { loop: false, volume: 1 });
+        this.gamesongSound = this.scene.sound.add('gamesong', { loop: false, volume: .5 });
         this.runningSound = this.scene.sound.add('running', { loop: true });
         this.flyingSound = this.scene.sound.add('flying', { loop: true });
 
         this.swordSound = this.scene.sound.add('sword', { loop: false });
-        this.sword2Sound = this.scene.sound.add('sword2', { loop: false});
+        this.sword2Sound = this.scene.sound.add('sword', { loop: false});
 
     }
 

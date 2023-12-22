@@ -178,7 +178,8 @@ export class MainScene extends Phaser.Scene {
 
     handleWindowResize(screenWidth: number, screenHeight: number) {
         
-
+        if( ! this.cursorKeys ) return;
+        
         // Destroy existing tiles if they exist
         if (this.bricksTileSprite) {
             this.bricksTileSprite.destroy();
@@ -191,8 +192,8 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
         this.forestTileSprite.setDepth( -10 );
         this.bricksTileSprite.setDepth( 1 );
-        this.game.scale.resize(screenWidth, screenHeight);
-        this.game.scale.refresh();
+        //this.game.scale.resize(screenWidth, screenHeight);
+        //this.game.scale.refresh();
 
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
