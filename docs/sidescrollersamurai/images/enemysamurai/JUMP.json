@@ -1,0 +1,87 @@
+{
+    "textures": [
+        {
+            "image": "JUMP.png",
+            "format": "RGBA8888",
+            "size": {
+                "w": 384,
+                "h": 64
+            },
+            "scale": 1,
+            "frames": [
+                {
+                    "filename": "jump/frame0000",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 128,
+                        "h": 64
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 128,
+                        "h": 64
+                    },
+                    "frame": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 128,
+                        "h": 64
+                    }
+                },
+                {
+                    "filename": "jump/frame0001",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 128,
+                        "h": 64
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 128,
+                        "h": 64
+                    },
+                    "frame": {
+                        "x": 128,
+                        "y": 0,
+                        "w": 128,
+                        "h": 64
+                    }
+                },
+                {
+                    "filename": "jump/frame0002",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 128,
+                        "h": 64
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 128,
+                        "h": 64
+                    },
+                    "frame": {
+                        "x": 256,
+                        "y": 0,
+                        "w": 128,
+                        "h": 64
+                    }
+                }
+            ]
+        }
+    ],
+    "meta": {
+        "app": "https://www.codeandweb.com/texturepacker",
+        "version": "3.0",
+        "image": "JUMP.png",
+        "format": "RGBA8888",
+        "size": {"w": 384, "h": 64},
+        "scale": "1",
+        "smartupdate": "$TexturePacker:SmartUpdate:..."
+    }
+}

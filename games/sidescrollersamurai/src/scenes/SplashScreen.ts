@@ -66,6 +66,12 @@ export class SplashScreen extends Phaser.Scene {
         this.load.atlas('heroattack', 'images/herosamurai/BASICATTACK.png', 'images/herosamurai/BASICATTACK.json');
         this.load.atlas('herospecialattack', 'images/herosamurai/SPECIALATTACK.png', 'images/herosamurai/SPECIALATTACK.json');
 
+        this.load.atlas('enemyidle', 'images/enemysamurai/IDLE.png', 'images/enemysamurai/IDLE.json');
+        this.load.atlas('enemyrun', 'images/enemysamurai/RUN.png', 'images/enemysamurai/RUN.json');
+        this.load.atlas('enemyjump', 'images/enemysamurai/JUMP.png', 'images/enemysamurai/JUMP.json');
+        this.load.atlas('enemyattack', 'images/enemysamurai/BASICATTACK.png', 'images/enemysamurai/BASICATTACK.json');
+        this.load.atlas('enemyspecialattack', 'images/enemysamurai/SPECIALATTACK.png', 'images/enemysamurai/SPECIALATTACK.json');
+
 
     }
 

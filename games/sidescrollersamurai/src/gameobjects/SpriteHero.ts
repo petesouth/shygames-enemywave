@@ -317,7 +317,7 @@ export class SpriteHero {
     }
 
     public getCentroid(): Phaser.Geom.Point {
-        return new Phaser.Geom.Point(this.spriteIdle?.getBounds().centerX, (60) + ((this.spriteIdle?.getBounds()?.centerY )? this.spriteIdle?.getBounds().centerY : 0) );
+        return new Phaser.Geom.Point(this.spriteIdle?.getBounds().centerX, (42) + ((this.spriteIdle?.getBounds()?.centerY )? this.spriteIdle?.getBounds().centerY : 0) );
     }
 
 
@@ -393,7 +393,7 @@ export class SpriteHero {
             const angle: number = (this.spriteIdle.flipX) ? 180 : 0;
               const centroid = this.getCentroid();
 
-            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
+            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle, [0xFFFFFF]);
             this.bullets.push(bullet);
             this.soundPlayer.playBulletSound();
             this.lastBullet = currentTime;

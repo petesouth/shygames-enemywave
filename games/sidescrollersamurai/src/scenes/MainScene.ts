@@ -4,6 +4,7 @@ import { MainSceneStartGameText } from './MainSceneStartGameText';
 import { Utils } from '../utils/utils';
 import { SpriteHero } from '../gameobjects/SpriteHero';
 import { SoundPlayer } from '../gameobjects/SoundPlayer';
+import { EnemyAntiHero } from '../gameobjects/EnemyAntiHero';
 
 
 export class MainScene extends Phaser.Scene {
@@ -17,7 +18,9 @@ export class MainScene extends Phaser.Scene {
     private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
     private forestTileSprite?: Phaser.GameObjects.TileSprite | null;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
-    protected spriteHero?: SpriteHero
+    protected spriteHero?: SpriteHero;
+    protected enemyAntiHero?: EnemyAntiHero;
+
     protected cursorKeys!: Phaser.Types.Input.Keyboard.CursorKeys;
     protected groundGroup?: Phaser.Physics.Arcade.StaticGroup;
     protected groundGroupBody?: Phaser.Physics.Arcade.Sprite;
@@ -89,6 +92,15 @@ export class MainScene extends Phaser.Scene {
             }
         });
 
+        this.enemyAntiHero?.applyToAllSprites((sprite) => {
+            if (this.groundGroup) {
+                this.physics.add.collider(sprite, this.groundGroup);
+            }
+        });
+
+
+        
+
 
     }
 
@@ -114,7 +126,7 @@ export class MainScene extends Phaser.Scene {
             this.mainSceneStartGameText.hideLevelInstructionsText();
         }, 10000);
         // Create Debug Graphics if needed to visualize the bodies
-        //this.physics.world.createDebugGraphic();
+        // this.physics.world.createDebugGraphic();
 
     }
 
@@ -141,6 +153,12 @@ export class MainScene extends Phaser.Scene {
             });
             this.spriteHero?.drawMines(distanceIncrement);
             this.spriteHero?.drawBullets(distanceIncrement);
+
+            this.enemyAntiHero?.drawMines(distanceIncrement);
+            this.enemyAntiHero?.drawBullets(distanceIncrement);
+
+
+            
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += distanceIncrement;
             this.forestTileSprite.tilePositionX += distanceIncrement;
@@ -151,14 +169,22 @@ export class MainScene extends Phaser.Scene {
             });
             this.spriteHero?.drawMines(-distanceIncrement);
             this.spriteHero?.drawBullets(-distanceIncrement);
+
+            this.enemyAntiHero?.drawMines(-distanceIncrement);
+            this.enemyAntiHero?.drawBullets(-distanceIncrement);
+            
         } else {
             this.spriteHero?.drawMines();
             this.spriteHero?.drawBullets();
+
+            this.enemyAntiHero?.drawMines();
+            this.enemyAntiHero?.drawBullets();
         }
 
         this.groundGroup?.refresh();
 
         this.spriteHero?.drawHeroSprite();
+        this.enemyAntiHero?.drawHeroSprite();
 
     }
 
@@ -238,6 +264,22 @@ export class MainScene extends Phaser.Scene {
                 this.colliders.push(this.physics.add.collider(sprite, this.groundGroup));
             }
         });
+
+
+        if( ! this.enemyAntiHero ) {
+            this.enemyAntiHero = new EnemyAntiHero(this, this.cursorKeys, this.soundPlayer);
+            this.enemyAntiHero.createHeroSprite();
+        } else {
+            this.enemyAntiHero.soundPlayer = this.soundPlayer;
+        }
+
+        this.enemyAntiHero.resizeEvent(screenWidth / 2, 0);
+        this.enemyAntiHero.applyToAllSprites((sprite) => {
+            if (this.groundGroup) {
+                this.colliders.push(this.physics.add.collider(sprite, this.groundGroup));
+            }
+        });
+        
 
         this.generatePlatforms();
         this.repositionPlatforms(screenWidth, screenHeight);
