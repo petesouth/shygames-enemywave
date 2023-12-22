@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import { Utils } from '../utils/utils';
 import { Mine } from './mine';
 import { BaseExplodableState } from './baseExplodable';
 import { SoundPlayer } from './SoundPlayer';
+import { Bullet } from './bullet';
 
 
 
@@ -33,6 +33,7 @@ export class SpriteHero {
 
     protected cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     protected mineKey?: Phaser.Input.Keyboard.Key;
+    protected bulletKey?: Phaser.Input.Keyboard.Key;
 
     protected scene: Phaser.Scene;
 
@@ -49,12 +50,17 @@ export class SpriteHero {
     protected mineRate: number = 500;  // 1000 ms = 1 second
     protected mines: Mine[] = [];
 
+    protected lastBullet: number = 0;
+    protected bulletRate: number = 500;  // 1000 ms = 1 second
+    protected bullets: Bullet[] = [];
+
     constructor(scene: Phaser.Scene,
         cursors: Phaser.Types.Input.Keyboard.CursorKeys, soundPlayer: SoundPlayer) {
         this.scene = scene;
         this.cursors = cursors;
         this.soundPlayer = soundPlayer;
         this.mineKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.M);
+        this.bulletKey = this.scene.input?.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.F);
     }
 
     applyToAllSprites(applyHandler: (sprite: Phaser.Physics.Arcade.Sprite) => void) {
@@ -129,6 +135,7 @@ export class SpriteHero {
     drawHeroSprite() {
         this.handleSpriteMovement();
         this.handleMines();
+        this.handleBullets();
         this.handleSwordAttacksSpecial();
         this.handleSwordAttacks();
 
@@ -185,6 +192,23 @@ export class SpriteHero {
         });
 
         this.mines = minesLeft;
+    }
+
+
+    public drawBullets(x?: number) {
+
+        const bulletsLeft: Bullet[] = [];
+        this.bullets.forEach((bullet) => {
+            if (bullet.state !== BaseExplodableState.DESTROYED) {
+                bulletsLeft.push(bullet);
+            }
+            if (x !== undefined) {
+                bullet.incrementX(x);
+            }
+            bullet.render();
+        });
+
+        this.bullets = bulletsLeft;
     }
 
 
@@ -288,6 +312,14 @@ export class SpriteHero {
         this.showSpriteFromState(this.animationState);
     }
 
+    public getCentroidBottomSide(): Phaser.Geom.Point {
+        return new Phaser.Geom.Point(this.spriteIdle?.getBottomCenter().x, this.spriteIdle?.getBottomCenter().y);
+    }
+
+    public getCentroid(): Phaser.Geom.Point {
+        return new Phaser.Geom.Point(this.spriteIdle?.getBounds().centerX, (60) + ((this.spriteIdle?.getBounds()?.centerY )? this.spriteIdle?.getBounds().centerY : 0) );
+    }
+
 
 
     public handleMines() {
@@ -298,7 +330,7 @@ export class SpriteHero {
 
         if ((this.mineKey?.isDown) &&
             (currentTime - this.lastMinePlaced > this.mineRate)) {
-            const centroid = { x: this.spriteIdle.x, y: this.spriteIdle.getBounds().bottom };
+            const centroid = this.getCentroidBottomSide();
             const x = centroid.x;
             const y = centroid.y;
             const mine = new Mine(this.scene, x, y - 20);
@@ -346,8 +378,31 @@ export class SpriteHero {
                 }, this.swordAttackRateSpecial);
             }
         }
-
+ 
     }
+
+
+    public handleBullets() {
+        if (!this.spriteIdle) {
+            return;
+        }
+        const currentTime = this.scene.time.now;
+
+        if ((this.bulletKey?.isDown) &&
+            (currentTime - this.lastBullet > this.bulletRate)) {
+            const angle: number = (this.spriteIdle.flipX) ? 180 : 0;
+              const centroid = this.getCentroid();
+
+            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle);
+            this.bullets.push(bullet);
+            this.soundPlayer.playBulletSound();
+            this.lastBullet = currentTime;
+        }
+    }
+
+
+
+
 
 
 

@@ -88,6 +88,7 @@ export class MainSceneStartGameText {
             '\u2190 - Rotate Left',
             '\u2192 - Rotate Right',
             'M - Ninja Land Mine',
+            'F - Ninja Flying Bullet',
             'Space - Attack', 
             '\u2193 - Special Attack', 
             

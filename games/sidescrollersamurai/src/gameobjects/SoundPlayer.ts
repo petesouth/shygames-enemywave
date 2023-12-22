@@ -77,6 +77,11 @@ export class SoundPlayer {
         sound.play();
     }
 
+    public playBulletSound() {
+        let sound = this.scene.sound.add('bullet', { loop: false });
+        sound.play();
+    }
+
     public playLevelComplete(): void {
         let sound = this.scene.sound.add('success', { loop: false });
         sound.play();

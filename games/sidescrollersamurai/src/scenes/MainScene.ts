@@ -140,6 +140,7 @@ export class MainScene extends Phaser.Scene {
                 gameObject.x += distanceIncrement;
             });
             this.spriteHero?.drawMines(distanceIncrement);
+            this.spriteHero?.drawBullets(distanceIncrement);
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += distanceIncrement;
             this.forestTileSprite.tilePositionX += distanceIncrement;
@@ -149,9 +150,10 @@ export class MainScene extends Phaser.Scene {
                 gameObject.x -= distanceIncrement;
             });
             this.spriteHero?.drawMines(-distanceIncrement);
+            this.spriteHero?.drawBullets(-distanceIncrement);
         } else {
             this.spriteHero?.drawMines();
-
+            this.spriteHero?.drawBullets();
         }
 
         this.groundGroup?.refresh();
