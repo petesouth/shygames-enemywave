@@ -80,13 +80,18 @@ export class MainSceneStartGameText {
         offset += 40;
 
         const instructionTexts = [
+            'Special Thanks to the Artist for all the fine Characters',
+            'Mattz Art at: https://xzany.itch.io/',
             'Mobile: Add Game To Homescreen for Fullscreen',
+            '',
             'Widnows: F11 - Fullscreen',
             'Mac: Control-⌘-F - Fullscreen',
             'Click Screen - Start Game / Re-spawn',
+            '',
             '\u2191 - Jump',
             '\u2190 - Rotate Left',
             '\u2192 - Rotate Right',
+            '',
             'M - Ninja Land Mine',
             'F - Ninja Flying Bullet',
             'Space - Attack', 
