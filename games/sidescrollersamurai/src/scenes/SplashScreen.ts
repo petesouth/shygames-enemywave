@@ -56,10 +56,11 @@ export class SplashScreen extends Phaser.Scene {
         this.load.image("bricks4", 'textures/bricks4.png');
 
 
-        for (let i = 21; i <= 23; ++i) {
-            this.load.image("background" + i, 'backgrounds/background' + i + '.png');
-        };
-
+        this.load.image("grassmountains", 'backgrounds/grassmountains.png');
+        this.load.image("rockmountains", 'backgrounds/rockmountains.png');
+        this.load.image("sky", 'backgrounds/sky.png');
+        this.load.image("clouds", 'backgrounds/clouds.png');
+    
         this.load.atlas('heroidle', 'images/herosamurai/IDLE.png', 'images/herosamurai/IDLE.json');
         this.load.atlas('herorun', 'images/herosamurai/RUN.png', 'images/herosamurai/RUN.json');
         this.load.atlas('herojump', 'images/herosamurai/JUMP.png', 'images/herosamurai/JUMP.json');

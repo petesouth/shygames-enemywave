@@ -48,7 +48,7 @@ export class MainSceneStartGameText {
 
     createStartGameText() {
         const fontString = 'bold 16px Aria';
-        const fontColor = 'white';
+        const fontColor = 'black';
         this.scoreText = this.scene.add.text(
             100,
             10,

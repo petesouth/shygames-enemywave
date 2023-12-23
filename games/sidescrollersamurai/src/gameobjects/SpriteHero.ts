@@ -393,7 +393,7 @@ export class SpriteHero {
             const angle: number = (this.spriteIdle.flipX) ? 180 : 0;
               const centroid = this.getCentroid();
 
-            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle, [0xFFFFFF]);
+            const bullet = new Bullet(this.scene, centroid.x, centroid.y, angle, [0xFF00FF]);
             this.bullets.push(bullet);
             this.soundPlayer.playBulletSound();
             this.lastBullet = currentTime;

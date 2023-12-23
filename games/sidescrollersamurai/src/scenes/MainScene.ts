@@ -16,7 +16,9 @@ export class MainScene extends Phaser.Scene {
 
 
     private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
-    private forestTileSprite?: Phaser.GameObjects.TileSprite | null;
+    private mountainRangeSprite?: Phaser.GameObjects.TileSprite | null;
+    private skySprite?: Phaser.GameObjects.TileSprite | null;
+    private cloudsSprite?: Phaser.GameObjects.TileSprite | null;
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     protected spriteHero?: SpriteHero;
     protected enemyAntiHero?: EnemyAntiHero;
@@ -124,7 +126,7 @@ export class MainScene extends Phaser.Scene {
 
         setTimeout(() => {
             this.mainSceneStartGameText.hideLevelInstructionsText();
-        }, 10000);
+        }, 20000);
         // Create Debug Graphics if needed to visualize the bodies
         // this.physics.world.createDebugGraphic();
 
@@ -132,7 +134,7 @@ export class MainScene extends Phaser.Scene {
 
     update() {
 
-        if (!this.forestTileSprite || !this.bricksTileSprite) {
+        if (!this.mountainRangeSprite || !this.cloudsSprite || !this.skySprite || !this.bricksTileSprite) {
             return;
         }
 
@@ -144,7 +146,9 @@ export class MainScene extends Phaser.Scene {
 
         if (this.cursorKeys?.left.isDown) {
             this.bricksTileSprite.tilePositionX -= distanceIncrement;
-            this.forestTileSprite.tilePositionX -= distanceIncrement;
+            this.mountainRangeSprite.tilePositionX -= distanceIncrement / 2;
+            this.skySprite.tilePositionX -= distanceIncrement / 6;
+            this.cloudsSprite.tilePositionX -= distanceIncrement / 4;
 
             this.distanceLeft += distanceIncrement;
             this.distanceRight -= distanceIncrement;
@@ -161,7 +165,10 @@ export class MainScene extends Phaser.Scene {
             
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += distanceIncrement;
-            this.forestTileSprite.tilePositionX += distanceIncrement;
+            this.mountainRangeSprite.tilePositionX += distanceIncrement / 2;
+            this.skySprite.tilePositionX += distanceIncrement / 6;
+            this.cloudsSprite.tilePositionX += distanceIncrement / 4;
+
             this.distanceRight += distanceIncrement;
             this.distanceLeft -= distanceIncrement;
             this.floatingPlatformBodies.forEach((gameObject) => {
@@ -202,34 +209,77 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    handleWindowResize(screenWidth: number, screenHeight: number) {
+    public handleWindowResize(screenWidth: number, screenHeight: number) {
         
         if( ! this.cursorKeys ) return;
         
-        // Destroy existing tiles if they exist
-        if (this.bricksTileSprite) {
-            this.bricksTileSprite.destroy();
-        }
+        this.repositionResizeTheGameAndWorld(screenWidth, screenHeight);
+        
+        this.resizeCreateUpdateMountainsSkyClouds(screenWidth, screenHeight);
+        
+        this.resizeCrateUpdateTheGround(screenWidth, screenHeight); // Refresh the physics body to apply the size change
+          
+        this.resizeCreateUpdateCharacters(screenWidth);
+        
 
-        if (this.forestTileSprite) {
-            this.forestTileSprite.destroy();
-        }
-        this.forestTileSprite = this.add.tileSprite(0, 0, 1792, 948, "background23");
-        this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
-        this.forestTileSprite.setDepth( -10 );
-        this.bricksTileSprite.setDepth( 1 );
-        //this.game.scale.resize(screenWidth, screenHeight);
-        //this.game.scale.refresh();
+        this.generatePlatforms();
+        this.repositionPlatforms(screenWidth, screenHeight);
 
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
+        
+    }
+
+
+    protected repositionResizeTheGameAndWorld(screenWidth: number, screenHeight: number) {
         const ThirtyPercent = screenWidth * .3;
         this.physics.world.setBounds(ThirtyPercent, 0, screenWidth - (2 * ThirtyPercent), screenHeight);
         this.physics.world.setBoundsCollision(true, true, true, true);
         this.physics.world.update(0, 0);
+    }
 
-        Utils.resizeImateToRatio(this.forestTileSprite, screenWidth, screenHeight);
+    protected resizeCreateUpdateMountainsSkyClouds(screenWidth: number, screenHeight: number) {
+        if (this.mountainRangeSprite) {
+            this.mountainRangeSprite.destroy();
+        }
 
+        if (this.cloudsSprite) {
+            this.cloudsSprite.destroy();
+        }
+
+        if (this.skySprite) {
+            this.skySprite.destroy();
+        }
+
+        this.mountainRangeSprite = this.add.tileSprite(0, 0, screenWidth, 320, "grassmountains");
+        this.mountainRangeSprite.setDepth(-10);
+        this.mountainRangeSprite.setDisplaySize(screenWidth, screenHeight + (screenHeight * .4) );
+        this.mountainRangeSprite.setPosition(screenWidth / 2, (screenHeight / 2) - (screenHeight * .2) );
+        this.mountainRangeSprite.update();
+        this.mountainRangeSprite.setVisible(true);
+        
+
+        this.skySprite = this.add.tileSprite(0, 0, screenWidth, 320, "sky");
+        this.skySprite.setDepth(-11);
+        Utils.resizeImateToRatio(this.skySprite, screenWidth, screenHeight * .8);
+        
+        
+        this.cloudsSprite = this.add.tileSprite(0, 0, screenWidth, 320, "clouds");
+        this.cloudsSprite.setDepth(-11);
+        Utils.resizeImateToRatio(this.cloudsSprite, screenWidth, screenHeight * .8);
+        
+  
+    }
+
+    protected resizeCrateUpdateTheGround(screenWidth: number, screenHeight: number) {
+        if (this.bricksTileSprite) {
+            this.bricksTileSprite.destroy();
+        }
+
+
+        this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
+        this.bricksTileSprite.setDepth( 1 );
+        
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight);
         this.bricksTileSprite.tilePositionX = 0;
@@ -237,7 +287,6 @@ export class MainScene extends Phaser.Scene {
         this.bricksTileSprite.update();
 
         if (!this.groundGroup || !this.groundGroupBody) {
-            // this.removeGroupBodies();
             this.groundGroup = this.physics.add.staticGroup();
             this.groundGroupBody = this.groundGroup.create(0, screenHeight) as Phaser.Physics.Arcade.Sprite;
 
@@ -247,11 +296,13 @@ export class MainScene extends Phaser.Scene {
         this.groundGroupBody.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.groundGroupBody.setPosition(screenWidth / 2, screenHeight);
         this.groundGroupBody.setVisible(false);
-        this.groundGroupBody.refreshBody(); // Refresh the physics body to apply the size change
+        this.groundGroupBody.refreshBody();
+        this.bricksTileSprite.tilePositionX = 0;
+        
+    }
 
-
-          
-        if( ! this.spriteHero ) {
+    protected resizeCreateUpdateCharacters(screenWidth: number) {
+        if (!this.spriteHero) {
             this.spriteHero = new SpriteHero(this, this.cursorKeys, this.soundPlayer);
             this.spriteHero.createHeroSprite();
         } else {
@@ -266,7 +317,7 @@ export class MainScene extends Phaser.Scene {
         });
 
 
-        if( ! this.enemyAntiHero ) {
+        if (!this.enemyAntiHero) {
             this.enemyAntiHero = new EnemyAntiHero(this, this.cursorKeys, this.soundPlayer);
             this.enemyAntiHero.createHeroSprite();
         } else {
@@ -279,18 +330,10 @@ export class MainScene extends Phaser.Scene {
                 this.colliders.push(this.physics.add.collider(sprite, this.groundGroup));
             }
         });
-        
-
-        this.generatePlatforms();
-        this.repositionPlatforms(screenWidth, screenHeight);
-
-        this.bricksTileSprite.tilePositionX = 0;
-        this.forestTileSprite.tilePositionX = 0;
     }
 
-
     // New method to reposition platforms
-    repositionPlatforms(screenWidth: number, screenHeight: number) {
+    protected repositionPlatforms(screenWidth: number, screenHeight: number) {
         // Example logic - you might need to adjust this based on your game's design
         const horizontalGapMin = 100;
         let lastPlatformEndX = 0;
