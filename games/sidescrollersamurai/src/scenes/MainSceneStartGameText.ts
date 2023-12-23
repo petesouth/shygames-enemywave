@@ -55,7 +55,7 @@ export class MainSceneStartGameText {
             'Player Kills: 0 - Level: 0',
             { font: fontString, color: fontColor }
         );
-        this.scoreText.setDepth(1);
+        this.scoreText.setDepth(10);
 
         this.levelAnnounceText = this.scene.add.text(
             (window.innerWidth / 2),
@@ -80,10 +80,11 @@ export class MainSceneStartGameText {
         offset += 40;
 
         const instructionTexts = [
+            '',
             'Special Thanks to the Artist for all the fine Characters',
             'Mattz Art at: https://xzany.itch.io/',
-            'Mobile: Add Game To Homescreen for Fullscreen',
             '',
+            'Mobile: Add Game To Homescreen for Fullscreen',
             'Widnows: F11 - Fullscreen',
             'Mac: Control-⌘-F - Fullscreen',
             'Click Screen - Start Game / Re-spawn',
@@ -107,7 +108,7 @@ export class MainSceneStartGameText {
                 { font: fontString, color: fontColor }
             );
             text.setOrigin(0.5);
-            text.setDepth(1);
+            text.setDepth(10);
             this.instructions.push(text);
             offset += 20;
         });
