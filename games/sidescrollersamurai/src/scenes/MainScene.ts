@@ -5,7 +5,7 @@ import { Utils } from '../utils/utils';
 import { SpriteHero } from '../gameobjects/SpriteHero';
 import { SoundPlayer } from '../gameobjects/SoundPlayer';
 import { EnemyAntiHero } from '../gameobjects/EnemyAntiHero';
-
+import { js as EasyStarJs } from 'easystarjs';
 
 export class MainScene extends Phaser.Scene {
 
@@ -31,7 +31,7 @@ export class MainScene extends Phaser.Scene {
     protected soundPlayer!: SoundPlayer;
     protected distanceLeft: number = 0;
     protected distanceRight: number = 0;
-
+    protected easyJs: EasyStarJs = new EasyStarJs();
 
     constructor() {
         super('MainScene');
@@ -100,8 +100,8 @@ export class MainScene extends Phaser.Scene {
             }
         });
 
-
-        
+        this.floatingPlatformBodies.forEach((platform)=>{
+        });
 
 
     }
