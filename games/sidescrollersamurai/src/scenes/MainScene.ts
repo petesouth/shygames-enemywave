@@ -14,7 +14,6 @@ export class MainScene extends Phaser.Scene {
     public static MAX_ENEMIES: number = 14;
     public static GROUND_HEIGHT = 50;
 
-
     private bricksTileSprite?: Phaser.GameObjects.TileSprite | null;
     private mountainRangeSprite?: Phaser.GameObjects.TileSprite | null;
     private skySprite?: Phaser.GameObjects.TileSprite | null;
@@ -36,8 +35,6 @@ export class MainScene extends Phaser.Scene {
     constructor() {
         super('MainScene');
     }
-
-
 
     generatePlatforms() {
         if (!this.groundGroup) {
@@ -91,18 +88,12 @@ export class MainScene extends Phaser.Scene {
         this.spriteHero?.applyToAllSprites((sprite) => {
             if (this.groundGroup) {
                 this.physics.add.collider(sprite, this.groundGroup);
+                this.enemyAntiHero?.applyToAllSprites((enemySprite)=>{
+                    if( this.groundGroup ) this.physics.add.collider(enemySprite, this.groundGroup);
+                    this.physics.add.collider(sprite, enemySprite );
+                });
             }
         });
-
-        this.enemyAntiHero?.applyToAllSprites((sprite) => {
-            if (this.groundGroup) {
-                this.physics.add.collider(sprite, this.groundGroup);
-            }
-        });
-
-        this.floatingPlatformBodies.forEach((platform)=>{
-        });
-
 
     }
 
