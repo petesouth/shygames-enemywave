@@ -12,10 +12,10 @@ import { BaseSpaceship } from '../gameobjects/basespaceship';
 
 export class MainScene extends Phaser.Scene {
 
-    public static GOLDEN_RATIO = { width: 2065, height: 1047 };
+    public static GOLDEN_RATIO = { width: 2848, height: 1444 };
     public static LEVEL_BONUS = 5;
-    static MAX_ENEMIES: number = 10;
-    
+    static MAX_ENEMIES: number = 6;
+
     private playerspaceship!: PlayerSpaceship;
     private enemyspaceships: EnemySpaceship[] = [];
     private starsBackgroundImage!: Phaser.GameObjects.Image;
@@ -27,7 +27,7 @@ export class MainScene extends Phaser.Scene {
     private mainSceneStartGameText: MainSceneStartGameText = new MainSceneStartGameText(this);
     private buttons: Phaser.GameObjects.Text[] = [];
     private buttonLeftMargin = 50;
-    
+    private waveCount: number = -1;
 
     constructor() {
         super('MainScene');
@@ -248,7 +248,7 @@ export class MainScene extends Phaser.Scene {
         }
     }
 
-    handleWindowResize(w:number,h:number) {
+    handleWindowResize(w: number, h: number) {
         this.resizeStarBackground();
         this.createAsteroidsBasedOnScreenSize();
         this.mainSceneStartGameText.repositionStartGameText(w);
@@ -267,18 +267,40 @@ export class MainScene extends Phaser.Scene {
         // Player must be alive or this no-opts
         if (this.playerspaceship.state === BaseExplodableState.ALIVE) {
 
-            if (this.enemyspaceships.length < 1 && this.betweenGames === true) {
-                // if 0 enemy and betweenGames is true spawn enemis Time to Assault the player
-                // With a wave of enemies.
+            if (this.enemyspaceships.length < 1 && (this.waveCount > 0 || this.betweenGames === true)) {
 
                 this.betweenGames = false;
                 this.timerBetweenLevels = -1;
 
+                this.playerspaceship.hitpoints = 2 * (MainScene.MAX_ENEMIES * game.currentLevel);
+
+
+                if (this.waveCount === -1) {
+                    this.waveCount = game.currentLevel;
+                } else {
+                    this.waveCount--;
+                    if (this.waveCount == 1) {
+                        this.waveCount = -1;
+                    }
+
+                    if( game.currentLevel ===  1 ) {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Level 1 Welcome.  Destroy the Enemy Ship!!!`);
+                    } else if( this.waveCount ===  -1 ) {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`Final Wave in level ${game.currentLevel}, almost done!!!`);
+                    } else {
+                        this.mainSceneStartGameText.setLevelAnnounceText(`${this.waveCount} more waves left in level ${game.currentLevel}`);
+                    }
+                    
+                    this.mainSceneStartGameText.showLevelAnnounceText();
+                    setTimeout(() => {
+                        this.mainSceneStartGameText.hideLevelAnnounceText();
+                    }, 4000);
+
+                };
 
                 for (let i = 0; i < game.currentLevel; ++i) {
                     this.spawnEnemy();
                 }
-
 
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
@@ -286,7 +308,6 @@ export class MainScene extends Phaser.Scene {
                 // In shit scenario all enemies have been destroyed or not yet created.
                 // So Ill start the timer.
                 this.timerBetweenLevels = Date.now();
-                this.playerspaceship.hitpoints = (game.currentLevel < 1) ? 10 : 10 + (10 * (game.currentLevel * .4));
                 if (game.currentLevel > 0) {
                     this.playLevelComplete();
                     let nextLevel = game.currentLevel + 1;
@@ -323,25 +344,24 @@ export class MainScene extends Phaser.Scene {
 
     spawnEnemy() {
 
-        if (this.enemyspaceships && this.enemyspaceships.length < MainScene.MAX_ENEMIES ) {
+        if (this.enemyspaceships && this.enemyspaceships.length < MainScene.MAX_ENEMIES) {
 
-            let hitpoints = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
-            gGameStore.getState().game.currentLevel * 2 : Phaser.Math.Between(5, 30);
-
-            let missileFireRate = Phaser.Math.Between(3000, 8000);
-            let fireRate = ( gGameStore.getState().game.currentLevel > MainScene.MAX_ENEMIES ) ?
-            2000 : Phaser.Math.Between(2000, 4000);
+            let hitpoints = gGameStore.getState().game.currentLevel * MainScene.MAX_ENEMIES;
+            let missileFireRate = Phaser.Math.Between(3000, 4000);
+            let fireRate = Phaser.Math.Between(800, 3000);
 
             const enemySpaceshipConfig: EnemySpaceshipConfig = {
                 // If there isn't a boss already being a boss and there isn't atleast 1 red ship.  No Boss
-                thrust: Phaser.Math.Between(.5, .8),
+                thrust: Phaser.Math.Between(.5, .7),
                 hitpoints: hitpoints,
                 fireRate: fireRate,
                 missileFireRate: missileFireRate,
                 imageKey: Phaser.Utils.Array.GetRandom(SplashScreen.enemySpaceships)
             };
 
-            this.enemyspaceships.push(new EnemySpaceship(this, window.innerHeight + (this.enemyspaceships.length * 40), this.playerspaceship, enemySpaceshipConfig));
+
+
+            this.enemyspaceships.push(new EnemySpaceship(this, (window.innerWidth + (this.enemyspaceships.length * 40)) * 10, this.playerspaceship, enemySpaceshipConfig));
         }
     }
 

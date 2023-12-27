@@ -53,8 +53,6 @@ export class MainScene extends Phaser.Scene {
         let lastPlatformEndX = 0;
 
         const displayPlatformHeight = MainScene.GROUND_HEIGHT / 2;
-
-
         let isCreated: boolean = (this.floatingPlatformBodies && this.floatingPlatformBodies.length > 0);
 
 
