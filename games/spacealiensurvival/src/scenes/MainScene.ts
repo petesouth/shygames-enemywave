@@ -271,36 +271,38 @@ export class MainScene extends Phaser.Scene {
 
                 this.betweenGames = false;
                 this.timerBetweenLevels = -1;
-
-                this.playerspaceship.hitpoints = 2 * (MainScene.MAX_ENEMIES * game.currentLevel);
-
-
+                
+                        
                 if (this.waveCount === -1) {
                     this.waveCount = game.currentLevel;
+                    this.playerspaceship.hitpoints = 2 * (MainScene.MAX_ENEMIES * game.currentLevel);
                 } else {
                     this.waveCount--;
                     if (this.waveCount == 1) {
                         this.waveCount = -1;
                     }
 
-                    if( game.currentLevel ===  1 ) {
+                    this.playerspaceship.hitpoints += 10;
+                    
+                    if (game.currentLevel === 1) {
                         this.mainSceneStartGameText.setLevelAnnounceText(`Level 1 Welcome.  Destroy the Enemy Ship!!!`);
-                    } else if( this.waveCount ===  -1 ) {
+                    } else if (this.waveCount === -1) {
                         this.mainSceneStartGameText.setLevelAnnounceText(`Final Wave in level ${game.currentLevel}, almost done!!!`);
                     } else {
                         this.mainSceneStartGameText.setLevelAnnounceText(`${this.waveCount} more waves left in level ${game.currentLevel}`);
                     }
-                    
+
                     this.mainSceneStartGameText.showLevelAnnounceText();
                     setTimeout(() => {
                         this.mainSceneStartGameText.hideLevelAnnounceText();
-                    }, 4000);
+                    }, 5000);
 
                 };
 
                 for (let i = 0; i < game.currentLevel; ++i) {
                     this.spawnEnemy();
                 }
+
 
             } else if (this.betweenGames === false &&
                 this.enemyspaceships.length < 1 &&
@@ -309,6 +311,7 @@ export class MainScene extends Phaser.Scene {
                 // So Ill start the timer.
                 this.timerBetweenLevels = Date.now();
                 if (game.currentLevel > 0) {
+                    
                     this.playLevelComplete();
                     let nextLevel = game.currentLevel + 1;
 
@@ -323,6 +326,8 @@ export class MainScene extends Phaser.Scene {
                         remainder = (remainder === 0) ? MainScene.LEVEL_BONUS : MainScene.LEVEL_BONUS - remainder;
                         this.mainSceneStartGameText.setLevelAnnounceText(`Level ${game.currentLevel} Completed, Next Upgrade in ${remainder} Levels!!`);
                     }
+
+                    this.playerspaceship.hitpoints = 2 * (MainScene.MAX_ENEMIES * game.currentLevel);
                     this.mainSceneStartGameText.showLevelAnnounceText();
                 }
 
