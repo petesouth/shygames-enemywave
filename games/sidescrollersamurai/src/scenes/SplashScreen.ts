@@ -54,6 +54,9 @@ export class SplashScreen extends Phaser.Scene {
         this.load.image('gamescreen', 'images/gamescreen.png');
         this.load.image("bricks2", 'textures/bricks2.png');
         this.load.image("bricks4", 'textures/bricks4.png');
+        this.load.tilemapTiledJSON('tilemap', 'textures/tilemap.json');
+        this.load.image('tilesetImage', 'textures/tilemap.png');
+        
 
 
         this.load.image("grassmountains", 'backgrounds/grassmountains.png');

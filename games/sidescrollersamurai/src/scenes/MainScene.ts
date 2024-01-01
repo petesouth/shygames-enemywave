@@ -1,3 +1,4 @@
+
 import Phaser, { Physics } from 'phaser';
 import gGameStore from '../store/store';
 import { MainSceneStartGameText } from './MainSceneStartGameText';
@@ -6,6 +7,10 @@ import { SpriteHero } from '../gameobjects/SpriteHero';
 import { SoundPlayer } from '../gameobjects/SoundPlayer';
 import { EnemyAntiHero } from '../gameobjects/EnemyAntiHero';
 import { js as EasyStarJs } from 'easystarjs';
+
+
+
+
 
 export class MainScene extends Phaser.Scene {
 
@@ -31,6 +36,14 @@ export class MainScene extends Phaser.Scene {
     protected distanceLeft: number = 0;
     protected distanceRight: number = 0;
     protected easyJs: EasyStarJs = new EasyStarJs();
+
+    private readonly mountainRangeDepth = -10;
+
+    private readonly skySpriteDepth = -11;
+
+    private readonly bricksSpriteDepth = 1;
+
+    private readonly singleTilesPlatformLayerDepth = 10;
 
     constructor() {
         super('MainScene');
@@ -86,9 +99,9 @@ export class MainScene extends Phaser.Scene {
         this.spriteHero?.applyToAllSprites((sprite) => {
             if (this.groundGroup) {
                 this.physics.add.collider(sprite, this.groundGroup);
-                this.enemyAntiHero?.applyToAllSprites((enemySprite)=>{
-                    if( this.groundGroup ) this.physics.add.collider(enemySprite, this.groundGroup);
-                    this.physics.add.collider(sprite, enemySprite );
+                this.enemyAntiHero?.applyToAllSprites((enemySprite) => {
+                    if (this.groundGroup) this.physics.add.collider(enemySprite, this.groundGroup);
+                    this.physics.add.collider(sprite, enemySprite);
                 });
             }
         });
@@ -100,7 +113,7 @@ export class MainScene extends Phaser.Scene {
     create() {
         const screenWidth = window.innerWidth;
         const screenHeight = window.innerHeight;
-   
+
         this.game.scale.resize(screenWidth, screenHeight);
         this.game.scale.refresh();
 
@@ -118,6 +131,8 @@ export class MainScene extends Phaser.Scene {
         }, 20000);
         // Create Debug Graphics if needed to visualize the bodies
         // this.physics.world.createDebugGraphic();
+
+        this.createOneSinglePlatform(screenWidth, screenHeight);
 
     }
 
@@ -151,7 +166,7 @@ export class MainScene extends Phaser.Scene {
             this.enemyAntiHero?.drawBullets(distanceIncrement);
 
 
-            
+
         } else if (this.cursorKeys?.right.isDown) {
             this.bricksTileSprite.tilePositionX += distanceIncrement;
             this.mountainRangeSprite.tilePositionX += distanceIncrement / 2;
@@ -168,7 +183,7 @@ export class MainScene extends Phaser.Scene {
 
             this.enemyAntiHero?.drawMines(-distanceIncrement);
             this.enemyAntiHero?.drawBullets(-distanceIncrement);
-            
+
         } else {
             this.spriteHero?.drawMines();
             this.spriteHero?.drawBullets();
@@ -199,24 +214,24 @@ export class MainScene extends Phaser.Scene {
     }
 
     public handleWindowResize(screenWidth: number, screenHeight: number) {
-        
-        if( ! this.cursorKeys ) return;
-        
+
+        if (!this.cursorKeys) return;
+
         this.repositionResizeTheGameAndWorld(screenWidth, screenHeight);
-        
+
         this.resizeCreateUpdateMountainsSkyClouds(screenWidth, screenHeight);
-        
+
         this.resizeCrateUpdateTheGround(screenWidth, screenHeight); // Refresh the physics body to apply the size change
-          
+
         this.resizeCreateUpdateCharacters(screenWidth);
-        
+
 
         this.generatePlatforms();
         this.repositionPlatforms(screenWidth, screenHeight);
 
         this.mainSceneStartGameText.repositionStartGameText(screenWidth);
 
-        
+
     }
 
 
@@ -241,23 +256,23 @@ export class MainScene extends Phaser.Scene {
         }
 
         this.mountainRangeSprite = this.add.tileSprite(0, 0, screenWidth, 320, "grassmountains");
-        this.mountainRangeSprite.setDepth(-10);
-        this.mountainRangeSprite.setDisplaySize(screenWidth, screenHeight + (screenHeight * .4) );
-        this.mountainRangeSprite.setPosition(screenWidth / 2, (screenHeight / 2) - (screenHeight * .2) );
+        this.mountainRangeSprite.setDepth(this.mountainRangeDepth);
+        this.mountainRangeSprite.setDisplaySize(screenWidth, screenHeight + (screenHeight * .4));
+        this.mountainRangeSprite.setPosition(screenWidth / 2, (screenHeight / 2) - (screenHeight * .2));
         this.mountainRangeSprite.update();
         this.mountainRangeSprite.setVisible(true);
-        
+
 
         this.skySprite = this.add.tileSprite(0, 0, screenWidth, 320, "sky");
-        this.skySprite.setDepth(-11);
+        this.skySprite.setDepth(this.skySpriteDepth);
         Utils.resizeImateToRatio(this.skySprite, screenWidth, screenHeight * .8);
-        
-        
+
+
         this.cloudsSprite = this.add.tileSprite(0, 0, screenWidth, 320, "clouds");
-        this.cloudsSprite.setDepth(-11);
+        this.cloudsSprite.setDepth(this.skySpriteDepth);
         Utils.resizeImateToRatio(this.cloudsSprite, screenWidth, screenHeight * .8);
-        
-  
+
+
     }
 
     protected resizeCrateUpdateTheGround(screenWidth: number, screenHeight: number) {
@@ -267,8 +282,8 @@ export class MainScene extends Phaser.Scene {
 
 
         this.bricksTileSprite = this.add.tileSprite(0, 0, screenWidth, MainScene.GROUND_HEIGHT, "bricks2");
-        this.bricksTileSprite.setDepth( 1 );
-        
+        this.bricksTileSprite.setDepth(this.bricksSpriteDepth);
+
         this.bricksTileSprite.setDisplaySize(screenWidth, MainScene.GROUND_HEIGHT);
         this.bricksTileSprite.setPosition(screenWidth / 2, screenHeight);
         this.bricksTileSprite.tilePositionX = 0;
@@ -287,7 +302,7 @@ export class MainScene extends Phaser.Scene {
         this.groundGroupBody.setVisible(false);
         this.groundGroupBody.refreshBody();
         this.bricksTileSprite.tilePositionX = 0;
-        
+
     }
 
     protected resizeCreateUpdateCharacters(screenWidth: number) {
@@ -333,6 +348,28 @@ export class MainScene extends Phaser.Scene {
             lastPlatformEndX = platform.x + platform.displayWidth / 2;
         });
     }
+
+    createOneSinglePlatform(screenWidth: number, screenHeight: number) {
+        const map = this.make.tilemap({ key: 'tilemap' });
+        const tileset = map.addTilesetImage('tilesetImage');
+    
+        if (tileset != null) {
+            // Adjust these values as needed to position your platform
+            const platformX = screenWidth / 2;
+            const platformY = screenHeight / 2;
+    
+            const layer = map.createLayer('layerName', tileset, platformX, platformY);
+    
+            if (layer) {
+                layer.setDepth(this.singleTilesPlatformLayerDepth);
+                layer.setDisplaySize(400, 200);
+                layer.setVisible(true);
+            }
+        }
+    }
+    
+
+
 
 
 }
