@@ -49,66 +49,7 @@ export class MainScene extends Phaser.Scene {
         super('MainScene');
     }
 
-    generatePlatforms() {
-        if (!this.groundGroup) {
-            return;
-        }
-
-        const { screenWidth, screenHeight } = {
-            screenWidth: window.innerWidth,
-            screenHeight: window.innerHeight,
-        };
-
-        const horizontalGapMin = 100;
-        const minYPosition = 220;
-        const maxYPosition = screenHeight - (MainScene.GROUND_HEIGHT + 40);
-
-        let lastPlatformEndX = 0;
-
-        const displayPlatformHeight = MainScene.GROUND_HEIGHT / 2;
-        let isCreated: boolean = (this.floatingPlatformBodies && this.floatingPlatformBodies.length > 0);
-
-
-        for (let i = 0;
-            ((isCreated === false && i < 300) ||
-                (isCreated === true && i < this.floatingPlatformBodies.length)); i++) {
-
-            let randomWidth = Phaser.Math.Between(screenWidth * .1, screenWidth * .30);
-            const randomYPos = Phaser.Math.Between(minYPosition, maxYPosition);
-            let randomXPos = Phaser.Math.Between(lastPlatformEndX + horizontalGapMin, lastPlatformEndX + horizontalGapMin + 200);
-
-            // Create platform, set its position, and anchor point to the center
-            let platform = (isCreated) ? this.floatingPlatformBodies[i] : this.groundGroup.create(randomXPos, randomYPos, "bricks2") as Phaser.Physics.Arcade.Sprite;
-
-            platform.setDisplaySize(randomWidth, displayPlatformHeight);
-            platform.setPosition(randomXPos, randomYPos);
-            platform.x = randomXPos;
-            platform.y = randomYPos;
-            platform.setVisible(true);
-            platform.refreshBody();
-
-            if (isCreated === false) {
-                this.floatingPlatformBodies.push(platform);
-            }
-
-            // Update for next platform
-            lastPlatformEndX = platform.x + platform.displayWidth / 2;
-        }
-
-        // Collider for the hero sprite with the platform
-        this.spriteHero?.applyToAllSprites((sprite) => {
-            if (this.groundGroup) {
-                this.physics.add.collider(sprite, this.groundGroup);
-                this.enemyAntiHero?.applyToAllSprites((enemySprite) => {
-                    if (this.groundGroup) this.physics.add.collider(enemySprite, this.groundGroup);
-                    this.physics.add.collider(sprite, enemySprite);
-                });
-            }
-        });
-
-    }
-
-
+  
 
     create() {
         const screenWidth = window.innerWidth;
@@ -336,18 +277,141 @@ export class MainScene extends Phaser.Scene {
         });
     }
 
-    // New method to reposition platforms
-    protected repositionPlatforms(screenWidth: number, screenHeight: number) {
-        // Example logic - you might need to adjust this based on your game's design
+    generatePlatforms() {
+        if (!this.groundGroup) {
+            return;
+        }
+
+        const { screenWidth, screenHeight } = {
+            screenWidth: window.innerWidth,
+            screenHeight: window.innerHeight,
+        };
+
         const horizontalGapMin = 100;
+        const minYPosition = 220;
+        const maxYPosition = screenHeight - (MainScene.GROUND_HEIGHT + 40);
+
         let lastPlatformEndX = 0;
 
-        this.floatingPlatformBodies.forEach((platform, index) => {
+        const displayPlatformHeight = MainScene.GROUND_HEIGHT / 2;
+        let isCreated: boolean = (this.floatingPlatformBodies && this.floatingPlatformBodies.length > 0);
+
+
+        for (let i = 0;
+            ((isCreated === false && i < 300) ||
+                (isCreated === true && i < this.floatingPlatformBodies.length)); i++) {
+
+            let randomWidth = Phaser.Math.Between(screenWidth * .1, screenWidth * .30);
+            const randomYPos = Phaser.Math.Between(minYPosition, maxYPosition);
             let randomXPos = Phaser.Math.Between(lastPlatformEndX + horizontalGapMin, lastPlatformEndX + horizontalGapMin + 200);
+
+            // Create platform, set its position, and anchor point to the center
+            let platform = (isCreated) ? this.floatingPlatformBodies[i] : this.groundGroup.create(randomXPos, randomYPos, "bricks2") as Phaser.Physics.Arcade.Sprite;
+
+            platform.setDisplaySize(randomWidth, displayPlatformHeight);
+            platform.setPosition(randomXPos, randomYPos);
             platform.x = randomXPos;
+            platform.y = randomYPos;
+            platform.setVisible(true);
+            platform.refreshBody();
+
+            if (isCreated === false) {
+                this.floatingPlatformBodies.push(platform);
+            }
+
+            // Update for next platform
             lastPlatformEndX = platform.x + platform.displayWidth / 2;
+        }
+
+        // Collider for the hero sprite with the platform
+        this.spriteHero?.applyToAllSprites((sprite) => {
+            if (this.groundGroup) {
+                this.physics.add.collider(sprite, this.groundGroup);
+                this.enemyAntiHero?.applyToAllSprites((enemySprite) => {
+                    if (this.groundGroup) this.physics.add.collider(enemySprite, this.groundGroup);
+                    this.physics.add.collider(sprite, enemySprite);
+                });
+            }
         });
+
+        
+
     }
+
+
+
+    // New method to reposition platforms
+    // protected repositionPlatforms(screenWidth: number, screenHeight: number) {
+    //     // Example logic - you might need to adjust this based on your game's design
+    //     const horizontalGapMin = 100;
+    //     let lastPlatformEndX = 0;
+
+    //     this.floatingPlatformBodies.forEach((platform, index) => {
+    //         let randomXPos = Phaser.Math.Between(lastPlatformEndX + horizontalGapMin, lastPlatformEndX + horizontalGapMin + 200);
+    //         platform.x = randomXPos;
+    //         lastPlatformEndX = platform.x + platform.displayWidth / 2;
+    //     });
+    // }
+
+    repositionPlatforms(screenWidth: number, screenHeight: number): void {
+        if( !this.spriteHero || ! this.enemyAntiHero ) {
+            return;
+        }
+        
+        const horizontalGapMin: number = 100;
+        let lastPlatformEndX: number = 0;
+    
+        let levelGrid: number[][] = Array.from({ length: screenHeight }, () => 
+                                  Array.from({ length: screenWidth }, () => 0));
+    
+        this.floatingPlatformBodies.forEach((platform: Phaser.Physics.Arcade.Image) => {
+            let randomXPos: number = Phaser.Math.Between(lastPlatformEndX + horizontalGapMin, lastPlatformEndX + horizontalGapMin + 200);
+            platform.x = randomXPos;
+            lastPlatformEndX = platform.x + platform.displayWidth;
+    
+            const gridY: number = Math.floor(platform.y / screenHeight * levelGrid.length);
+            const gridXStart: number = Math.floor(platform.x / screenWidth * levelGrid[0].length);
+            const gridXEnd: number = Math.floor((platform.x + platform.displayWidth) / screenWidth * levelGrid[0].length);
+    
+            for (let x: number = gridXStart; x <= gridXEnd && x < levelGrid[0].length; x++) {
+                if (gridY < levelGrid.length) {
+                    levelGrid[gridY][x] = 1;
+                }
+            }
+        });
+    
+        // Now, apply the updated levelGrid for pathfinding
+        this.easyJs.setGrid(levelGrid);
+        this.easyJs.setAcceptableTiles([1]);
+    
+        // Assuming we have positions for SpriteHero and EnemyAntiHero
+        const heroPosition = this.spriteHero.getCenter(); // Or however you get the hero's position
+        const enemyPosition = this.enemyAntiHero.getCenter(); // Or the enemy's position
+    
+        const heroGridPos = {
+            x: Math.floor(heroPosition.x / screenWidth * levelGrid[0].length),
+            y: Math.floor(heroPosition.y / screenHeight * levelGrid.length)
+        };
+    
+        const enemyGridPos = {
+            x: Math.floor(enemyPosition.x / screenWidth * levelGrid[0].length),
+            y: Math.floor(enemyPosition.y / screenHeight * levelGrid.length)
+        };
+    
+        this.easyJs.findPath(enemyGridPos.x, enemyGridPos.y, heroGridPos.x, heroGridPos.y, path => {
+            if (path !== null && path.length > 0) {
+                // Here, you can move the enemy along the path towards the hero
+                // This might involve setting a movement vector for the enemy or directly manipulating its position
+                // For example:
+                console.log("Path found", path);
+                // Implement logic to follow path...
+            } else {
+                console.log("No path found");
+            }
+        });
+        this.easyJs.calculate(); // Trigger the pathfinding calculation
+    }
+    
 
     createOneSinglePlatform(screenWidth: number, screenHeight: number) {
         const map = this.make.tilemap({ key: 'tilemap' });

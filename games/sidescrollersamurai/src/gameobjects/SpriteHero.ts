@@ -401,7 +401,19 @@ export class SpriteHero {
     }
 
 
-
+    public getCenter(): Phaser.Geom.Point {
+        // Assuming the idle sprite is always defined and positioned correctly,
+        // even if it's not currently visible. Adjust if this assumption doesn't hold.
+        if (this.spriteIdle) {
+            const centerX = this.spriteIdle.x + this.spriteIdle.displayWidth / 2;
+            const centerY = this.spriteIdle.y + this.spriteIdle.displayHeight / 2;
+            return new Phaser.Geom.Point(centerX, centerY);
+        } else {
+            // Fallback or default position if no sprite is available
+            return new Phaser.Geom.Point(0, 0);
+        }
+    }
+    
 
 
 

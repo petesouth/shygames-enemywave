@@ -25,7 +25,7 @@ const config: Phaser.Types.Core.GameConfig = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: { y: 0 },
+            gravity: { y: 0, x:0 },
             debug: false,  // Set true if you want to see the physics debug info
             checkCollision: {
                 up: true,
